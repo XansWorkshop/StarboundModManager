@@ -1,0 +1,225 @@
+[gd_scene format=3 uid="uid://dj6i10d8xumgl"]
+
+[ext_resource type="Texture2D" uid="uid://dt0wnqyl5o57b" path="res://icon.svg" id="1_vr020"]
+[ext_resource type="Script" uid="uid://cj41q10eeu26e" path="res://SBModManager/AutoClosableWindow.cs" id="1_xe4su"]
+[ext_resource type="Script" uid="uid://dsgwji4qolfwj" path="res://SBModManager/TooltipLabel.cs" id="2_jgx42"]
+[ext_resource type="Script" uid="uid://wc5gyhx7lkuj" path="res://SBModManager/TooltipButton.cs" id="3_dvotq"]
+
+[node name="EditModpack" type="Window" unique_id=939907019]
+oversampling_override = 1.0
+title = "Edit Modpack Details"
+position = Vector2i(0, 36)
+size = Vector2i(800, 500)
+transient = true
+exclusive = true
+unresizable = true
+sharp_corners = true
+minimize_disabled = true
+maximize_disabled = true
+script = ExtResource("1_xe4su")
+
+[node name="Panel" type="Panel" parent="." unique_id=143099214]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=1980975647]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=852355481]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=530402158]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1263551607]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="NameCtr" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=837152733]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/NameCtr" unique_id=958671302]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Modpack Name"
+
+[node name="ModpackName" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/NameCtr" unique_id=488697440]
+custom_minimum_size = Vector2(310, 32)
+custom_maximum_size = Vector2(310, -1)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter the modpack name..."
+
+[node name="ModpackFolder" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1157427228]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/ModpackFolder" unique_id=500421636]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Game Location"
+
+[node name="ModpackFolderText" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/ModpackFolder" unique_id=596270930]
+custom_minimum_size = Vector2(274, 32)
+custom_maximum_size = Vector2(274, 32)
+layout_mode = 2
+placeholder_text = "path/to/starbound.exe"
+
+[node name="ModpackFolderPick" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/ModpackFolder" unique_id=1218366623]
+custom_minimum_size = Vector2(32, 32)
+custom_maximum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="CustomDescription" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=462456556]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/CustomDescription" unique_id=1411645451]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Description"
+
+[node name="TextEdit" type="TextEdit" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/CustomDescription" unique_id=652914280]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Enter a custom description here, if you want to..."
+
+[node name="ModpackIcon" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=2018210441]
+custom_minimum_size = Vector2(256, 256)
+custom_maximum_size = Vector2(256, 256)
+layout_mode = 2
+texture = ExtResource("1_vr020")
+
+[node name="ReplaceModpackIcon" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer/ModpackIcon" unique_id=353696949]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 32
+text = "Replace..."
+
+[node name="HSeparator" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=598121868]
+layout_mode = 2
+
+[node name="LabelAdvOptions" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=285522454]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Advanced Options"
+
+[node name="TipCursor" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=1449228164]
+self_modulate = Color(1, 1, 1, 0.7529412)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
+bbcode_enabled = true
+text = "[i]Hover your cursor over an option to view information.[/i]"
+fit_content = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1422498432]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AlwaysSyncWorkshop" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer" unique_id=1536480455]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/AlwaysSyncWorkshop" unique_id=2010526920]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Not recommended!
+
+When enabled, your Steam Workshop subscriptions are noted and used for this modpack. If you subscribe or unsubscribe to something on the Workshop, those changes will be reflected here.
+
+When enabled, this has the same effect as automatically clicking the \"Sync Workshop Mods\" button before every launch."
+mouse_filter = 0
+text = "Always Sync Workshop Subscriptions"
+script = ExtResource("2_jgx42")
+
+[node name="AlwaysSyncWorkshopButton" type="CheckButton" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/AlwaysSyncWorkshop" unique_id=591593623]
+layout_mode = 2
+
+[node name="BypassModPool" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer" unique_id=1425843330]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/BypassModPool" unique_id=123442489]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "REALLY Not Recommended!
+
+To prevent SBMM from obliterating your disk space, it keeps an archive of the Steam Workshop mods that one or more of your modpacks are using. When loading mods from the Workshop, it will instead use this archive as the source of the mod, rather than your mods folder.
+
+Enabling this option will bypass this sharing behavior, meaning that if you make 3 modpacks with Frackin' Universe, you install Frackin' Universe 3 times. Individually. There's basically no reason to ever want to do this."
+mouse_filter = 0
+text = "Bypass Workshop Mod Pool"
+script = ExtResource("2_jgx42")
+
+[node name="BypassModPoolButton" type="CheckButton" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/BypassModPool" unique_id=1911467275]
+layout_mode = 2
+
+[node name="UseSharedBaseSBInstall" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer" unique_id=830150337]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/UseSharedBaseSBInstall" unique_id=1345488349]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Strongly recommended!
+
+When enabled, Steam's install of Starbound will be shared across all modpacks that use the base game.
+
+Unlike other games, this is actually recommended, since Starbound is not receiving updates anymore. Note that when enabled, the mods directory in the Steam installation location will be ignored. Enabling this can remove some bloat when you have a lot of modpacks installed since it doesn't need to copy the entire game for every single modpack.
+
+When disabled, an installation will be placed into the folder for this profile of the modpack."
+mouse_filter = 0
+text = "Use Shared Starbound Installation"
+script = ExtResource("2_jgx42")
+
+[node name="UseSharedBaseSBInstallButton" type="CheckButton" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/UseSharedBaseSBInstall" unique_id=1007932840]
+layout_mode = 2
+button_pressed = true
+
+[node name="UseSharedOSBInstall" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer" unique_id=1907217833]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/UseSharedOSBInstall" unique_id=1192486129]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Recommended!
+
+When enabled, an install of OpenStarbound will be shared across all modpacks that use the base game.
+
+Unlike the other toggle for the base game, a copy of opensb.pak will still be duplicated per install, but this file is so small that it largely does not matter for disk bloat.
+
+When disabled, an installation will be placed into the folder for this profile of the modpack."
+mouse_filter = 0
+text = "Use Shared OpenStarbound Installation"
+script = ExtResource("2_jgx42")
+
+[node name="UseSharedOSBInstallButton" type="CheckButton" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer/UseSharedOSBInstall" unique_id=344413136]
+layout_mode = 2
+button_pressed = true
+
+[node name="SyncWorkshopButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer" unique_id=726128118]
+layout_mode = 2
+tooltip_text = "Press this button to take note of every installed mod from the Steam Workshop. These mods will be copied to the Workshop Mod Pool, and the mod list for this pack will be updated to note all of those Workshop mods in use."
+text = "Sync Workshop Subscriptions Now"
+script = ExtResource("3_dvotq")

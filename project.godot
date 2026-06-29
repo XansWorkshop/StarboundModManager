@@ -1,0 +1,44 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Starbound Mod Manager"
+config/description="A tool which basically does glorified directory management for Starbound."
+run/main_scene="uid://ehcuhykhn26h"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="Xan's Workshop/StarboundModManager"
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+boot_splash/show_image=false
+boot_splash/use_filter=false
+config/icon="res://icon.svg"
+
+[display]
+
+window/subwindows/embed_subwindows=false
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[dotnet]
+
+project/assembly_name="SBModManager"
+
+[gui]
+
+timers/tooltip_delay_sec=0.1
+timers/tooltip_delay_sec.editor_hint=0.1
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"

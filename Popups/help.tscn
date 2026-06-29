@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://c8q3258ivlb4h"]
+
+[ext_resource type="Script" uid="uid://cj41q10eeu26e" path="res://SBModManager/AutoClosableWindow.cs" id="1_eqxc5"]
+
+[node name="About" type="Window" unique_id=939907019]
+oversampling_override = 1.0
+title = "About Starbound Mod Manager"
+position = Vector2i(0, 36)
+size = Vector2i(800, 500)
+transient = true
+exclusive = true
+unresizable = true
+sharp_corners = true
+minimize_disabled = true
+maximize_disabled = true
+script = ExtResource("1_eqxc5")
+
+[node name="Panel" type="Panel" parent="." unique_id=143099214]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=1980975647]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=852355481]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=2126993555]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "[font_size=28]What is SBMM?[/font_size]
+Starbound Mod Manager (SBMM) is basically a glorified file management tool. Starbound offers a config file which determines where mods, saves, and log files are located. Combined with the ability to launch starbound while telling it which config file to read, it becomes possible to have multiple configs with their own saves and mods folders. Thus, a mod manager is possible.
+
+[font_size=28]What About The Steam Workshop?[/font_size]
+Starbound can also load mods from the Steam Workshop. SBMM does a lot of wizardry to make this layer effectively transparent, however."

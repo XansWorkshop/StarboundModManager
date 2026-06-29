@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://r74q4a3m8hl1"]
+
+[node name="Content" type="RichTextLabel" unique_id=118802332]
+custom_maximum_size = Vector2(400, -1)
+offset_right = 1.0
+bbcode_enabled = true
+fit_content = true
+
+[node name="Panel" type="ColorRect" parent="." unique_id=1520423829]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.1, 1.1)
+color = Color(0, 0, 0, 1)
