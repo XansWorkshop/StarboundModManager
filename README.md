@@ -45,4 +45,4 @@ SBMM implements the same mod list feature commonly seen in modpack managers for 
 
 ### Local Mod Catalogue
 
-Using a catalogue system, SBMM can keep a local archive of every mod you've installed (including multiple versions of the same mod). This way, a mod only needs to be downloaded once, and then it can be reused in an unlimited number of modpacks without needing any more disk space.
+Using a catalogue system, SBMM can keep a local archive of every mod you've installed. This way, a mod only needs to be downloaded once, and then it can be reused in an unlimited number of modpacks without needing any more disk space.

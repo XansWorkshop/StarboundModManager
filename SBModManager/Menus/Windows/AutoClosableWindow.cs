@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SBModManager {
+namespace SBModManager.Menus.Windows {
 	public partial class AutoClosableWindow : Window {
 
 		/// <summary>

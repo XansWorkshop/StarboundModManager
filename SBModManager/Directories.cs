@@ -5,6 +5,8 @@ using System.Text;
 
 using Godot;
 
+using SBModManager.ModInstances;
+
 namespace SBModManager {
 
 	/// <summary>
@@ -29,6 +31,14 @@ namespace SBModManager {
 		}
 
 		/// <summary>
+		/// Returns the base directory for all modpacks.
+		/// </summary>
+		/// <returns></returns>
+		public static string GetPackDirectory() {
+			return ProjectSettings.GlobalizePath($"user://profiles");
+		}
+
+		/// <summary>
 		/// Returns the base directory for a modpack based on the provided ID.
 		/// </summary>
 		/// <param name="modpackID">The GUID of the modpack to get the directory for.</param>
@@ -38,11 +48,29 @@ namespace SBModManager {
 		}
 
 		/// <summary>
+		/// Returns the path of the information json file for the modpack with the provided ID.
+		/// </summary>
+		/// <param name="modpackID"></param>
+		/// <returns></returns>
+		public static string GetPackInfoFile(Guid modpackID) {
+			return Path2.Combine(GetPackDirectory(modpackID), "info.json");
+		}
+
+		/// <summary>
 		/// Returns the path to the workshop cache directory.
 		/// </summary>
 		/// <returns></returns>
 		public static string GetLocalWorkshopCacheDirectory() {
-			return ProjectSettings.GlobalizePath($"user://workshop_cache");
+			return ProjectSettings.GlobalizePath($"user://mod_catalog_workshop");
+		}
+
+		/// <summary>
+		/// Returns the path to the manually installed mod cache directory. It's the same as the workshop cache but for
+		/// mods that come from an explicit source like a .pak file being directly installed.
+		/// </summary>
+		/// <returns></returns>
+		public static string GetLocalManualModCacheDirectory() {
+			return ProjectSettings.GlobalizePath($"user://mod_catalog_manual");
 		}
 
 		/// <summary>
@@ -68,13 +96,13 @@ namespace SBModManager {
 		public static void InitializeModpackDirectory(Guid modpackID) {
 			string directory = GetPackDirectory(modpackID);
 			// CreateDirectory creates the entire tree.
-			Directory.CreateDirectory(Path.Combine(directory, "logs"));
-			Directory.CreateDirectory(Path.Combine(directory, "storage"));
-			Directory.CreateDirectory(Path.Combine(directory, "extra_mods"));
-			Directory.CreateDirectory(Path.Combine(directory, "extra_assets"));
+			Directory.CreateDirectory(Path2.Combine(directory, "logs"));
+			Directory.CreateDirectory(Path2.Combine(directory, "storage"));
+			Directory.CreateDirectory(Path2.Combine(directory, "extra_mods"));
+			Directory.CreateDirectory(Path2.Combine(directory, "extra_assets"));
 
 			File.WriteAllText(
-				Path.Combine(directory, "NO_MODS_HERE.TXT"),
+				Path2.Combine(directory, "NO_MODS_HERE.TXT"),
 				"You might be wondering \"where is the mod folder?\"\n\nThere is none. If you want to install mods manually go to the shared mods directory instead.\nThen, you can install them from your catalog."
 			);
 		}
@@ -126,10 +154,10 @@ namespace SBModManager {
 			}
 			Directory.CreateDirectory(target);
 			foreach (string file in Directory.GetFiles(source)) {
-				File.Copy(file, Path.Combine(target, Path.GetFileName(file)), true);
+				File.Copy(file, Path2.Combine(target, Path.GetFileName(file)), true);
 			}
 			foreach (string subdirectory in Directory.GetDirectories(source)) {
-				CopyDirectory(subdirectory, Path.Combine(target, Path.GetFileName(subdirectory)));
+				CopyDirectory(subdirectory, Path2.Combine(target, Path.GetFileName(subdirectory)));
 			}
 		}
 	}

@@ -14,22 +14,38 @@ using SBModManager.Attributes;
 
 using HttpClient = System.Net.Http.HttpClient;
 using FileAccess = System.IO.FileAccess;
+using SBModManager.SteamInterop;
 
 namespace SBModManager.Menus {
 	public partial class ProgramSettingsWindow : Window {
 
+		/// <summary>
+		/// The note that describes where to install SteamCMD. It may also have a link to auto-install it.
+		/// </summary>
 		[Import, AllowNull]
 		public RichTextLabel SteamCMDNote { get; }
 
+		/// <summary>
+		/// The text area where the location of SteamCMD can be manually input.
+		/// </summary>
 		[Import, AllowNull]
 		public LineEdit SteamCMDLocationInput { get; }
 
+		/// <summary>
+		/// The text area where the location of Starbound can be manually input.
+		/// </summary>
 		[Import, AllowNull]
 		public LineEdit StarboundLocationInput { get; }
 
+		/// <summary>
+		/// The button which opens a file dialog that can be used to choose the location of Starbound.
+		/// </summary>
 		[Import, AllowNull]
 		public Button StarboundFileDialogButton { get; }
 
+		/// <summary>
+		/// The actual file dialog that is used to choose Starbound.
+		/// </summary>
 		[Import, AllowNull]
 		public FileDialog StarboundFileDialog { get; }
 
@@ -73,6 +89,8 @@ namespace SBModManager.Menus {
 
 			CloseRequested += OnCloseRequested;
 			VisibilityChanged += OnSelfVisibilityChanged;
+
+			StarboundFileDialog.CurrentPath = SteamTools.GetStarboundDirectory() ?? string.Empty;
 		}
 
 		private void OnOKPressed() => OnCloseRequested();
@@ -190,7 +208,7 @@ namespace SBModManager.Menus {
 
 			File.WriteAllText(
 				Path2.Combine(destination, "DO NOT MODIFY, READ ME.TXT"), 
-				"This is a template/shared installation of OpenStarbound.\nDo not install mods or assets into this folder, because they won't work properly."
+				"This is a template/shared installation of OpenStarbound.\nDO NOT INSTALL MODS HERE. It doesn't work (even if there is a mods folder)."
 			);
 		}
 
@@ -233,7 +251,7 @@ namespace SBModManager.Menus {
 					if (_steamCmdInstallationTask != null && !_steamCmdInstallationTask.IsCompleted) {
 						return;
 					}
-					SteamCMDNote.Text = "SteamCMD is installing... [color=#f77][url=CancelInstallHint]Click here to cancel[/url][/color]. It will take about 20 seconds.";
+					SteamCMDNote.Text = "SteamCMD is installing... [color=#f77][url=CancelInstallHint]Click here to cancel[/url][/color].";
 
 					_downloadCancellation = new CancellationTokenSource();
 					_steamCmdInstallationTask = InstallSteamCMDAsync(_downloadCancellation.Token);
@@ -243,12 +261,16 @@ namespace SBModManager.Menus {
 			}
 		}
 
-		private static async Task InstallSteamCMDAsync(CancellationToken cancellationToken) {
+		private async Task InstallSteamCMDAsync(CancellationToken cancellationToken) {
+			StringName TEXT = RichTextLabel.PropertyName.Text;
+			const string CLICK_TO_CANCEL = "[color=#f77][url=CancelInstallHint]Click here to cancel[/url][/color].";
+
 			string steamCMDDir = Directories.GetLocalSteamCMDInstallationDirectory();
 			string steamCMDZip = Path2.Combine(steamCMDDir, "steamcmd.zip");
 			string steamCMDExe = Path2.Combine(steamCMDDir, "steamcmd.exe");
 			if (File.Exists(steamCMDExe)) return;
 
+			SteamCMDNote.SetDeferred(TEXT, $"Downloading SteamCMD... {CLICK_TO_CANCEL}");
 			{
 				Directory.CreateDirectory(steamCMDDir);
 				using HttpClient client = new HttpClient();
@@ -263,6 +285,7 @@ namespace SBModManager.Menus {
 
 			if (cancellationToken.IsCancellationRequested) return;
 
+			SteamCMDNote.SetDeferred(TEXT, $"Extracting SteamCMD... {CLICK_TO_CANCEL}");
 			{
 				using FileStream reader = File.Open(
 					steamCMDZip,
@@ -278,6 +301,8 @@ namespace SBModManager.Menus {
 
 			if (cancellationToken.IsCancellationRequested) return;
 
+			SteamCMDNote.SetDeferred(TEXT, $"Performing SteamCMD First Time Startup... This step can take about 30 seconds.");
+			await Task.Delay(1000);
 			Process? steamCMDProcess = Process.Start(new ProcessStartInfo {
 				FileName = steamCMDExe,
 				Arguments = "+exit",

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c8q3258ivlb4h"]
 
-[ext_resource type="Script" uid="uid://d2x121uofpxh2" path="res://SBModManager/GUI/AutoClosableWindow.cs" id="1_eqxc5"]
+[ext_resource type="Script" uid="uid://d2x121uofpxh2" path="res://SBModManager/Menus/Windows/AutoClosableWindow.cs" id="1_eqxc5"]
 
 [node name="About" type="Window" unique_id=939907019]
 oversampling_override = 1.0

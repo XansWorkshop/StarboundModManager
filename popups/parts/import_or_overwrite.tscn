@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://hgb6fqxfv6bj"]
 
+[ext_resource type="Script" uid="uid://bivk2f8fqe6xq" path="res://SBModManager/GUI/MergeOrReplacePopup.cs" id="1_sefs6"]
+
 [node name="ImportOrOverwrite" type="Popup" unique_id=1997859641]
 oversampling_override = 1.0
 title = "Replace Mods"
 size = Vector2i(400, 200)
 visible = true
+script = ExtResource("1_sefs6")
 
 [node name="Panel" type="Panel" parent="." unique_id=1481448303]
 anchors_preset = 15

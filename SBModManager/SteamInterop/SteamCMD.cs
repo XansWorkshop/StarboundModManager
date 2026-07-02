@@ -31,7 +31,7 @@ namespace SBModManager.SteamInterop {
 		public static async Task RunSteamCMDScriptAsync(string scriptPath, CancellationToken cancellationToken) {
 			ProcessStartInfo info = new ProcessStartInfo {
 				FileName = ProgramSettings.SteamCMD?.FullName ?? throw new InvalidOperationException("SteamCMD is not installed."),
-				//CreateNoWindow = true
+				CreateNoWindow = true
 			};
 			info.ArgumentList.Add($"+runscript \"{scriptPath}\"");
 			info.ArgumentList.Add("+quit");
@@ -51,24 +51,6 @@ namespace SBModManager.SteamInterop {
 		/// <param name="args">Each command to run, with its own args. Should not include the leading + symbol. Quotations are handled for you and no escape sequences are necessary.</param>
 		/// <returns></returns>
 		public static async Task RunSteamCMDAsync(string[] args, CancellationToken cancellationToken) {
-			/*
-			Directly invoking commands at program execution time using the
-			command-line
-
-			This can be done using the '+' directive: Any command (including convars)
-			which you can type at the Steam> prompt may also be passed in via the
-			program command-line after the '+' character.
-
-			If the command takes more than one argument, you must wrap the entire
-			command (including the '+' character) in quotes. Additionally, if any
-			arguments include spaces, they should themselves be wrapped in quotes. In
-			the case where outer and inner quotes are necessary, escape the inner qotes
-			with the backslash ('\') character.
-
-			You can include as many '+' directives on the command-line as you want, they
-			will be executed sequentially in order.
-			*/
-
 			ProcessStartInfo info = new ProcessStartInfo {
 				FileName = ProgramSettings.SteamCMD?.FullName ?? throw new InvalidOperationException("SteamCMD is not installed."),
 				CreateNoWindow = true

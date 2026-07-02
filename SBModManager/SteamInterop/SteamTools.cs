@@ -27,15 +27,18 @@ namespace SBModManager.SteamInterop {
 		public static string? GetSteamappsContainingStarbound() {
 			try {
 				string os = OS.GetName();
-				VDFObject vdf;
+				VDFObject? vdf;
 				if (os == "Windows") {
-					vdf = VDFReader.ReadVDF(@"C:\Program Files (x86)\Steam\steamapps\libraryfolders.vdf");
+					vdf = VDFReader.TryReadVDF(@"C:\Program Files (x86)\Steam\steamapps\libraryfolders.vdf");
 				} else if (os == "macOS") {
-					vdf = VDFReader.ReadVDF("~/Library/Application Support/Steam/steamapps/libraryfolders.vdf");
+					vdf = VDFReader.TryReadVDF("~/Library/Application Support/Steam/steamapps/libraryfolders.vdf");
 				} else if (os == "Linux") {
-					vdf = VDFReader.ReadVDF("~/.steam/steam/steamapps/libraryfolders.vdf");
+					vdf = VDFReader.TryReadVDF("~/.steam/steam/steamapps/libraryfolders.vdf");
 				} else {
 					throw new NotSupportedException($"No known steam directory on OS: {os}");
+				}
+				if (vdf == null) {
+					throw new InvalidOperationException("Failed to read vdf file to get library directories.");
 				}
 				VDFObject libraryFolders = vdf.GetChild("libraryfolders");
 				foreach (KeyValuePair<string, object> kvp in libraryFolders.Values) {
@@ -43,7 +46,7 @@ namespace SBModManager.SteamInterop {
 					string path = libraryFolder.GetValue("path");
 					VDFObject apps = libraryFolder.GetChild("apps");
 					if (apps.Values.ContainsKey("211820")) {
-						return Path.Combine(path, "steamapps");
+						return Path2.Combine(path, "steamapps");
 					}
 				}
 			} catch { }
@@ -125,13 +128,13 @@ namespace SBModManager.SteamInterop {
 		/// Returns a list of every installed mod ID.
 		/// </summary>
 		/// <returns></returns>
-		public static ulong[] CopyAllCurrentSubscriptionsToCache(CancellationToken cancellationToken) {
+		public static ulong[] CopyAllCurrentSubscriptionsToCache(bool skipDuplicates, CancellationToken cancellationToken) {
 			List<ulong> installed = [];
 
 			string? sbPath = GetSteamappsContainingStarbound();
 			string workshopCacheDir = Directories.GetLocalWorkshopCacheDirectory();
 			if (sbPath != null) {
-				string workshopContent = Path.Combine(sbPath, "workshop", "content", "211820");
+				string workshopContent = Path2.Combine(sbPath, "workshop", "content", "211820");
 				string[] subdirectories = Directory.GetDirectories(workshopContent);
 				for (int i = 0; i < subdirectories.Length; i++) {
 					if (cancellationToken.IsCancellationRequested) return [];
@@ -142,9 +145,13 @@ namespace SBModManager.SteamInterop {
 					if (name != null && ulong.TryParse(name, out ulong workshopID)) {
 						string destination = Path2.Combine(workshopCacheDir, workshopID.ToString());
 						if (Directory.Exists(destination)) {
+							if (skipDuplicates) {
+								installed.Add(workshopID);
+								continue;
+							}
 							// ^ For performance, not to prevent the error.
 							try {
-								Directory.Delete(destination);
+								Directory.Delete(destination, true);
 							} catch (DirectoryNotFoundException) { }
 						}
 

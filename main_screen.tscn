@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://dt0wnqyl5o57b" path="res://icon.svg" id="1_tjn2e"]
 [ext_resource type="Script" uid="uid://bxj2e5kcyxw4" path="res://SBModManager/Core.cs" id="1_w0p2i"]
-[ext_resource type="Script" uid="uid://c5gfgijyu5tlr" path="res://SBModManager/GUI/TooltipImageButton.cs" id="3_7a4el"]
+[ext_resource type="Script" uid="uid://x81ofxplde8b" path="res://SBModManager/GUI/TooltipTextureButton.cs" id="3_4sclt"]
 [ext_resource type="PackedScene" uid="uid://dii41rl1tytuv" path="res://popups/app_settings.tscn" id="4_4sclt"]
 [ext_resource type="PackedScene" uid="uid://dj6i10d8xumgl" path="res://popups/edit_modpack_details.tscn" id="5_ywh4s"]
 
@@ -41,7 +41,7 @@ tooltip_text = "Create a new modpack using the latest version of OpenStarbound."
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="NewModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=312914462]
 unique_name_in_owner = true
@@ -54,7 +54,7 @@ tooltip_text = "Create a new modpack using Starbound 1.14.
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="DuplicateModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=733481348]
 unique_name_in_owner = true
@@ -64,7 +64,7 @@ tooltip_text = "Create a copy of the current selected modpack, carrying over eve
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="ImportModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1291402901]
 unique_name_in_owner = true
@@ -74,7 +74,7 @@ tooltip_text = "Import a modpack from a list or archive."
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="VSeparator" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools" unique_id=197170488]
 layout_mode = 2
@@ -87,7 +87,7 @@ tooltip_text = "Configure the settings associated with the selected modpack."
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="DeleteModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=732978601]
 unique_name_in_owner = true
@@ -97,7 +97,7 @@ tooltip_text = "Permanently delete the selected modpack."
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="VSeparator2" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools" unique_id=1313816397]
 layout_mode = 2
@@ -110,7 +110,7 @@ tooltip_text = "Modify the app's settings and provide it with tools that are nee
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="HelpButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1144096353]
 unique_name_in_owner = true
@@ -120,14 +120,18 @@ tooltip_text = "Get help and information about the app."
 texture_normal = ExtResource("1_tjn2e")
 ignore_texture_size = true
 stretch_mode = 0
-script = ExtResource("3_7a4el")
+script = ExtResource("3_4sclt")
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=1423019913]
 layout_mode = 2
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer" unique_id=1274272620]
+[node name="ModpacksList" type="HFlowContainer" parent="MarginContainer/VBoxContainer" unique_id=1722701330]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 32
+alignment = 1
 
 [node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=2114744713]
 layout_mode = 2

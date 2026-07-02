@@ -3,60 +3,95 @@
   "WorkspaceRootPath": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\menus\\programsettingswindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\menus\\programsettingswindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\programsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\programsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\viewmodlistpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\viewmodlistpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\directories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\directories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\modpack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\modpack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\steaminterop\\steamtools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\steaminterop\\steamtools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\core.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\core.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\modpackmanagementwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\modpackmanagementwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\mergeorreplacepopup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\mergeorreplacepopup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\menus\\editmodpackdetailspanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\menus\\editmodpackdetailspanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\foldablemodgroup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\foldablemodgroup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\modlistentry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\modlistentry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\steaminterop\\steamcmd.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\steaminterop\\steamcmd.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\modinstances\\metadatareader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\modinstances\\metadatareader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\tooltipimagebutton.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\tooltipimagebutton.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\modinstances\\modsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\modinstances\\modsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gameinstallationhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gameinstallationhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\modinstances\\modarchive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\modinstances\\modarchive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\a372a8094654238744289910565ec7f85fa687856f8a84e56ff22e1fca4ff482\\Dictionary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\4c43712bc4f0f339d989d544034c0e564b23e0cc01d78e48347d8370e795596d\\Variant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\menus\\viewmodlistpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\menus\\viewmodlistpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\directories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\directories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\steaminterop\\steamtools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\steaminterop\\steamtools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\d9d8e01208e3a6e2dbfb409adeeb32e1963ab6d0\\Godot.NativeInterop.NativeFuncs.generated.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\ee7b495b0dd568fdfacd6c12fc182a87bb27c835b9b7412c6d931db447d5783c\\PackedScene.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\modinstances\\modpack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\modinstances\\modpack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\modpackentry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\modpackentry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\e973689ff100ee64b1739d1410678c29423aee443fe14619333e0c2b77eb2969\\DelegateUtils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\menus\\editmodpackdetailspanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\menus\\editmodpackdetailspanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\core.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\core.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\menus\\windows\\modpackmanagementwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\menus\\windows\\modpackmanagementwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\editablefoldablecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\editablefoldablecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\gui\\formattools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\gui\\formattools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\modinstances\\modmetadata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\modinstances\\modmetadata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\menus\\programsettingswindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\menus\\programsettingswindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\godotdictionarytools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\godotdictionarytools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|f:\\users\\xan\\source\\godot\\sb_mod_manager\\sbmodmanager\\programsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26F0D40A-11BA-428C-AC8E-EEB2AEDC8F33}|SBModManager.csproj|solutionrelative:sbmodmanager\\programsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -66,7 +101,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 20,
+          "SelectedChildIndex": 21,
           "Children": [
             {
               "$type": "Bookmark",
@@ -122,182 +157,300 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ViewModListPanel.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ViewModListPanel.cs",
-              "RelativeDocumentMoniker": "SBModManager\\GUI\\ViewModListPanel.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ViewModListPanel.cs",
-              "RelativeToolTip": "SBModManager\\GUI\\ViewModListPanel.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAADwvy0AAAAkAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "Dictionary.cs",
+              "DocumentMoniker": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\a372a8094654238744289910565ec7f85fa687856f8a84e56ff22e1fca4ff482\\Dictionary.cs",
+              "ToolTip": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\a372a8094654238744289910565ec7f85fa687856f8a84e56ff22e1fca4ff482\\Dictionary.cs [Read Only]",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAQwEkAAAABAAAAAQAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T20:37:27.068Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-02T11:39:08.375Z",
+              "EditorCaption": " [Read Only]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "MergeOrReplacePopup.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\MergeOrReplacePopup.cs",
-              "RelativeDocumentMoniker": "SBModManager\\GUI\\MergeOrReplacePopup.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\MergeOrReplacePopup.cs",
-              "RelativeToolTip": "SBModManager\\GUI\\MergeOrReplacePopup.cs",
-              "ViewState": "AgIAAB0AAAAAAAAAAAA3wCYAAAAxAAAAAAAAAA==",
+              "DocumentIndex": 6,
+              "Title": "Variant.cs",
+              "DocumentMoniker": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\4c43712bc4f0f339d989d544034c0e564b23e0cc01d78e48347d8370e795596d\\Variant.cs",
+              "ToolTip": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\4c43712bc4f0f339d989d544034c0e564b23e0cc01d78e48347d8370e795596d\\Variant.cs [Read Only]",
+              "ViewState": "AgIAAEUFAAAAAAAAAAAQwFIFAAACAAAAAQAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T20:33:39.039Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ModListEntry.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModListEntry.cs",
-              "RelativeDocumentMoniker": "SBModManager\\GUI\\ModListEntry.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModListEntry.cs",
-              "RelativeToolTip": "SBModManager\\GUI\\ModListEntry.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T20:25:09.457Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "TooltipImageButton.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\TooltipImageButton.cs",
-              "RelativeDocumentMoniker": "SBModManager\\GUI\\TooltipImageButton.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\TooltipImageButton.cs",
-              "RelativeToolTip": "SBModManager\\GUI\\TooltipImageButton.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAA/AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T18:54:22.964Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-02T11:37:23.406Z",
+              "EditorCaption": " [Read Only]"
             },
             {
               "$type": "Document",
               "DocumentIndex": 11,
-              "Title": "SteamCMD.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\SteamInterop\\SteamCMD.cs",
-              "RelativeDocumentMoniker": "SBModManager\\SteamInterop\\SteamCMD.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\SteamInterop\\SteamCMD.cs",
-              "RelativeToolTip": "SBModManager\\SteamInterop\\SteamCMD.cs",
-              "ViewState": "AgIAAAEAAAAAAAAAAAApwCUAAAArAAAAAAAAAA==",
+              "Title": "PackedScene.cs",
+              "DocumentMoniker": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\ee7b495b0dd568fdfacd6c12fc182a87bb27c835b9b7412c6d931db447d5783c\\PackedScene.cs",
+              "ToolTip": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\ee7b495b0dd568fdfacd6c12fc182a87bb27c835b9b7412c6d931db447d5783c\\PackedScene.cs [Read Only]",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAQwIMAAAAIAAAAAQAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T17:00:43.795Z",
+              "WhenOpened": "2026-07-02T11:32:22.888Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Godot.NativeInterop.NativeFuncs.generated.cs",
+              "DocumentMoniker": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\d9d8e01208e3a6e2dbfb409adeeb32e1963ab6d0\\Godot.NativeInterop.NativeFuncs.generated.cs",
+              "ToolTip": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\d9d8e01208e3a6e2dbfb409adeeb32e1963ab6d0\\Godot.NativeInterop.NativeFuncs.generated.cs [Read Only]",
+              "ViewState": "AgIAAG4BAAAAAAAAAAAQwHsBAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T11:32:14.629Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SteamTools.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\SteamInterop\\SteamTools.cs",
+              "RelativeDocumentMoniker": "SBModManager\\SteamInterop\\SteamTools.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\SteamInterop\\SteamTools.cs",
+              "RelativeToolTip": "SBModManager\\SteamInterop\\SteamTools.cs",
+              "ViewState": "AgIAAHUAAAAAAAAAAAAMwIIAAABQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T11:26:08.524Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "ModpackManagementWindow.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModpackManagementWindow.cs",
-              "RelativeDocumentMoniker": "SBModManager\\GUI\\ModpackManagementWindow.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModpackManagementWindow.cs",
-              "RelativeToolTip": "SBModManager\\GUI\\ModpackManagementWindow.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAwA0AAAAtAAAAAAAAAA==",
+              "DocumentIndex": 14,
+              "Title": "DelegateUtils.cs",
+              "DocumentMoniker": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\e973689ff100ee64b1739d1410678c29423aee443fe14619333e0c2b77eb2969\\DelegateUtils.cs",
+              "ToolTip": "C:\\Users\\Eti\\AppData\\Local\\Temp\\.vsdbgsrc\\e973689ff100ee64b1739d1410678c29423aee443fe14619333e0c2b77eb2969\\DelegateUtils.cs [Read Only]",
+              "ViewState": "AgIAAFkCAAAAAAAAAAAQwGYCAAACAAAAAQAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T15:19:44.828Z",
+              "WhenOpened": "2026-07-02T11:25:55Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ModpackEntry.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModpackEntry.cs",
+              "RelativeDocumentMoniker": "SBModManager\\GUI\\ModpackEntry.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModpackEntry.cs",
+              "RelativeToolTip": "SBModManager\\GUI\\ModpackEntry.cs",
+              "ViewState": "AgIAACEAAAAAAAAAAIAzwDEAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T11:21:23.881Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ProgramSettings.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ProgramSettings.cs",
-              "RelativeDocumentMoniker": "SBModManager\\ProgramSettings.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ProgramSettings.cs",
-              "RelativeToolTip": "SBModManager\\ProgramSettings.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAQwBgAAAAwAAAAAAAAAA==",
+              "DocumentIndex": 18,
+              "Title": "EditableFoldableContainer.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\EditableFoldableContainer.cs",
+              "RelativeDocumentMoniker": "SBModManager\\GUI\\EditableFoldableContainer.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\EditableFoldableContainer.cs",
+              "RelativeToolTip": "SBModManager\\GUI\\EditableFoldableContainer.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABUAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T13:28:56.246Z",
+              "WhenOpened": "2026-07-02T11:07:19.824Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "FoldableModGroup.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\FoldableModGroup.cs",
+              "RelativeDocumentMoniker": "SBModManager\\GUI\\FoldableModGroup.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\FoldableModGroup.cs",
+              "RelativeToolTip": "SBModManager\\GUI\\FoldableModGroup.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAuwCkAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T11:07:06.353Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "FormatTools.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\FormatTools.cs",
+              "RelativeDocumentMoniker": "SBModManager\\GUI\\FormatTools.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\FormatTools.cs",
+              "RelativeToolTip": "SBModManager\\GUI\\FormatTools.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T10:54:17.187Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MetadataReader.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\MetadataReader.cs",
+              "RelativeDocumentMoniker": "SBModManager\\ModInstances\\MetadataReader.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\MetadataReader.cs",
+              "RelativeToolTip": "SBModManager\\ModInstances\\MetadataReader.cs",
+              "ViewState": "AgIAAEMAAAAAAAAAAAAgwHcAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T10:14:27.658Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ModArchive.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\ModArchive.cs",
+              "RelativeDocumentMoniker": "SBModManager\\ModInstances\\ModArchive.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\ModArchive.cs",
+              "RelativeToolTip": "SBModManager\\ModInstances\\ModArchive.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T10:03:51.9Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ViewModListPanel.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\ViewModListPanel.cs",
+              "RelativeDocumentMoniker": "SBModManager\\Menus\\ViewModListPanel.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\ViewModListPanel.cs",
+              "RelativeToolTip": "SBModManager\\Menus\\ViewModListPanel.cs",
+              "ViewState": "AgIAAF8AAAAAAAAAAAASwG8AAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T09:49:34.201Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "ModpackManagementWindow.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\Windows\\ModpackManagementWindow.cs",
+              "RelativeDocumentMoniker": "SBModManager\\Menus\\Windows\\ModpackManagementWindow.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\Windows\\ModpackManagementWindow.cs",
+              "RelativeToolTip": "SBModManager\\Menus\\Windows\\ModpackManagementWindow.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAiwEIAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T09:49:25.704Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ModListEntry.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModListEntry.cs",
+              "RelativeDocumentMoniker": "SBModManager\\GUI\\ModListEntry.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GUI\\ModListEntry.cs",
+              "RelativeToolTip": "SBModManager\\GUI\\ModListEntry.cs",
+              "ViewState": "AgIAAE4AAAAAAAAAAAAlwGQAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T09:15:06.657Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "ModMetadata.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\ModMetadata.cs",
+              "RelativeDocumentMoniker": "SBModManager\\ModInstances\\ModMetadata.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\ModMetadata.cs",
+              "RelativeToolTip": "SBModManager\\ModInstances\\ModMetadata.cs",
+              "ViewState": "AgIAAFEAAAAAAAAAAAD4v18AAABwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T08:53:53.98Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "GodotDictionaryTools.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GodotDictionaryTools.cs",
+              "RelativeDocumentMoniker": "SBModManager\\GodotDictionaryTools.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GodotDictionaryTools.cs",
+              "RelativeToolTip": "SBModManager\\GodotDictionaryTools.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T08:53:45.021Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Directories.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Directories.cs",
+              "RelativeDocumentMoniker": "SBModManager\\Directories.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Directories.cs",
+              "RelativeToolTip": "SBModManager\\Directories.cs",
+              "ViewState": "AgIAAJUAAAAAAAAAAAASwKEAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T08:51:39.285Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ModSource.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\ModSource.cs",
+              "RelativeDocumentMoniker": "SBModManager\\ModInstances\\ModSource.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\ModSource.cs",
+              "RelativeToolTip": "SBModManager\\ModInstances\\ModSource.cs",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAiwFsAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-02T08:39:05.096Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ProgramSettings.cs",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ProgramSettings.cs",
+              "RelativeDocumentMoniker": "SBModManager\\ProgramSettings.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ProgramSettings.cs",
+              "RelativeToolTip": "SBModManager\\ProgramSettings.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAxwBgAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-01T13:28:56.246Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
               "Title": "ProgramSettingsWindow.cs",
               "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\ProgramSettingsWindow.cs",
               "RelativeDocumentMoniker": "SBModManager\\Menus\\ProgramSettingsWindow.cs",
               "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\ProgramSettingsWindow.cs",
               "RelativeToolTip": "SBModManager\\Menus\\ProgramSettingsWindow.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAcwBAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFcAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-01T13:07:02.453Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "GameInstallationHelper.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GameInstallationHelper.cs",
-              "RelativeDocumentMoniker": "SBModManager\\GameInstallationHelper.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\GameInstallationHelper.cs",
-              "RelativeToolTip": "SBModManager\\GameInstallationHelper.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T12:32:27.56Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "SteamTools.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\SteamInterop\\SteamTools.cs",
-              "RelativeDocumentMoniker": "SBModManager\\SteamInterop\\SteamTools.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\SteamInterop\\SteamTools.cs",
-              "RelativeToolTip": "SBModManager\\SteamInterop\\SteamTools.cs",
-              "ViewState": "AgIAAHoAAAAAAAAAAAApwJ4AAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-01T10:16:04.515Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 15,
               "Title": "EditModpackDetailsPanel.cs",
               "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\EditModpackDetailsPanel.cs",
               "RelativeDocumentMoniker": "SBModManager\\Menus\\EditModpackDetailsPanel.cs",
               "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Menus\\EditModpackDetailsPanel.cs",
               "RelativeToolTip": "SBModManager\\Menus\\EditModpackDetailsPanel.cs",
-              "ViewState": "AgIAAFUAAAAAAAAAAADwv24AAAADAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAGYAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-01T09:21:34.551Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 12,
               "Title": "Modpack.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Modpack.cs",
-              "RelativeDocumentMoniker": "SBModManager\\Modpack.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Modpack.cs",
-              "RelativeToolTip": "SBModManager\\Modpack.cs",
-              "ViewState": "AgIAAGkAAAAAAAAAAAAcwHQAAAA5AAAAAAAAAA==",
+              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\Modpack.cs",
+              "RelativeDocumentMoniker": "SBModManager\\ModInstances\\Modpack.cs",
+              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\ModInstances\\Modpack.cs",
+              "RelativeToolTip": "SBModManager\\ModInstances\\Modpack.cs",
+              "ViewState": "AgIAALkAAAAAAAAAAAAcwMsAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-29T05:31:21.723Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Directories.cs",
-              "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Directories.cs",
-              "RelativeDocumentMoniker": "SBModManager\\Directories.cs",
-              "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Directories.cs",
-              "RelativeToolTip": "SBModManager\\Directories.cs",
-              "ViewState": "AgIAADEAAAAAAAAAAAAQwE0AAACaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-29T05:29:01.162Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 16,
               "Title": "Core.cs",
               "DocumentMoniker": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Core.cs",
               "RelativeDocumentMoniker": "SBModManager\\Core.cs",
               "ToolTip": "F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\SBModManager\\Core.cs",
               "RelativeToolTip": "SBModManager\\Core.cs",
-              "ViewState": "AgIAADcAAAAAAAAAAAAxwG4AAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAAIoAAAAAAAAAAAAqwI0AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-29T05:28:36.373Z",
               "EditorCaption": ""

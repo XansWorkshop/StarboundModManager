@@ -1,24 +1,24 @@
 [gd_scene format=3 uid="uid://dj6i10d8xumgl"]
 
-[ext_resource type="Script" uid="uid://d2x121uofpxh2" path="res://SBModManager/GUI/AutoClosableWindow.cs" id="1_qs7w8"]
+[ext_resource type="Script" uid="uid://bytmr2lgg73p3" path="res://SBModManager/Menus/Windows/ModpackManagementWindow.cs" id="1_o685q"]
 [ext_resource type="Theme" uid="uid://qlg4pb2qh52g" path="res://theme.tres" id="2_0sis3"]
+[ext_resource type="Script" uid="uid://b46g2ugm183w7" path="res://SBModManager/Menus/EditModpackDetailsPanel.cs" id="2_o685q"]
 [ext_resource type="Texture2D" uid="uid://lo8aqvl4m0jw" path="res://icons/starbound.png" id="3_lxa52"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/TooltipButton.cs" id="5_0sis3"]
+[ext_resource type="Script" uid="uid://dq4ktxrpkdv2i" path="res://SBModManager/Menus/ViewModListPanel.cs" id="5_ghlnl"]
 [ext_resource type="PackedScene" uid="uid://hgb6fqxfv6bj" path="res://popups/parts/import_or_overwrite.tscn" id="5_lxa52"]
 
 [node name="EditModpack" type="Window" unique_id=939907019]
-oversampling_override = 1.0
 title = "Edit Modpack Details"
 initial_position = 2
 size = Vector2i(800, 428)
 transient = true
 exclusive = true
 unresizable = true
-always_on_top = true
 sharp_corners = true
 minimize_disabled = true
 maximize_disabled = true
-script = ExtResource("1_qs7w8")
+script = ExtResource("1_o685q")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=166677377]
 anchors_preset = 15
@@ -27,44 +27,47 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="EditDetailsPanel" type="TabContainer" parent="VBoxContainer" unique_id=666834317]
+[node name="Tabs" type="TabContainer" parent="VBoxContainer" unique_id=666834317]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 current_tab = 1
 tab_0/title = "Edit Modpack Details"
 tab_1/title = "View Mod List"
 
-[node name="EditModpackDetails" type="MarginContainer" parent="VBoxContainer/EditDetailsPanel" unique_id=1980975647]
+[node name="EditModpackDetails" type="MarginContainer" parent="VBoxContainer/Tabs" unique_id=1980975647]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
+script = ExtResource("2_o685q")
 metadata/_tab_index = 0
 metadata/_tab_name = "Edit Modpack Details"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails" unique_id=852355481]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails" unique_id=852355481]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer" unique_id=530402158]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer" unique_id=530402158]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer" unique_id=1263551607]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer" unique_id=1263551607]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="ColumnatedEntries" type="HBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=837152733]
+[node name="ColumnatedEntries" type="HBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=837152733]
 layout_mode = 2
 
-[node name="Names" type="VBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries" unique_id=1058833805]
+[node name="Names" type="VBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries" unique_id=1058833805]
 layout_mode = 2
 size_flags_horizontal = 0
 alignment = 1
 
-[node name="ModpackNameLabel" type="Label" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=958671302]
+[node name="ModpackNameLabel" type="Label" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=958671302]
 custom_minimum_size = Vector2(0, 31)
 custom_maximum_size = Vector2(-1, 31)
 layout_mode = 2
@@ -72,7 +75,7 @@ size_flags_horizontal = 3
 text = "Modpack Name"
 vertical_alignment = 1
 
-[node name="ModpackCreatorLabel" type="Label" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=500421636]
+[node name="ModpackCreatorLabel" type="Label" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=500421636]
 custom_minimum_size = Vector2(0, 31)
 custom_maximum_size = Vector2(-1, 31)
 layout_mode = 2
@@ -81,11 +84,11 @@ theme = ExtResource("2_0sis3")
 text = "Pack Author"
 vertical_alignment = 1
 
-[node name="Values" type="VBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries" unique_id=1963408797]
+[node name="Values" type="VBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries" unique_id=1963408797]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ModpackNameEntry" type="LineEdit" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Values" unique_id=488697440]
+[node name="ModpackNameEntry" type="LineEdit" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Values" unique_id=488697440]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
@@ -93,7 +96,7 @@ size_flags_horizontal = 3
 placeholder_text = "Enter the modpack name..."
 max_length = 1000
 
-[node name="ModpackCreatorEntry" type="LineEdit" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Values" unique_id=451658596]
+[node name="ModpackCreatorEntry" type="LineEdit" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/ColumnatedEntries/Values" unique_id=451658596]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
@@ -101,25 +104,25 @@ size_flags_horizontal = 3
 placeholder_text = "Enter the name of whoever made this pack..."
 max_length = 8000
 
-[node name="ModpackFolder" type="HBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1157427228]
+[node name="ModpackFolder" type="HBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1157427228]
 layout_mode = 2
 
-[node name="CustomDescription" type="VBoxContainer" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=462456556]
+[node name="CustomDescription" type="VBoxContainer" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=462456556]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/CustomDescription" unique_id=1411645451]
+[node name="Label" type="Label" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/CustomDescription" unique_id=1411645451]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Description"
 
-[node name="DescriptionEntry" type="TextEdit" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/CustomDescription" unique_id=652914280]
+[node name="DescriptionEntry" type="TextEdit" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer/CustomDescription" unique_id=652914280]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Enter a custom description here, if you want to..."
 
-[node name="ModpackIcon" type="TextureRect" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer" unique_id=2018210441]
+[node name="ModpackIcon" type="TextureRect" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer" unique_id=2018210441]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(256, 256)
 custom_maximum_size = Vector2(256, 256)
@@ -128,7 +131,7 @@ size_flags_horizontal = 8
 size_flags_vertical = 4
 texture = ExtResource("3_lxa52")
 
-[node name="ChangeModpackIconButton" type="Button" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails/VBoxContainer/HBoxContainer/ModpackIcon" unique_id=353696949]
+[node name="ChangeModpackIconButton" type="Button" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/ModpackIcon" unique_id=353696949]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0)
 layout_mode = 1
@@ -143,7 +146,7 @@ theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 32
 text = "Edit Icon..."
 
-[node name="FindIconDialog" type="FileDialog" parent="VBoxContainer/EditDetailsPanel/EditModpackDetails" unique_id=1112044857]
+[node name="FindIconDialog" type="FileDialog" parent="VBoxContainer/Tabs/EditModpackDetails" unique_id=1112044857]
 unique_name_in_owner = true
 oversampling_override = 1.0
 title = "Pick Modpack Icon"
@@ -158,75 +161,76 @@ access = 2
 filters = PackedStringArray(".png,.jpg,.jpeg;Image Files")
 use_native_dialog = true
 
-[node name="ViewModList" type="MarginContainer" parent="VBoxContainer/EditDetailsPanel" unique_id=848081395]
+[node name="ViewModList" type="MarginContainer" parent="VBoxContainer/Tabs" unique_id=848081395]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
+script = ExtResource("5_ghlnl")
 metadata/_tab_index = 1
 metadata/_tab_name = "View Mod List"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/EditDetailsPanel/ViewModList" unique_id=1151899063]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Tabs/ViewModList" unique_id=1151899063]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer" unique_id=2122860021]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer" unique_id=2122860021]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ModsList" type="VBoxContainer" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer/ScrollContainer" unique_id=1464791130]
+[node name="ModsList" type="VBoxContainer" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/ScrollContainer" unique_id=1464791130]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer" unique_id=277238859]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer" unique_id=277238859]
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="ImportFromWorkshopButton" type="Button" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer/HBoxContainer" unique_id=1769287703]
+[node name="ImportFromWorkshopButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=1769287703]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "Looks at every installed mod from the Steam Workshop, and adds them into the list of mods used by this pack.
+tooltip_text = "Looks at all of your installed mods from the Steam Workshop, and adds them into the list of mods used by this pack.
 
 [color=#f77]Notice:[/color] If you have recently changed your subscriptions, launch the game from Steam first. This will force the installation to update."
-text = "Import Subscriptions"
+text = "Add Subscriptions"
 script = ExtResource("5_0sis3")
 
-[node name="ImportFromListButton" type="Button" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer/HBoxContainer" unique_id=876757866]
+[node name="ImportFromListButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=876757866]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Import List"
+tooltip_text = "Collects the mods from a mod list that was exported by this program, and adds them all to this list."
+text = "Add From List"
 script = ExtResource("5_0sis3")
 
-[node name="ImportFromCatalogButton" type="Button" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer/HBoxContainer" unique_id=875390124]
+[node name="ImportFromCatalogButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=875390124]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "Choose a mod from your catalog (locally installed Steam Workshop mods, and shared mods). 
+tooltip_text = "Choose a mod from the local catalog (which consists of mods used by other packs or which have been made available due to being installed in the past), and add it to the list.
 
-These are mods you have already downloaded at some point in the past, making it a sort of offline list of mods to choose from."
-text = "Install From Catalog"
+This option requires no additional disk space, because mods are shared across many installations."
+text = "Add From Catalog"
 script = ExtResource("5_0sis3")
 
-[node name="ImportFromFileButton" type="Button" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer/HBoxContainer" unique_id=1570532514]
+[node name="ImportFromFileButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=1570532514]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "Choose a mod from your catalog (locally installed Steam Workshop mods, and shared mods). 
-
-These are mods you have already downloaded at some point in the past, making it a sort of offline list of mods to choose from."
-text = "Install From File"
+tooltip_text = "Choose a mod from a .zip archive, folder, or .pak file, and add it to the list."
+text = "Add From File"
 script = ExtResource("5_0sis3")
 
-[node name="ImportOrOverwrite" parent="VBoxContainer/EditDetailsPanel/ViewModList/VBoxContainer/HBoxContainer" unique_id=1997859641 instance=ExtResource("5_lxa52")]
+[node name="ImportOrOverwrite" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=1997859641 instance=ExtResource("5_lxa52")]
 unique_name_in_owner = true
 initial_position = 2
 visible = false
 
-[node name="FindModListDialog" type="FileDialog" parent="VBoxContainer/EditDetailsPanel/ViewModList" unique_id=259777594]
+[node name="FindModListDialog" type="FileDialog" parent="VBoxContainer/Tabs/ViewModList" unique_id=259777594]
 unique_name_in_owner = true
 oversampling_override = 1.0
 title = "Import Modlist"
@@ -239,6 +243,20 @@ file_mode = 0
 display_mode = 1
 access = 2
 filters = PackedStringArray("*.zip")
+use_native_dialog = true
+
+[node name="FindModFileDialog" type="FileDialog" parent="VBoxContainer/Tabs/ViewModList" unique_id=92049171]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Import Mod"
+initial_position = 2
+size = Vector2i(800, 400)
+ok_button_text = "Import"
+dialog_hide_on_ok = true
+mode_overrides_title = false
+file_mode = 0
+display_mode = 1
+access = 2
 use_native_dialog = true
 
 [node name="Buttons" type="HBoxContainer" parent="VBoxContainer" unique_id=1569252826]

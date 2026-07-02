@@ -18,14 +18,19 @@ namespace SBModManager.SteamInterop {
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		public static VDFObject ReadVDF(string path) {
-			string[] lines = File.ReadAllLines(path);
-			VDFObject root = new VDFObject() {
-				Name = "VDF"
-			};
-			int index = 0;
-			ReadNext(root, lines, ref index);
-			return root;
+		public static VDFObject? TryReadVDF(string path) {
+			try {
+				string[] lines = File.ReadAllLines(path);
+				VDFObject root = new VDFObject() {
+					Name = "VDF"
+				};
+				int index = 0;
+				ReadNext(root, lines, ref index);
+				return root;
+			} catch (Exception exc) {
+				GD.PushError(exc);
+				return null;
+			}
 		}
 
 		private static string StripQuotesOrThrow(string text) {

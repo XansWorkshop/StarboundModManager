@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
@@ -7,6 +8,8 @@ using Godot;
 using SBModManager.Attributes;
 using SBModManager.GUI;
 using SBModManager.Menus;
+using SBModManager.Menus.Windows;
+using SBModManager.ModInstances;
 using SBModManager.SteamInterop;
 
 namespace SBModManager {
@@ -34,10 +37,22 @@ namespace SBModManager {
 		public TextureButton HelpButton { get; }
 
 		[AllowNull, Import]
+		public HFlowContainer ModpacksList { get; }
+
+		[AllowNull, Import]
 		public ProgramSettingsWindow AppSettings { get; }
 
 		[AllowNull, Import]
 		public ModpackManagementWindow EditModpack { get; }
+
+		/// <summary>
+		/// Every current modpack that is known.
+		/// </summary>
+		private List<Modpack> CurrentModpacks { get; } = [];
+
+		private ModpackEntry? _currentSelectedEntryButton;
+		private Modpack? _currentSelectedModpack;
+
 
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
@@ -51,6 +66,31 @@ namespace SBModManager {
 
 			AppSettings.VisibilityChanged += UpdateButtonUsability;
 
+			string modpacks = Directories.GetPackDirectory();
+			Directory.CreateDirectory(modpacks);
+			PackedScene entry = GD.Load<PackedScene>("res://ui_elements/modpack_entry.tscn");
+
+			foreach (string subdirectory in Directory.GetDirectories(modpacks)) {
+				string nameOnly = Path.GetFileName(subdirectory);
+				if (Guid.TryParse(nameOnly, out Guid modpackID)) {
+					Modpack? modpack = Modpack.LoadFromDisk(modpackID);
+					if (modpack != null) {
+						CurrentModpacks.Add(modpack);
+						ModpackEntry button = entry.Instantiate<ModpackEntry>();
+						button.Name = modpackID.ToString("D");
+						button.AssignOrUpdateModpack(modpack);
+						button.OnModpackSelected += SetSelection;
+						ModpacksList.AddChild(button);
+					}
+				}
+			}
+		}
+
+		private void SetSelection(Modpack modpack, ModpackEntry clicked) {
+			_currentSelectedEntryButton?.SetSelectedAppearance(false);
+			clicked.SetSelectedAppearance(true);
+			_currentSelectedEntryButton = clicked;
+			_currentSelectedModpack = clicked.Modpack;
 		}
 
 		private void UpdateButtonUsability() {
@@ -82,7 +122,16 @@ namespace SBModManager {
 				AppSettings.Show();
 				return;
 			}
-			throw new NotImplementedException();
+
+			PackedScene entry = GD.Load<PackedScene>("res://ui_elements/modpack_entry.tscn");
+			Modpack modpack = new Modpack();
+			CurrentModpacks.Add(modpack);
+
+			ModpackEntry button = entry.Instantiate<ModpackEntry>();
+			button.Name = modpack.ID.ToString("D");
+			button.AssignOrUpdateModpack(modpack);
+			button.OnModpackSelected += SetSelection;
+			ModpacksList.AddChild(button);
 		}
 		
 		private void OnDuplicateModpackButtonPressed() {
@@ -106,9 +155,11 @@ namespace SBModManager {
 				AppSettings.Show();
 				return;
 			}
-			//EditModpack.SetModpack( );
-			//EditModpack.Show();
-			throw new NotImplementedException();
+			if (_currentSelectedModpack == null) {
+				return;
+			}
+			EditModpack.AssignModpack(_currentSelectedModpack);
+			EditModpack.Show();
 		}
 
 		private void OnDeleteModpackButtonPressed() {

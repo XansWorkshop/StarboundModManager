@@ -5,8 +5,9 @@ using System.Text;
 
 using SBModManager.Attributes;
 using SBModManager.Menus;
+using SBModManager.ModInstances;
 
-namespace SBModManager.GUI {
+namespace SBModManager.Menus.Windows {
 
 	/// <summary>
 	/// The entire window for managing a specific modpack.
@@ -26,6 +27,12 @@ namespace SBModManager.GUI {
 		public Button OKButton { get; }
 
 		/// <summary>
+		/// The tab window for the editor.
+		/// </summary>
+		[Import, AllowNull]
+		public TabContainer Tabs { get; }
+
+		/// <summary>
 		/// The panel where the modpack's name, author, description, and icon are set.
 		/// </summary>
 		[Import, AllowNull]
@@ -41,17 +48,23 @@ namespace SBModManager.GUI {
 			ImportAttribute.ImportAll(this);
 
 			CloseRequested += OnCloseRequested;
+			AboutToPopup += OnAboutToPopUp;
+		}
+
+		private void OnAboutToPopUp() {
+			Tabs.CurrentTab = 1;
 		}
 
 		private void OnCloseRequested() {
 			EditModpackDetails.OnClosing();
+			ViewModList.OnClosing();
 		}
 
 		/// <summary>
 		/// Sets <see cref="EditingModpack"/>, and updates every element in this menu to display its customization.
 		/// </summary>
 		/// <param name="modpack"></param>
-		internal void SetModpack(Modpack modpack) {
+		public void AssignModpack(Modpack modpack) {
 			ArgumentNullException.ThrowIfNull(modpack);
 			EditModpackDetails.SetModpack(modpack);
 			ViewModList.SetModpack(modpack);

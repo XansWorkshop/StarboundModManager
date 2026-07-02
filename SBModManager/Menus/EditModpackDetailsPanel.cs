@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using SBModManager.Attributes;
+using SBModManager.ModInstances;
 using SBModManager.SteamInterop;
 
 namespace SBModManager.Menus {

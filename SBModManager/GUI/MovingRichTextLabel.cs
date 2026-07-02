@@ -7,7 +7,7 @@ namespace SBModManager.GUI {
 	/// <summary>
 	/// Explicitly designed for the <see cref="RichTextLabel"/> in use inside of Godot's tooltip popup.
 	/// </summary>
-	public sealed partial class MovingRichTextLabel : RichTextLabel {
+	public partial class MovingRichTextLabel : RichTextLabel {
 
 		public override void _Process(double delta) {
 			if (GetParent() is Popup popup) {

@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://cg08iq6h6xrkf"]
+
+[ext_resource type="Script" uid="uid://n1bm14vo6w4e" path="res://SBModManager/GUI/ModpackEntry.cs" id="1_5cwkd"]
+[ext_resource type="Script" uid="uid://x81ofxplde8b" path="res://SBModManager/GUI/TooltipTextureButton.cs" id="1_nvb8f"]
+[ext_resource type="Script" uid="uid://vfb01c624vvb" path="res://SBModManager/GUI/TooltipLabel.cs" id="1_q0iy2"]
+
+[node name="ModpackEntry" type="ColorRect" unique_id=217134906]
+custom_minimum_size = Vector2(140, 180)
+custom_maximum_size = Vector2(140, 180)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 530.0
+offset_top = 260.0
+offset_right = -530.0
+offset_bottom = -260.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12941177, 0.20784314, 0.27450982, 0)
+script = ExtResource("1_5cwkd")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=981864138]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1269224687]
+layout_mode = 2
+
+[node name="ModpackIcon" type="TextureButton" parent="MarginContainer/VBoxContainer" unique_id=675216360]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
+custom_maximum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("1_nvb8f")
+
+[node name="ModpackName" type="Label" parent="MarginContainer/VBoxContainer" unique_id=2004683895]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(136, 42)
+custom_maximum_size = Vector2(136, 42)
+layout_mode = 2
+theme_override_constants/line_spacing = 1
+theme_override_font_sizes/font_size = 14
+text = "modpack name on two lines"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+text_overrun_behavior = 3
+script = ExtResource("1_q0iy2")

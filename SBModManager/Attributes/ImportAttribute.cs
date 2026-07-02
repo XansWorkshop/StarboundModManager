@@ -12,7 +12,6 @@ namespace SBModManager.Attributes {
 	/// <strong>Copied from The Conservatory's codebase.</strong>
 	/// <para/>
 	/// 
-	/// 
 	/// A counterpart to <see cref="ExportAttribute"/> which causes the game to automatically locate the node provided
 	/// in the constructor of this attribute. Once located, the value of this field or property may be modified such 
 	/// that it contains a reference to the located node. (n.b. "may be" because of <see cref="NodeResolutionRule"/>).
@@ -23,7 +22,7 @@ namespace SBModManager.Attributes {
 	/// By default, node paths without any path characters (<c>"/"</c>) are treated as <strong>global paths</strong> 
 	/// (the kind that begin with the <c>%</c> symbol). This behavior allows the <see cref="CallerMemberNameAttribute"/> to 
 	/// function for global nodes, which is the most common use case in The Conservatory. To index a child, use 
-	/// <c>"./ChildName"</c>, not <c>"ChildName"</c> (which will be interpreted as (<c>"%ChildName"</c>).
+	/// <c>"./ChildName"</c>, not <c>"ChildName"</c> (which will be interpreted as <c>"%ChildName"</c>).
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
 	public sealed class ImportAttribute : Attribute {
