@@ -1,6 +1,5 @@
 name: "Request a Change or Upgrade"
 description: "Got something you want to see added? Find something annoying or hard to work with? Tell me all about it here!"
-type: "Feature Request"
 labels: ["enhancement"]
 body:
   - type: markdown
