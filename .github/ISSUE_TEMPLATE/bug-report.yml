@@ -1,7 +1,6 @@
 name: "Report a Problem"
 description: "Is the mod manager not doing something properly?"
 labels: ["bug"]
-type: "Bug Report"
 body:
   - type: markdown
     attributes:
