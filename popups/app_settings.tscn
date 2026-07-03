@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dii41rl1tytuv"]
 
-[ext_resource type="Script" uid="uid://d1c5ivfm4esrp" path="res://SBModManager/Menus/ProgramSettingsWindow.cs" id="1_jiimp"]
+[ext_resource type="Script" uid="uid://b0hrrunhp410w" path="res://SBModManager/Menus/Windows/ProgramSettingsWindow.cs" id="1_8qtix"]
 [ext_resource type="Script" uid="uid://vfb01c624vvb" path="res://SBModManager/GUI/TooltipLabel.cs" id="2_jiimp"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/TooltipButton.cs" id="3_8qtix"]
 
@@ -14,7 +14,7 @@ sharp_corners = true
 minimize_disabled = true
 maximize_disabled = true
 content_scale_aspect = 1
-script = ExtResource("1_jiimp")
+script = ExtResource("1_8qtix")
 
 [node name="Panel" type="Panel" parent="." unique_id=143099214]
 anchors_preset = 15
@@ -219,9 +219,9 @@ use_native_dialog = true
 [node name="PruneModCatalogButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=784141859]
 unique_name_in_owner = true
 layout_mode = 2
-tooltip_text = "Observes all current modpacks, and deletes any catalogued mods that aren't used by any of them.
+tooltip_text = "Observes all current modpacks, and deletes any downloaded mods that aren't installed by any of your packs. Use this if you have recently deleted a large modpack and need to try to free up some disk space.
 
-For more information on the catalogue, press the help button in the main menu."
+Mods that are installed but disabled are still considered to be \"in use\", so they will not get deleted."
 text = "Prune Mod Catalog"
 script = ExtResource("3_8qtix")
 

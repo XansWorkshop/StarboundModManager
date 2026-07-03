@@ -6,6 +6,7 @@ using System.Text;
 using Godot;
 
 using SBModManager.ModInstances;
+using SBModManager.Other;
 
 namespace SBModManager {
 

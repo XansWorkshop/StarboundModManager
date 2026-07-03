@@ -8,4 +8,12 @@
     <AssemblyName>SBModManager</AssemblyName>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="EndianBinaryIO" Version="1.1.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SimpleGIF">
+      <HintPath>Includes\SimpleGIF.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

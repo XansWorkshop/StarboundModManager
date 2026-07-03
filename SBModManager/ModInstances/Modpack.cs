@@ -11,6 +11,8 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
+using SBModManager.Menus.Windows;
+using SBModManager.Other;
 using SBModManager.SteamInterop;
 
 namespace SBModManager.ModInstances {
@@ -109,7 +111,7 @@ namespace SBModManager.ModInstances {
 							GD.PushError($"Workshop mod {workshopID} has already been added to this pack, but its mod_sources lookup included it more than once.");
 							continue;
 						}
-						try { 
+						try {
 							pack.ModSources[new ModSource(workshopID)] = isEnabled;
 						} catch (Exception ex) {
 							GD.PushError($"Workshop mod {workshopID} failed to load: {ex}");
@@ -168,6 +170,30 @@ namespace SBModManager.ModInstances {
 		}
 
 		/// <summary>
+		/// Copies everything from this modpack into a new modpack.
+		/// </summary>
+		/// <returns></returns>
+		public Modpack Duplicate() {
+			Modpack dupe = new Modpack {
+				Name = Name,
+				Creator = Creator,
+				Description = Description
+			};
+			foreach (KeyValuePair<ModSource, bool> kvp in ModSources) {
+				dupe.ModSources[kvp.Key] = kvp.Value;
+			}
+			dupe.SaveAndUpdateInitAsync(CancellationToken.None).Wait();
+
+			string iconSrc = Path2.Combine(Directories.GetPackDirectory(ID), "icon.png");
+			string iconDst = Path2.Combine(Directories.GetPackDirectory(dupe.ID), "icon.png");
+			try {
+				File.Copy(iconSrc, iconDst, true);
+			} catch (FileNotFoundException) { }
+
+			return dupe;
+		}
+
+		/// <summary>
 		/// Returns a <see cref="Texture2D"/> representing the icon of this modpack.
 		/// </summary>
 		/// <returns></returns>
@@ -175,18 +201,16 @@ namespace SBModManager.ModInstances {
 			string directory = Directories.GetPackDirectory(ID);
 			string icon = Path2.Combine(directory, "icon.png");
 			try {
-				if (File.Exists(icon)) {
-					byte[] buffer = File.ReadAllBytes(icon);
-					Image result = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
-					Error error = result.LoadPngFromBuffer(buffer);
-					if (error != Error.Ok) {
-						error = result.LoadJpgFromBuffer(buffer);
-					}
-					if (error == Error.Ok) {
-						return ImageTexture.CreateFromImage(result);
-					}
+				byte[] buffer = File.ReadAllBytes(icon);
+				Image result = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
+				Error error = result.LoadPngFromBuffer(buffer);
+				if (error != Error.Ok) {
+					error = result.LoadJpgFromBuffer(buffer);
 				}
-			} catch { }
+				if (error == Error.Ok) {
+					return ImageTexture.CreateFromImage(result);
+				}
+			} catch (FileNotFoundException) { }
 			return Core.GetStarboundIcon();
 		}
 
@@ -209,6 +233,9 @@ namespace SBModManager.ModInstances {
 				Error error = result.LoadPngFromBuffer(buffer);
 				if (error != Error.Ok) {
 					error = result.LoadJpgFromBuffer(buffer);
+				}
+				if (error != Error.Ok) {
+					error = result.LoadGifFirstFrameFromBuffer(buffer);
 				}
 				if (error == Error.Ok) {
 					result.Resize(256, 256, Image.Interpolation.Lanczos);

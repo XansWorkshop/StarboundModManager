@@ -12,7 +12,7 @@ namespace SBModManager.Menus.Windows {
 		[Import, AllowNull]
 		public RichTextLabel RichTextLabel { get; }
 
-		private const string FORMAT = @"Are you sure you want to delete [b]{0}[/b]? [color=#f77]All characters and worlds in this modpack will be deleted. You cannot undo this action![/color]";
+		private const string FORMAT = @"Are you sure you want to delete [b]{0}[/b]? [color=#f77]All characters and worlds in this modpack will be [b]permanently deleted[/b]. You cannot undo this action![/color]";
 
 		private TaskCompletionSource<bool>? _tcs;
 		private string? _pendingText;

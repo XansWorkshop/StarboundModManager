@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://8wdij3i1bfq1"]
+
+[ext_resource type="Script" uid="uid://b1ce7cp0jl2co" path="res://SBModManager/Menus/Windows/GeneralProgressWindow.cs" id="1_x2ejr"]
+
+[node name="Launching" type="Window" unique_id=779850626]
+oversampling_override = 1.0
+title = "Working..."
+initial_position = 2
+size = Vector2i(400, 200)
+transient = true
+exclusive = true
+unresizable = true
+sharp_corners = true
+script = ExtResource("1_x2ejr")
+
+[node name="Panel" type="Panel" parent="." unique_id=2097359132]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=424302945]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=422251450]
+layout_mode = 2
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="StatusLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=350446095]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="Panel/MarginContainer/VBoxContainer" unique_id=656033785]
+unique_name_in_owner = true
+layout_mode = 2
+rounded = true
+
+[node name="CancelButton" type="Button" parent="Panel/MarginContainer/VBoxContainer" unique_id=771711450]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Cancel"

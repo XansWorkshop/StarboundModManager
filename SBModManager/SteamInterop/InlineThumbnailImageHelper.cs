@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+using SBModManager.Other;
+
 using HttpClient = System.Net.Http.HttpClient;
 using Semaphore = System.Threading.Semaphore;
 

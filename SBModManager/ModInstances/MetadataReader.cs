@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using SBModManager.Other;
+
 namespace SBModManager.ModInstances {
 
 	/// <summary>
@@ -88,8 +90,7 @@ namespace SBModManager.ModInstances {
 					return null;
 				}
 
-				long filePtr = reader.ReadInt64();
-				filePtr = BinaryPrimitives.ReverseEndianness(filePtr); // Starbound writes in BE
+				long filePtr = BinaryPrimitives.ReverseEndianness(reader.ReadInt64());
 
 				fs.Seek(filePtr, SeekOrigin.Begin);
 
@@ -117,12 +118,19 @@ namespace SBModManager.ModInstances {
 							Error loadError = image.LoadPngFromBuffer(buffer);
 							if (loadError == Error.Ok) {
 								json["preview_image"] = ImageTexture.CreateFromImage(image);
-							} else if (loadError == Error.FileCorrupt) {
+							} else {
 								// Hunch: Might be jpg
+								// In several cases, it's a .gif, but there's no way to read and display those.
 								loadError = image.LoadJpgFromBuffer(buffer);
 								if (loadError == Error.Ok) {
 									GD.Print("The previous warning about a corrupt image can be ignored. It's fine, it was just a jpeg instead.");
 									json["preview_image"] = ImageTexture.CreateFromImage(image);
+								} else {
+									loadError = image.LoadGifFirstFrameFromBuffer(buffer);
+									if (loadError == Error.Ok) {
+										GD.Print("The previous warning about a corrupt image can be ignored. It's fine, it was just a gif instead.");
+										json["preview_image"] = ImageTexture.CreateFromImage(image);
+									}
 								}
 							}
 							break;
@@ -184,7 +192,6 @@ namespace SBModManager.ModInstances {
 		private static long ReadVlqU(BinaryReader data) {
 			long x = 0;
 			for (int i = 0; i < 10; ++i) {
-				//uint8_t oct = *in++;
 				byte oct = data.ReadByte();
 				x = (x << 7) | (long)(oct & 127);
 				if ((oct & 128) == 0) {

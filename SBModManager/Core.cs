@@ -26,6 +26,9 @@ namespace SBModManager {
 		public static Core Instance { get; private set; }
 
 		[AllowNull, Import]
+		public TextureButton RunButton { get; }
+
+		[AllowNull, Import]
 		public TextureButton NewOSBModpackButton { get; }
 
 		[AllowNull, Import]
@@ -75,6 +78,7 @@ namespace SBModManager {
 			Instance = this;
 			ProgramSettings.Load();
 
+			RunButton.Pressed += OnRunPressed;
 			NewOSBModpackButton.Pressed += OnNewOSBModpackButtonPressed;
 			DuplicateModpackButton.Pressed += OnDuplicateModpackButtonPressed;
 			ImportModpackButton.Pressed += OnImportModpackButtonPressed;
@@ -86,23 +90,41 @@ namespace SBModManager {
 
 			string modpacks = Directories.GetPackDirectory();
 			Directory.CreateDirectory(modpacks);
-			PackedScene entry = GD.Load<PackedScene>("res://ui_elements/modpack_entry.tscn");
 
-
+			// Create buttons for all of the user's modpacks.
 			foreach (string subdirectory in Directory.GetDirectories(modpacks)) {
 				string nameOnly = Path.GetFileName(subdirectory);
 				if (Guid.TryParse(nameOnly, out Guid modpackID)) {
 					Modpack? modpack = Modpack.LoadFromDisk(modpackID);
 					if (modpack != null) {
 						CurrentModpacks.Add(modpack);
-						ModpackEntry button = entry.Instantiate<ModpackEntry>();
-						button.Name = modpackID.ToString("D");
-						button.AssignOrUpdateModpack(modpack);
-						button.OnModpackSelected += SetSelection;
-						button.OnModpackDoubleClicked += Launch;
-						ModpacksList.AddChild(button);
+						CreateButtonForModpack(modpack);
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Shared code that creates a <see cref="ModpackEntry"/> for the provided modpack.
+		/// </summary>
+		private ModpackEntry CreateButtonForModpack(Modpack modpack) {
+			PackedScene entry = GD.Load<PackedScene>("res://ui_elements/modpack_entry.tscn"); // This is cached by Godot.
+			ModpackEntry button = entry.Instantiate<ModpackEntry>();
+			button.Name = modpack.ID.ToString("D");
+			button.AssignOrUpdateModpack(modpack);
+			button.OnModpackSelected += SetSelection;
+			button.OnModpackDoubleClicked += Launch;
+			ModpacksList.AddChild(button);
+			return button;
+		}
+
+		private void OnRunPressed() {
+			if (!IsFullySetUp()) {
+				AppSettings.Show();
+				return;
+			}
+			if (_currentSelectedModpack != null && _currentSelectedEntryButton != null) {
+				Launch(_currentSelectedModpack, _currentSelectedEntryButton);
 			}
 		}
 
@@ -141,8 +163,8 @@ namespace SBModManager {
 		}
 
 		private void Launch(Modpack modpack, ModpackEntry clicked) {
-			PackedScene launchPromptScene = GD.Load<PackedScene>("res://popups/launching.tscn");
-			LaunchingWindow launching = launchPromptScene.Instantiate<LaunchingWindow>();
+			PackedScene launchPromptScene = GD.Load<PackedScene>("res://popups/progress_window.tscn");
+			GeneralProgressWindow launching = launchPromptScene.Instantiate<GeneralProgressWindow>();
 			_cancelPreppingLaunch = new CancellationTokenSource();
 			launching.ShowWithCancellation(_cancelPreppingLaunch);
 			AddChild(launching);
@@ -150,7 +172,7 @@ namespace SBModManager {
 			_starboundLaunchAndRunTask = LaunchAsync(modpack, launching);
 		}
 
-		private async Task LaunchAsync(Modpack modpack, LaunchingWindow launching) {
+		private async Task LaunchAsync(Modpack modpack, GeneralProgressWindow launching) {
 			launching.SetStatus("Downloading mods...");
 			try {
 				await modpack.SaveAndUpdateInitAsync(_cancelPreppingLaunch!.Token);
@@ -223,13 +245,7 @@ namespace SBModManager {
 			Modpack modpack = new Modpack();
 			CurrentModpacks.Add(modpack);
 			modpack.SaveAndUpdateInitAsync(CancellationToken.None).Wait();
-
-			ModpackEntry button = entry.Instantiate<ModpackEntry>();
-			button.Name = modpack.ID.ToString("D");
-			button.AssignOrUpdateModpack(modpack);
-			button.OnModpackSelected += SetSelection;
-			button.OnModpackDoubleClicked += Launch;
-			ModpacksList.AddChild(button);
+			CreateButtonForModpack(modpack);
 		}
 		
 		private void OnDuplicateModpackButtonPressed() {
@@ -237,7 +253,12 @@ namespace SBModManager {
 				AppSettings.Show();
 				return;
 			}
-			throw new NotImplementedException();
+			if (_currentSelectedModpack != null) {
+				Modpack dupe = _currentSelectedModpack.Duplicate();
+				CurrentModpacks.Add(dupe);
+				ModpackEntry button = CreateButtonForModpack(dupe);
+				SetSelection(dupe, button);
+			}
 		}
 
 		private void OnImportModpackButtonPressed() {

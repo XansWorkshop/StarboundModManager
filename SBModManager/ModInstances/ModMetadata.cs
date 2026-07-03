@@ -7,6 +7,8 @@ using System.Text;
 
 using Godot.Collections;
 
+using SBModManager.Other;
+
 namespace SBModManager.ModInstances {
 
 	/// <summary>

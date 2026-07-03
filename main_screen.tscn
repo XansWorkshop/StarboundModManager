@@ -2,9 +2,16 @@
 
 [ext_resource type="Texture2D" uid="uid://dt0wnqyl5o57b" path="res://icon.svg" id="1_tjn2e"]
 [ext_resource type="Script" uid="uid://bxj2e5kcyxw4" path="res://SBModManager/Core.cs" id="1_w0p2i"]
+[ext_resource type="Texture2D" uid="uid://bsctcnud5svye" path="res://icons/play.png" id="2_sj757"]
 [ext_resource type="Script" uid="uid://x81ofxplde8b" path="res://SBModManager/GUI/TooltipTextureButton.cs" id="3_4sclt"]
 [ext_resource type="PackedScene" uid="uid://dii41rl1tytuv" path="res://popups/app_settings.tscn" id="4_4sclt"]
+[ext_resource type="Texture2D" uid="uid://cay0y0lw1y431" path="res://icons/new_modpack.png" id="4_ups6l"]
+[ext_resource type="Texture2D" uid="uid://bkqohamnsux0x" path="res://icons/duplicate_modpack.png" id="5_7sxnj"]
 [ext_resource type="PackedScene" uid="uid://dj6i10d8xumgl" path="res://popups/edit_modpack_details.tscn" id="5_ywh4s"]
+[ext_resource type="Texture2D" uid="uid://b2h7de5a5uknn" path="res://icons/import_modpack.png" id="6_cxp7d"]
+[ext_resource type="Texture2D" uid="uid://1vkt0comhivi" path="res://icons/edit_modpack.png" id="7_p3r6q"]
+[ext_resource type="Texture2D" uid="uid://d3s8o8ujg8ysa" path="res://icons/delete_modpack.png" id="8_3qsiq"]
+[ext_resource type="Texture2D" uid="uid://o8ctjuteqtp1" path="res://icons/config.png" id="9_7087c"]
 
 [node name="MainScreen" type="Panel" unique_id=718710276]
 anchors_preset = 15
@@ -33,45 +40,13 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 
-[node name="NewOSBModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1384851246]
+[node name="RunButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1669579298]
 unique_name_in_owner = true
+texture_filter = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-tooltip_text = "Create a new modpack using the latest version of OpenStarbound."
-texture_normal = ExtResource("1_tjn2e")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("3_4sclt")
-
-[node name="NewModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=312914462]
-unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-tooltip_text = "Create a new modpack using Starbound 1.14.
-
-[color=#f77]You should prefer using OpenStarbound instead[/color]. OpenStarbound is a community patch to base Starbound that fixes dozens of bugs, crashes, and memory leaks."
-texture_normal = ExtResource("1_tjn2e")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("3_4sclt")
-
-[node name="DuplicateModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=733481348]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-tooltip_text = "Create a copy of the current selected modpack, carrying over every mod, setting, character, and world."
-texture_normal = ExtResource("1_tjn2e")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("3_4sclt")
-
-[node name="ImportModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1291402901]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-tooltip_text = "Import a modpack from a list or archive."
-texture_normal = ExtResource("1_tjn2e")
+tooltip_text = "Run the selected modpack. You can also double click on it."
+texture_normal = ExtResource("2_sj757")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -79,22 +54,46 @@ script = ExtResource("3_4sclt")
 [node name="VSeparator" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools" unique_id=197170488]
 layout_mode = 2
 
-[node name="EditModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1345846559]
+[node name="NewOSBModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1384851246]
 unique_name_in_owner = true
+texture_filter = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-tooltip_text = "Configure the settings associated with the selected modpack."
-texture_normal = ExtResource("1_tjn2e")
+tooltip_text = "Create a new modpack using the latest version of OpenStarbound."
+texture_normal = ExtResource("4_ups6l")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
 
-[node name="DeleteModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=732978601]
+[node name="DuplicateModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=733481348]
 unique_name_in_owner = true
+texture_filter = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-tooltip_text = "Permanently delete the selected modpack."
-texture_normal = ExtResource("1_tjn2e")
+tooltip_text = "Create a copy of the current selected modpack, carrying over every mod, setting, character, and world."
+texture_normal = ExtResource("5_7sxnj")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("3_4sclt")
+
+[node name="ImportModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1291402901]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "Import a modpack from a list or archive."
+texture_normal = ExtResource("6_cxp7d")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("3_4sclt")
+
+[node name="EditModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1345846559]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "Configure the settings associated with the selected modpack."
+texture_normal = ExtResource("7_p3r6q")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -102,18 +101,35 @@ script = ExtResource("3_4sclt")
 [node name="VSeparator2" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools" unique_id=1313816397]
 layout_mode = 2
 
+[node name="DeleteModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=732978601]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "Permanently delete the selected modpack."
+texture_normal = ExtResource("8_3qsiq")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("3_4sclt")
+
+[node name="VSeparator3" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools" unique_id=409628419]
+layout_mode = 2
+
 [node name="ConfigButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=2133547503]
 unique_name_in_owner = true
+texture_filter = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Modify the app's settings and provide it with tools that are needed to function."
-texture_normal = ExtResource("1_tjn2e")
+texture_normal = ExtResource("9_7087c")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
 
 [node name="HelpButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1144096353]
 unique_name_in_owner = true
+visible = false
+texture_filter = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Get help and information about the app."
@@ -139,9 +155,14 @@ layout_mode = 2
 [node name="Status" type="RichTextLabel" parent="MarginContainer/VBoxContainer" unique_id=1098337546]
 layout_mode = 2
 theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
 bbcode_enabled = true
-text = "Starbound Mod Manager v1.0.0 by Xan's Workshop
-To report issues or request upgrades, visit [color=#aff][url]https://github.com/XansWorkshop/StarboundModManager[/url][/color]"
+text = "[font_size=14]Starbound Mod Manager
+Version: Beta 0.1.0[/font_size]
+To report bugs or request features, visit [color=#aff][url]https://github.com/XansWorkshop/StarboundModManager[/url][/color]"
 fit_content = true
 scroll_active = false
 vertical_alignment = 2

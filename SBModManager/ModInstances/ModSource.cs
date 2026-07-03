@@ -4,12 +4,17 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Text;
 
+using SBModManager.Other;
+
 namespace SBModManager.ModInstances {
 
 	/// <summary>
 	/// While this may seem useless at first, this exists to address an edge case where it is possible for a modder to include several .pak files
 	/// or directories within their Workshop upload. Only like 4 modders actually do this, but it's a thing and can be useful, so it has to be accounted for.
 	/// </summary>
+	/// <remarks>
+	/// This class reference can be shared across many modpacks since it is immutable.
+	/// </remarks>
 	public class ModSource : IEquatable<ModSource> {
 
 		/// <summary>

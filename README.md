@@ -18,7 +18,9 @@ SBMM tries to be as easy to use as possible. You can have it up and running in j
 
 1. Install Starbound, and select the folder in SBMM
 2. Download an OpenStarbound .zip file, and select it in SBMM
-3. Press a button to download and install SteamCMD\*<br/><small>* Windows Only. Mac and Linux require using your package manager and then manually locating the executable program.</small>
+3. Press a button to download and install SteamCMD\*
+
+###### * Windows Only. Mac and Linux require using your package manager and then manually locating the executable program.
 
 ### OpenStarbound Support
 
@@ -35,14 +37,14 @@ This means....
 1. You can freely subscribe to and unsubscribe from any mod, at no risk to your save file or universes.
 2. Workshop mods work on dedicated servers too, no extra setup required.
 
-<small>Steam Workshop Support requires the installation of `SteamCMD`, an official Valve tool. Starbound's workshop supports *anonymous access*, meaning no login is required to access it.</small>
+###### Steam Workshop Support requires the installation of `SteamCMD`, an official Valve tool. Starbound's workshop supports *anonymous access*, meaning no login is required to access it.
 
 ### Mod List Sharing
 
 SBMM implements the same mod list feature commonly seen in modpack managers for other games. Instead of requiring potential gigabytes of mods to be stored in an archive, you can share a small .zip file with a list of Workshop IDs to your friends. SBMM will download the mods for them.\*
 
-<small>\* Where possible. This only supports Workshop mods, which make up the overwhelming vast majority of all Starbound mods in existence.</small>
+###### \* Where possible. This only supports Workshop mods, which make up the overwhelming vast majority of all Starbound mods in existence.
 
 ### Local Mod Catalogue
 
-Using a catalogue system, SBMM can keep a local archive of every mod you've installed. This way, a mod only needs to be downloaded once, and then it can be reused in an unlimited number of modpacks without needing any more disk space.
+Using a catalogue system, SBMM can keep a local archive of every mod you've installed. This way, a mod only needs to be downloaded once, and then it can be reused in an unlimited number of modpacks without needing any additional disk space.

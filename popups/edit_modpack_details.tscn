@@ -159,7 +159,7 @@ dialog_hide_on_ok = true
 mode_overrides_title = false
 file_mode = 0
 access = 2
-filters = PackedStringArray("*.png,*.jpg,*.jpeg;Image Files")
+filters = PackedStringArray("*.png,*.jpg,*.jpeg,*.gif;Image Files")
 use_native_dialog = true
 
 [node name="ViewModList" type="MarginContainer" parent="VBoxContainer/Tabs" unique_id=848081395]
