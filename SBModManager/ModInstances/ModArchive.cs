@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml.Linq;
 
 using SBModManager.Other;
 
@@ -9,6 +10,8 @@ namespace SBModManager.ModInstances {
 
 	/// <summary>
 	/// Represents a mod archive in the cache. This will usually be a .pak file, but may also be a directory.
+	/// <para/>
+	/// See the documentation of <see cref="ModSource"/> for how to conceptualize this.
 	/// </summary>
 	public class ModArchive {
 
@@ -16,6 +19,11 @@ namespace SBModManager.ModInstances {
 		/// The source (workshop installation, manual installation) that this belongs to.
 		/// </summary>
 		public ModSource Owner { get; }
+
+		/// <summary>
+		/// If the name of the mod archive begins with an underscore <c>_</c>, Starbound will skip loading it.
+		/// </summary>
+		public bool IsDisabledByForce { get; }
 
 		/// <summary>
 		/// If <see langword="true"/>, this archive is a directory. Otherwise, it is a .pak file.
@@ -49,6 +57,7 @@ namespace SBModManager.ModInstances {
 		/// <param name="path"></param>
 		public ModArchive(ModSource owner, string name) {
 			Owner = owner;
+			IsDisabledByForce = name.StartsWith('_');
 			Path = Path2.Combine(owner.Path, name);
 			IsDirectory = File.GetAttributes(Path).HasFlag(FileAttributes.Directory); // Let this throw.
 			Metadata = new ModMetadata(this);
@@ -72,6 +81,7 @@ namespace SBModManager.ModInstances {
 
 		internal ModArchive(ModSource owner, string fullPath, ModMetadata metadata) {
 			Owner = owner;
+			IsDisabledByForce = System.IO.Path.GetFileName(fullPath)!.StartsWith('_');
 			Path = fullPath;
 			IsDirectory = File.GetAttributes(fullPath).HasFlag(FileAttributes.Directory);
 			Metadata = metadata;

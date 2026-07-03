@@ -9,6 +9,10 @@ using Kermalis.SimpleGIF;
 using Kermalis.SimpleGIF.Decoding;
 
 namespace SBModManager.Other {
+
+	/// <summary>
+	/// Uses a third party library to decode GIF files and turn the first frame into a Godot <see cref="Image"/>.
+	/// </summary>
 	public static class GifInterop {
 
 		/// <summary>

@@ -16,18 +16,6 @@ namespace SBModManager.Menus.Windows {
 	public partial class ModpackManagementWindow : AutoClosableWindow {
 
 		/// <summary>
-		/// This button opens a prompt to export the modpack.
-		/// </summary>
-		[Import, AllowNull]
-		public Button ExportButton { get; }
-
-		/// <summary>
-		/// This button opens a prompt to export the modpack.
-		/// </summary>
-		[Import, AllowNull]
-		public Button ApplyButton { get; }
-
-		/// <summary>
 		/// The tab window for the editor.
 		/// </summary>
 		[Import, AllowNull]
@@ -44,6 +32,18 @@ namespace SBModManager.Menus.Windows {
 		/// </summary>
 		[Import, AllowNull]
 		public ViewModListPanel ViewModList { get; }
+
+		/// <summary>
+		/// This button opens a prompt to export the modpack.
+		/// </summary>
+		[Import, AllowNull]
+		public Button ExportButton { get; }
+
+		/// <summary>
+		/// This button opens a prompt to export the modpack.
+		/// </summary>
+		[Import, AllowNull]
+		public Button ApplyButton { get; }
 
 		/// <summary>
 		/// The modpack being managed.

@@ -20,7 +20,13 @@ using SBModManager.Other;
 using SBModManager.Menus.Windows;
 
 namespace SBModManager.Menus {
+
+	/// <summary>
+	/// The class which controls the program settings menu.
+	/// </summary>
 	public partial class ProgramSettingsWindow : Window {
+
+#if false
 
 		/// <summary>
 		/// The note that describes where to install SteamCMD. It may also have a link to auto-install it.
@@ -119,7 +125,7 @@ namespace SBModManager.Menus {
 
 		private void OnSelfVisibilityChanged() {
 			if (Visible) {
-				string sbInstall = Directories.GetPrivateStarboundInstallDirectory();
+				string sbInstall = Directories.GetLocalStarboundInstallDirectory();
 				if (Directory.Exists(sbInstall)) {
 					NoStarboundRequiredNotice.SelfModulate = Colors.White;
 				} else {
@@ -172,7 +178,7 @@ namespace SBModManager.Menus {
 		}
 
 		private void InstallStarboundIfNeeded() {
-			string destination = Directories.GetPrivateStarboundInstallDirectory();
+			string destination = Directories.GetLocalStarboundInstallDirectory();
 			string starboundFolderLocation = StarboundLocationInput.Text;
 			string openStarboundZipLocation = OpenStarboundLocationInput.Text;
 			if (string.IsNullOrWhiteSpace(starboundFolderLocation)) return;
@@ -300,7 +306,7 @@ namespace SBModManager.Menus {
 
 		private async Task InstallSteamCMDAsync(CancellationToken cancellationToken) {
 
-			string steamCMDDir = Directories.GetLocalSteamCMDInstallationDirectory();
+			string steamCMDDir = Directories.GetSteamCMDInstallationDirectory();
 			string steamCMDZip = Path2.Combine(steamCMDDir, "steamcmd.zip");
 			string steamCMDExe = Path2.Combine(steamCMDDir, "steamcmd.exe");
 			if (File.Exists(steamCMDExe)) return;
@@ -369,7 +375,7 @@ namespace SBModManager.Menus {
 						//SteamCMDNote.Text = $"[color=#ff7]ERROR: {_steamCmdInstallationTask.Exception.Message}[/color]";
 						OS.Alert(_steamCmdInstallationTask.Exception.Message, "Failed to download SteamCMD");
 					} else {
-						string steamCMDDir = Directories.GetLocalSteamCMDInstallationDirectory();
+						string steamCMDDir = Directories.GetSteamCMDInstallationDirectory();
 						string steamCMDExe = Path2.Combine(steamCMDDir, "steamcmd.exe");
 						SteamCMDLocationInput.Text = steamCMDExe;
 					}
@@ -400,6 +406,7 @@ namespace SBModManager.Menus {
 
 		#endregion
 
+#endif
 
 	}
 }

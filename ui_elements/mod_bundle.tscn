@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://44tvffmfn2mc"]
 
-[ext_resource type="Script" uid="uid://ddbupcdebnbv5" path="res://SBModManager/GUI/FoldableModGroup.cs" id="1_fwfbj"]
+[ext_resource type="Script" uid="uid://ddbupcdebnbv5" path="res://SBModManager/GUI/ModBundleElement.cs" id="1_fwfbj"]
 
 [node name="ModCategory" type="Control" unique_id=1434697865]
 custom_minimum_size = Vector2(0, 38)

@@ -4,14 +4,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using SBModManager.SteamInterop;
+
 namespace SBModManager.GUI {
 
 	/// <summary>
-	/// Copied from The Conservatory, includes some string formatting tools.
+	/// <strong>Copied from The Conservatory's codebase.</strong>
+	/// <para/>
+	/// 
+	/// Various string formatting tools. Modified to have some Starbound stuff in it.
 	/// </summary>
 	public static partial class FormatTools {
 
-		private static FrozenDictionary<string, Color> COLORS = new Dictionary<string, Color> {
+		private static readonly FrozenDictionary<string, Color> COLORS = new Dictionary<string, Color> {
 			{ "red", Color.Color8(255, 73, 66, 255) },
 			{ "orange", Color.Color8(255, 180, 47, 255) },
 			{ "yellow", Color.Color8(255, 239, 30, 255) },
@@ -35,24 +40,85 @@ namespace SBModManager.GUI {
 		}.ToFrozenDictionary();
 
 		/// <summary>
+		/// I'm so sorry for the bullshit you're about to lay your eyes upon.
+		/// </summary>
+		/// <param name="sbOrWorkshopDesc">The description of a mod, using either Steam markup or Starbound markup.</param>
+		/// <returns></returns>
+		public static string ReparseStarboundIntoBBCode(string sbOrWorkshopDesc) {
+			// Starbound markup:
+			sbOrWorkshopDesc = StarboundMarkupToBBCode(sbOrWorkshopDesc);
+
+			// Because some people like to use all caps bbcode...
+			sbOrWorkshopDesc = sbOrWorkshopDesc.Replace("[B]", "[b]", StringComparison.OrdinalIgnoreCase).Replace("[/B]", "[/b]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[I]", "[i]", StringComparison.OrdinalIgnoreCase).Replace("[/I]", "[/i]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[U]", "[u]", StringComparison.OrdinalIgnoreCase).Replace("[/U]", "[/u]", StringComparison.OrdinalIgnoreCase)
+												// .Replace("[IMG]", "[img]", StringComparison.OrdinalIgnoreCase).Replace("[/IMG]", "[/img]", StringComparison.OrdinalIgnoreCase)
+												// .Replace("[URL]", "[url]", StringComparison.OrdinalIgnoreCase).Replace("[/URL]", "[/url]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[STRIKE]", "[s]", StringComparison.OrdinalIgnoreCase).Replace("[/STRIKE]", "[/s]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[LIST]", "[ul]", StringComparison.OrdinalIgnoreCase).Replace("[/LIST]", "[/ul]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[OLIST]", "[ol]", StringComparison.OrdinalIgnoreCase).Replace("[/OLIST]", "[/ol]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[*]", null, StringComparison.OrdinalIgnoreCase) // Used in lists
+												.Replace("[/HR]", null, StringComparison.OrdinalIgnoreCase) // Godot doesn't use a closing tag.
+												.Replace("[LI]", null, StringComparison.OrdinalIgnoreCase).Replace("[/LI]", null, StringComparison.OrdinalIgnoreCase);
+
+			// For URL and IMG:
+			sbOrWorkshopDesc = URLBBCodeResolver().Replace(sbOrWorkshopDesc, delegate (Match match) {
+				if (!match.Success) return match.Value;
+				return $"[color=#aff][url{match.Groups[1].Value}]{match.Groups[2].Value}[/url][/color]";
+			});
+			sbOrWorkshopDesc = IMGBBCodeResolver().Replace(sbOrWorkshopDesc, delegate (Match match) {
+				if (!match.Success) return match.Value;
+				return $"[img]{match.Groups[1].Value}[/img]";
+			});
+
+			// Steam Workshop formatting:
+			sbOrWorkshopDesc = sbOrWorkshopDesc.Replace("[h1]", "[font_size=24]", StringComparison.OrdinalIgnoreCase).Replace("[/h1]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[h2]", "[font_size=20]", StringComparison.OrdinalIgnoreCase).Replace("[/h2]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[h3]", "[font_size=16]", StringComparison.OrdinalIgnoreCase).Replace("[/h3]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[h4]", "[font_size=14]", StringComparison.OrdinalIgnoreCase).Replace("[/h4]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[h5]", "[font_size=12]", StringComparison.OrdinalIgnoreCase).Replace("[/h5]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+												.Replace("[h6]", "[font_size=10]", StringComparison.OrdinalIgnoreCase).Replace("[/h6]", "[/font_size]", StringComparison.OrdinalIgnoreCase);
+
+			// Image Fixers
+			// The idea here is to create a dummy texture and then download it in the background.
+			return InlineThumbnailImageHelper.ReplaceImages(sbOrWorkshopDesc);
+		}
+
+		/// <summary>
 		/// An extremely shitty tool which lazily and destructively converts a starbound formatted string (with color codes) into one that works,
 		/// albeit barely, in Godot. This bbcode is not at all valid and this abuses the fact that Godot allows it.
 		/// </summary>
 		/// <param name="sbString"></param>
 		/// <returns></returns>
 		[NoDiscard]
-		public static string ShittyStarboundMarkupToBBCode(string sbString) {
+		public static string StarboundMarkupToBBCode(string sbString, bool alsoEscapeBBCode = false) {
+			if (alsoEscapeBBCode) {
+				sbString = sbString.Replace("[", "[lb]");
+			}
+
+			// okay so check this out right:
+			// replace every color with a closing tag, then the opening of the next tag
+			string original = sbString;
 			sbString = SBHexColorRegex().Replace(sbString, delegate (Match match) {
 				if (match.Success) {
-					return $"[color={match.Groups[1]}]";
+					return $"[/color][color={match.Groups[1].Value}]";
 				} else {
 					return match.Value;
 				}
 			});
 			foreach (KeyValuePair<string, Color> colorMapping in COLORS) {
-				sbString = sbString.Replace($"^{colorMapping.Key};", $"[color=#{colorMapping.Value.ToHtml()}]", StringComparison.OrdinalIgnoreCase);
+				sbString = sbString.Replace($"^{colorMapping.Key};", $"[/color][color=#{colorMapping.Value.ToHtml()}]", StringComparison.OrdinalIgnoreCase);
 			}
-			return sbString.Replace("^reset;", "[color=white]", StringComparison.OrdinalIgnoreCase);
+			sbString = sbString.Replace("^reset;", "[/color][color=#fff]", StringComparison.OrdinalIgnoreCase);
+
+			if (!ReferenceEquals(sbString, original)) {
+				// All replacement methods used will return the input by reference if there were no edits.
+				// But if there were edits, every edit begins with closing its previous tag, and opening the next tag
+				// which means I can just surround the result with a tag and bang. it's valid.
+				// This is so cursed lmfao
+				return $"[color=#fff]{sbString}[/color]";
+			}
+			return original;
 		}
 
 		/// <summary>
@@ -118,5 +184,11 @@ namespace SBModManager.GUI {
 
 		[GeneratedRegex(@"\^#([a-fA-F0-9]{3}|[a-fA-F0-9]{4}|[a-fA-F0-9]{6}|[a-fA-F0-9]{8});")]
 		private static partial Regex SBHexColorRegex();
+
+		[GeneratedRegex(@"\[url(\=[^\]]+)?\]([^\[\]]+)\[\/url\]", RegexOptions.IgnoreCase)]
+		private static partial Regex URLBBCodeResolver();
+
+		[GeneratedRegex(@"\[img(?:\=[^\]]+)?\]([^\[\]]+)\[\/img\]", RegexOptions.IgnoreCase)]
+		public static partial Regex IMGBBCodeResolver();
 	}
 }

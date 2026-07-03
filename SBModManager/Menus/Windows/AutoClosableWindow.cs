@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SBModManager.Menus.Windows {
+
+	/// <summary>
+	/// The base class for a window that closes itself.
+	/// </summary>
 	public partial class AutoClosableWindow : Window {
 
 		/// <summary>

@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://do3n7qkptmstn"]
 
 [ext_resource type="Texture2D" uid="uid://dt0wnqyl5o57b" path="res://icon.svg" id="1_b0mdo"]
-[ext_resource type="Script" uid="uid://bgstufxnhq8wt" path="res://SBModManager/GUI/TooltipCheckButton.cs" id="1_dbo7l"]
-[ext_resource type="Script" uid="uid://bhnu5j1fv15t4" path="res://SBModManager/GUI/ModListEntry.cs" id="1_ysqsd"]
-[ext_resource type="Script" uid="uid://vl5rinndcuu5" path="res://SBModManager/GUI/TooltipRichTextLabel.cs" id="3_ysqsd"]
+[ext_resource type="Script" uid="uid://bgstufxnhq8wt" path="res://SBModManager/GUI/RichTooltipElements/TooltipCheckButton.cs" id="1_dbo7l"]
+[ext_resource type="Script" uid="uid://bhnu5j1fv15t4" path="res://SBModManager/GUI/ModListEntryElement.cs" id="1_ysqsd"]
+[ext_resource type="Script" uid="uid://vl5rinndcuu5" path="res://SBModManager/GUI/RichTooltipElements/TooltipRichTextLabel.cs" id="3_ysqsd"]
 
 [node name="ModEntry" type="ColorRect" unique_id=1954689346]
 custom_minimum_size = Vector2(0, 36)
@@ -53,7 +53,8 @@ expand_mode = 1
 
 [node name="ModNameAndAuthor" type="RichTextLabel" parent="MarginContainer/HBoxContainer" unique_id=563932082]
 unique_name_in_owner = true
-clip_contents = false
+custom_minimum_size = Vector2(0, 36)
+custom_maximum_size = Vector2(-1, 36)
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true

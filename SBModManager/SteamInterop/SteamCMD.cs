@@ -12,25 +12,28 @@ using System.Threading.Tasks;
 namespace SBModManager.SteamInterop {
 
 	/// <summary>
-	/// Helps interoperability with SteamCMD.
+	/// Provides an interface to run SteamCMD from C#.
 	/// </summary>
 	public static class SteamCMD {
 
-		/// <summary>
-		/// Determines if SteamCMD is available.
-		/// </summary>
-		public static bool HasSteamCMD => ProgramSettings.SteamCMD != null && ProgramSettings.SteamCMD.Exists;
+		// FUTURE XAN:
+		// No matter how hard you tried, you could not get SteamCMD to accept input from stdin.
+		// I don't know why this doesn't work. I was doing it wrong maybe? But I tried a lot, including
+		// adapting VB code that Valve themselves vetted. Maybe something broke.
+
+		// But that's why I rely on scripts for more complex operations.
 
 		/// <summary>
 		/// Runs a SteamCMD script by its file path then exits. Returns a task which is completed once SteamCMD exits.
 		/// </summary>
-		/// <param name="scriptPath"></param>
-		/// <param name="cancellationToken"></param>
+		/// <param name="scriptPath">The path to a script file.</param>
+		/// <param name="cancellationToken">A <see cref="CancellationToken"/> which will stop running the script. If SteamCMD is running, cancellation will kill the program.</param>
 		/// <returns></returns>
 		/// <exception cref="InvalidOperationException"></exception>
+		/// <exception cref="OperationCanceledException"></exception>
 		public static async Task RunSteamCMDScriptAsync(string scriptPath, CancellationToken cancellationToken) {
 			ProcessStartInfo info = new ProcessStartInfo {
-				FileName = ProgramSettings.SteamCMD?.FullName ?? throw new InvalidOperationException("SteamCMD is not installed."),
+				FileName = Directories.GetSteamCMDProgram(),
 				CreateNoWindow = true
 			};
 			info.ArgumentList.Add($"+runscript \"{scriptPath}\"");
@@ -41,6 +44,7 @@ namespace SBModManager.SteamInterop {
 				await steamCMD.WaitForExitAsync(cancellationToken);
 			} catch (OperationCanceledException) {
 				steamCMD.Kill(true);
+				throw;
 			}
 		}
 
@@ -52,7 +56,7 @@ namespace SBModManager.SteamInterop {
 		/// <returns></returns>
 		public static async Task RunSteamCMDAsync(string[] args, CancellationToken cancellationToken) {
 			ProcessStartInfo info = new ProcessStartInfo {
-				FileName = ProgramSettings.SteamCMD?.FullName ?? throw new InvalidOperationException("SteamCMD is not installed."),
+				FileName = Directories.GetSteamCMDProgram(),
 				CreateNoWindow = true
 			};
 			for (int i = 0; i < args.Length; i++) {
@@ -67,6 +71,7 @@ namespace SBModManager.SteamInterop {
 				await steamCMD.WaitForExitAsync(cancellationToken);
 			} catch (OperationCanceledException) {
 				steamCMD.Kill(true);
+				throw;
 			}
 		}
 

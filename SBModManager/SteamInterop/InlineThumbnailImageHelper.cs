@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+using SBModManager.GUI;
 using SBModManager.Other;
 
 using HttpClient = System.Net.Http.HttpClient;
@@ -34,7 +35,7 @@ namespace SBModManager.SteamInterop {
 		/// <summary>
 		/// Used to prevent a comical amount of downloads from occurring at once. Prevents you from getting blocked by Steam.
 		/// </summary>
-		private static readonly Semaphore RATE_LIMITER = new Semaphore(8, 8);
+		private static readonly Semaphore RATE_LIMITER = new Semaphore(4, 4);
 
 		/// <summary>
 		/// Replace all image tags with a valid Godot resource on the fly. This may have a serious performance impact.
@@ -42,13 +43,13 @@ namespace SBModManager.SteamInterop {
 		/// <param name="bbcode"></param>
 		/// <returns></returns>
 		public static string ReplaceImages(string bbcode) {
-			Regex regex = ImgTagRegex();
+			Regex regex = FormatTools.IMGBBCodeResolver();
 			return regex.Replace(bbcode, delegate (Match match) {
 				if (!match.Success) return match.Value;
 
 				string url = match.Groups[1].Value;
 				string res = EnqueueImageDownloadIfNeeded(url);
-				return res;
+				return $"[img]{res}[/img]";
 			});
 		}
 
@@ -58,10 +59,11 @@ namespace SBModManager.SteamInterop {
 		/// <param name="url"></param>
 		private static string EnqueueImageDownloadIfNeeded(string url) {
 			string md5 = Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(url)));
+			string path = $"res://workshop_image_cache/{md5}";
 			if (!IMAGE_ACQUISITIONS.TryGetValue(md5, out Task<Texture2D>? existingTask)) {
 				IMAGE_ACQUISITIONS[md5] = DownloadImageIntoTexture2DImpl(url, md5);
 			}
-			return $"res://workshop_image_cache/{md5}";
+			return path;
 		}
 
 		/// <summary>
@@ -71,11 +73,12 @@ namespace SBModManager.SteamInterop {
 		/// <param name="md5"></param>
 		/// <returns></returns>
 		private static async Task<Texture2D> DownloadImageIntoTexture2DImpl(string url, string md5) {
-			Image image = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
-			image.SetPixel(0, 0, Colors.Magenta);
+			Image actualImage = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
+			actualImage.SetPixel(0, 0, Colors.Magenta);
 
-			ImageTexture result = ImageTexture.CreateFromImage(image);
-			result.TakeOverPath($"res://workshop_image_cache/{md5}");
+			string path = $"res://workshop_image_cache/{md5}";
+			ImageTexture result = ImageTexture.CreateFromImage(Assets.PlaceholderWorkshopImageLoading);
+			result.TakeOverPath(path);
 
 			string imgCache = Directories.GetSteamImageCacheDirectory();
 			Directory.CreateDirectory(imgCache);
@@ -91,8 +94,8 @@ namespace SBModManager.SteamInterop {
 				}
 
 				if (buffer != null) {
-					if (image.LoadPngFromBuffer(buffer) == Error.Ok) {
-						result.SetImage(image);
+					if (actualImage.LoadPngFromBuffer(buffer) == Error.Ok) {
+						result.SetImage(actualImage);
 					}
 					return result;
 				}
@@ -103,6 +106,7 @@ namespace SBModManager.SteamInterop {
 				while (retries-- > 0) {
 					try {
 						download = await client.GetStreamAsync(url, CancellationToken.None).ConfigureAwait(false);
+						break;
 					} catch (HttpRequestException request) {
 						if (request.StatusCode == HttpStatusCode.TooManyRequests) {
 							int rng = Random.Shared.Next();
@@ -114,6 +118,7 @@ namespace SBModManager.SteamInterop {
 					}
 				}
 				if (download == null) {
+					result.SetImage(Assets.PlaceholderWorkshopImageError);
 					return result;
 				}
 
@@ -123,32 +128,30 @@ namespace SBModManager.SteamInterop {
 				buffer = imageBuffer.ToArray();
 				imageBuffer.Dispose();
 
-				Error error = image.LoadPngFromBuffer(buffer);
+				Error error = actualImage.LoadPngFromBuffer(buffer);
 				if (error != Error.Ok) {
 					// Try it as a jpg?
-					error = image.LoadJpgFromBuffer(buffer);
+					error = actualImage.LoadJpgFromBuffer(buffer);
 
 					if (error != Error.Ok) {
 						// Nope :(
-						image.SetData(1, 1, false, Image.Format.Rgba8, BitConverter.GetBytes(0xFF00FFFF));
+						result.SetImage(Assets.PlaceholderWorkshopImageError);
+						return result;
 					}
 				}
 
-				result.SetImage(image);
-				image.SavePng(Path2.Combine(imgCache, $"{md5}.png"));
+				result.SetImage(actualImage);
+				actualImage.SavePng(Path2.Combine(imgCache, $"{md5}.png"));
 				await Task.Delay(1000).ConfigureAwait(false);
 				return result;
 			} catch {
 				result.Dispose();
-				image.Dispose();
+				actualImage.Dispose();
 				return new PlaceholderTexture2D();
 			} finally {
 				RATE_LIMITER.Release();
 			}
 		}
 
-
-		[GeneratedRegex(@"\[img(?:\=[^\]]+)?\]([^\[\]]+)\[\/img\]", RegexOptions.IgnoreCase)]
-		private static partial Regex ImgTagRegex();
 	}
 }

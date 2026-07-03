@@ -1,13 +1,12 @@
 [gd_scene format=3 uid="uid://ehcuhykhn26h"]
 
-[ext_resource type="Texture2D" uid="uid://dt0wnqyl5o57b" path="res://icon.svg" id="1_tjn2e"]
 [ext_resource type="Script" uid="uid://bxj2e5kcyxw4" path="res://SBModManager/Core.cs" id="1_w0p2i"]
 [ext_resource type="Texture2D" uid="uid://bsctcnud5svye" path="res://icons/play.png" id="2_sj757"]
-[ext_resource type="Script" uid="uid://x81ofxplde8b" path="res://SBModManager/GUI/TooltipTextureButton.cs" id="3_4sclt"]
-[ext_resource type="PackedScene" uid="uid://dii41rl1tytuv" path="res://popups/app_settings.tscn" id="4_4sclt"]
+[ext_resource type="Script" uid="uid://x81ofxplde8b" path="res://SBModManager/GUI/RichTooltipElements/TooltipTextureButton.cs" id="3_4sclt"]
+[ext_resource type="PackedScene" uid="uid://dii41rl1tytuv" path="res://ui_elements/popups/program_settings.tscn" id="4_4sclt"]
 [ext_resource type="Texture2D" uid="uid://cay0y0lw1y431" path="res://icons/new_modpack.png" id="4_ups6l"]
 [ext_resource type="Texture2D" uid="uid://bkqohamnsux0x" path="res://icons/duplicate_modpack.png" id="5_7sxnj"]
-[ext_resource type="PackedScene" uid="uid://dj6i10d8xumgl" path="res://popups/edit_modpack_details.tscn" id="5_ywh4s"]
+[ext_resource type="PackedScene" uid="uid://dj6i10d8xumgl" path="res://ui_elements/popups/modpack_management.tscn" id="5_ywh4s"]
 [ext_resource type="Texture2D" uid="uid://b2h7de5a5uknn" path="res://icons/import_modpack.png" id="6_cxp7d"]
 [ext_resource type="Texture2D" uid="uid://1vkt0comhivi" path="res://icons/edit_modpack.png" id="7_p3r6q"]
 [ext_resource type="Texture2D" uid="uid://d3s8o8ujg8ysa" path="res://icons/delete_modpack.png" id="8_3qsiq"]
@@ -54,7 +53,7 @@ script = ExtResource("3_4sclt")
 [node name="VSeparator" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools" unique_id=197170488]
 layout_mode = 2
 
-[node name="NewOSBModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1384851246]
+[node name="NewModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1384851246]
 unique_name_in_owner = true
 texture_filter = 1
 custom_minimum_size = Vector2(48, 48)
@@ -113,27 +112,17 @@ stretch_mode = 0
 script = ExtResource("3_4sclt")
 
 [node name="VSeparator3" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools" unique_id=409628419]
+visible = false
 layout_mode = 2
 
-[node name="ConfigButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=2133547503]
-unique_name_in_owner = true
-texture_filter = 1
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-tooltip_text = "Modify the app's settings and provide it with tools that are needed to function."
-texture_normal = ExtResource("9_7087c")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("3_4sclt")
-
-[node name="HelpButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1144096353]
+[node name="ConfigureAppButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=2133547503]
 unique_name_in_owner = true
 visible = false
 texture_filter = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-tooltip_text = "Get help and information about the app."
-texture_normal = ExtResource("1_tjn2e")
+tooltip_text = "Modify the app's settings and provide it with tools that are needed to function."
+texture_normal = ExtResource("9_7087c")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -167,10 +156,10 @@ fit_content = true
 scroll_active = false
 vertical_alignment = 2
 
-[node name="AppSettings" parent="." unique_id=939907019 instance=ExtResource("4_4sclt")]
+[node name="ProgramSettings" parent="." unique_id=939907019 instance=ExtResource("4_4sclt")]
 unique_name_in_owner = true
 visible = false
 
-[node name="EditModpack" parent="." unique_id=1489936823 instance=ExtResource("5_ywh4s")]
+[node name="ModpackManagement" parent="." unique_id=1489936823 instance=ExtResource("5_ywh4s")]
 unique_name_in_owner = true
 visible = false

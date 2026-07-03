@@ -1,1 +1,6 @@
 blank_issues_enabled: false
+
+contact_links:
+  - name: "My game has errors or crashes!"
+    url: \#
+    about: "Starbound Mod Manager only handles the part where the game is launched. Any bugs that occur while you play are caused by the mods you chose to install, not your program."

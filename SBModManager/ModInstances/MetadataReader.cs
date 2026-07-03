@@ -25,8 +25,8 @@ namespace SBModManager.ModInstances {
 			if (File.GetAttributes(modArchivePath).HasFlag(FileAttributes.Directory)) { 
 				try {
 					DirectoryInfo archiveFolder = new DirectoryInfo(modArchivePath);
-					GDDictionary? data = GetMetadataFromDirectory(archiveFolder);
-					if (data != null) {
+					GDDictionary? json = GetMetadataFromDirectory(archiveFolder);
+					if (json != null) {
 						FileInfo previewImage = new FileInfo(Path2.Combine(archiveFolder.FullName, "_previewimage"));
 						if (previewImage.Exists) {
 							// See Modpack.TrySetIcon for the explanation as to why LoadFromFile is not being used.
@@ -36,12 +36,15 @@ namespace SBModManager.ModInstances {
 							if (error != Error.Ok) {
 								error = result.LoadJpgFromBuffer(buffer);
 							}
+							if (error != Error.Ok) {
+								error = result.LoadGifFirstFrameFromBuffer(buffer);
+							}
 							if (error == Error.Ok) {
-								data["preview_image"] = ImageTexture.CreateFromImage(result);
+								json["preview_image"] = ImageTexture.CreateFromImage(result);
 							}
 						}
 					}
-					return data;
+					return json;
 				} catch { }
 			} else {
 				try {
@@ -60,7 +63,7 @@ namespace SBModManager.ModInstances {
 				if (!metadata.Exists) metadata = new FileInfo(Path2.Combine(directory.FullName, ".metadata"));
 				if (!metadata.Exists) return null;
 
-				Variant json = Json.ParseString(File.ReadAllText(metadata.FullName));
+				Variant json = StarboundJsonSanitizer.ParseString(File.ReadAllText(metadata.FullName));
 				return (GDDictionary)json;
 			} catch {
 				return null;
@@ -101,7 +104,6 @@ namespace SBModManager.ModInstances {
 				if (inde != INDE || x != X) return null; // lmfao
 
 				GDDictionary json = ReadNextJsonObject(reader);
-
 				// Now the file index.
 				try {
 					long indexSize = ReadVlqU(reader);
@@ -116,22 +118,14 @@ namespace SBModManager.ModInstances {
 
 							Image image = Image.CreateEmpty(256, 256, false, Image.Format.Rgba8);
 							Error loadError = image.LoadPngFromBuffer(buffer);
+							if (loadError != Error.Ok) {
+								loadError = image.LoadJpgFromBuffer(buffer);
+							}
+							if (loadError != Error.Ok) {
+								loadError = image.LoadGifFirstFrameFromBuffer(buffer);
+							}
 							if (loadError == Error.Ok) {
 								json["preview_image"] = ImageTexture.CreateFromImage(image);
-							} else {
-								// Hunch: Might be jpg
-								// In several cases, it's a .gif, but there's no way to read and display those.
-								loadError = image.LoadJpgFromBuffer(buffer);
-								if (loadError == Error.Ok) {
-									GD.Print("The previous warning about a corrupt image can be ignored. It's fine, it was just a jpeg instead.");
-									json["preview_image"] = ImageTexture.CreateFromImage(image);
-								} else {
-									loadError = image.LoadGifFirstFrameFromBuffer(buffer);
-									if (loadError == Error.Ok) {
-										GD.Print("The previous warning about a corrupt image can be ignored. It's fine, it was just a gif instead.");
-										json["preview_image"] = ImageTexture.CreateFromImage(image);
-									}
-								}
 							}
 							break;
 						}

@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using Godot.NativeInterop;
 
 using SBModManager.Attributes;
 using SBModManager.GUI;
@@ -43,10 +46,10 @@ namespace SBModManager.Menus {
 		public Button ImportFromCatalogButton { get; }
 
 		/// <summary>
-		/// The button to import a mod from a downloaded file or directory.
+		/// The button to import a mod from a downloaded file or directory, or a workshop ID.
 		/// </summary>
 		[Import, AllowNull]
-		public Button ImportFromFileButton { get; }
+		public Button ImportManuallyButton { get; }
 
 		/// <summary>
 		/// The file dialog to find mod lists.
@@ -54,15 +57,78 @@ namespace SBModManager.Menus {
 		[Import, AllowNull]
 		public FileDialog FindModListDialog { get; }
 
+		/// <summary>
+		/// The search bar.
+		/// </summary>
+		[Import, AllowNull]
+		public LineEdit SearchMods { get; }
 
+		/// <summary>
+		/// A sorted dictionary used to optimize searching for strings.
+		/// </summary>
+		private readonly SortedDictionary<string, ModListEntryElement> _sortedElementsByDisplayName = [];
+		private string? _pendingSearchString;
+		private double _pendingSearchCooldown = 0.2;
 
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
 			ImportFromWorkshopButton.Pressed += OnImportFromWorkshopPressed;
 			ImportFromListButton.Pressed += OnImportFromListPressed;
 			ImportFromCatalogButton.Pressed += OnImportFromCatalogPressed;
-			ImportFromFileButton.Pressed += OnImportFromFilePressed;
+			ImportManuallyButton.Pressed += OnImportFromFilePressed;
 			FindModListDialog.FileSelected += OnModlistFileSelected;
+			SearchMods.TextChanged += OnSearchTextChanged;
+		}
+
+		public override void _Process(double delta) {
+			if (_pendingSearchString != null) {
+				// ^ Yes, even for empty strings (that just shows everything).
+
+				_pendingSearchCooldown -= delta;
+				if (_pendingSearchCooldown <= 0) {
+					scoped StringSearchEnumerator enumerator = EnumerateSearchResults(_pendingSearchString);
+					_pendingSearchString = null;
+
+					// To prevent a huge processing toll, this has to be done:
+					RemoveChild(ModsList);
+					try {
+						// ^ This is the only way that NOTIFICATION_SORT_CHILDREN is suppressed.
+						while (enumerator.MoveNext()) {
+							(ModListEntryElement element, bool qualifies) = enumerator.Current;
+							element.Visible = qualifies;
+						}
+					} finally {
+						AddChild(ModsList);
+					}
+				}
+			}
+		}
+
+		private void OnSearchTextChanged(string newText) {
+			_pendingSearchCooldown = 0.2;
+			_pendingSearchString = newText;
+			
+			// Give it a border when there is text.
+			if (SearchMods.GetThemeStylebox(NORMAL) is StyleBoxFlat flat) {
+				if (newText.Length == 0) {
+					flat.SetBorderWidthAll(0);
+				} else {
+					flat.SetBorderWidthAll(4);
+				}
+			}
+		}
+		private static readonly StringName NORMAL = "normal";
+
+		/// <summary>
+		/// Returns a <see cref="StringSearchEnumerator"/> which can be used to get all of the matching results of a search.
+		/// The enumerator returns every <see cref="ModListEntryElement"/> coupled with a boolean indicating if it's a match.
+		/// </summary>
+		/// <param name="query">The string to search for.</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public StringSearchEnumerator EnumerateSearchResults(string query) {
+			ArgumentNullException.ThrowIfNull(query);
+			return new StringSearchEnumerator(query, _sortedElementsByDisplayName);
 		}
 
 		private void RebuildList() {
@@ -74,27 +140,21 @@ namespace SBModManager.Menus {
 				obj.Free();
 			}
 
-			PackedScene foldableModGroup = GD.Load<PackedScene>("res://ui_elements/mod_bundle.tscn");
-			PackedScene modListEntry = GD.Load<PackedScene>("res://ui_elements/mod_list_entry.tscn");
-
+			_sortedElementsByDisplayName.Clear();
 			foreach (KeyValuePair<ModSource, bool> srcBinding in EditingModpack.ModSources) {
 				ModSource src = srcBinding.Key;
 				bool enabled = srcBinding.Value;
 				if (src.Mods.Length == 1) {
-					ModListEntry mle = modListEntry.Instantiate<ModListEntry>();
-					mle.AssignMod(EditingModpack, src.Mods[0]);
-					mle.Name = src.Mods[0].Metadata.ModID;
+					ModListEntryElement mle = Assets.CreateModListEntryElementFor(EditingModpack, src.Mods[0]);
 					ModsList.AddChild(mle);
+					_sortedElementsByDisplayName.Add(src.Mods[0].Metadata.FriendlyName, mle);
 				} else {
-					FoldableModGroup fmg = foldableModGroup.Instantiate<FoldableModGroup>();
-					fmg.AssignModpack(EditingModpack, src);
-					fmg.Name = src.PersistentName;
+					ModBundleElement fmg = Assets.CreateModBundleElementFor(EditingModpack, src);
 					ModsList.AddChild(fmg);
 					for (int i = 0; i < src.Mods.Length; i++) {
-						ModListEntry mle = modListEntry.Instantiate<ModListEntry>();
-						mle.AssignMod(EditingModpack, src.Mods[i]);
-						mle.Name = src.Mods[i].Metadata.ModID;
-						fmg.Children.AddChild(mle);
+						ModListEntryElement mle = Assets.CreateModListEntryElementFor(EditingModpack, src.Mods[i]);
+						fmg.AddModListEntry(mle);
+						_sortedElementsByDisplayName.Add(src.Mods[i].Metadata.FriendlyName, mle);
 					}
 				}
 			}
@@ -113,6 +173,7 @@ namespace SBModManager.Menus {
 			}
 			RebuildList();
 		}
+
 
 		private void OnImportFromListPressed() {
 			throw new NotImplementedException();
@@ -142,6 +203,36 @@ namespace SBModManager.Menus {
 			EditingModpack = modpack;
 			FindModListDialog.Hide();
 			RebuildList();
+		}
+
+
+		public ref struct StringSearchEnumerator : IEnumerator<(ModListEntryElement, bool)> {
+			public (ModListEntryElement, bool) Current { readonly get; private set; }
+			readonly object IEnumerator.Current => Current;
+
+			private readonly string _query;
+			private readonly (string name, ModListEntryElement element)[] _candidates;
+			private int _index = -1;
+
+			internal StringSearchEnumerator(string query, SortedDictionary<string, ModListEntryElement> candidates) {
+				ArgumentNullException.ThrowIfNull(query);
+				ArgumentNullException.ThrowIfNull(candidates);
+				_query = query.ToLower();
+				_candidates = candidates.Select(kvp => (kvp.Key.ToLower(), kvp.Value)).ToArray();
+			}
+
+			public bool MoveNext() {
+				int nextIndex = _index + 1;
+				if (nextIndex >= _candidates.Length) return false;
+				_index = nextIndex;
+				(string name, ModListEntryElement element) = _candidates[_index];
+				Current = (element, _query.Length == 0 || name.Contains(_query, StringComparison.Ordinal));
+				return true;
+			}
+
+			public readonly void Reset() => throw new NotSupportedException();
+
+			public readonly void Dispose() { }
 		}
 	}
 }

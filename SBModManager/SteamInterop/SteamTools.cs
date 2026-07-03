@@ -16,9 +16,14 @@ namespace SBModManager.SteamInterop {
 	/// </summary>
 	public static class SteamTools {
 
+		public static string? GetStarboundDirectory() {
+			string? steamapps = GetSteamappsContainingStarbound();
+			if (steamapps == null) return null;
+			return Path2.Combine(steamapps, "common", "Starbound");
+		}
 
 		/// <summary>
-		/// Reads libraryfolders.vdf, which is a value stored in Steam's default installation location. This file contains
+		/// Reads libraryfolders.vdf, which is a file stored in Steam's default installation location. This file contains
 		/// a list of every library folder and every game within it, which this method uses to try to find the install location
 		/// of Starbound.
 		/// <para/>
@@ -56,34 +61,19 @@ namespace SBModManager.SteamInterop {
 		}
 
 		/// <summary>
-		/// Reads libraryfolders.vdf, which is a value stored in Steam's default installation location. This file contains
-		/// a list of every library folder and every game within it, which this method uses to try to find the install location
-		/// of Starbound.
-		/// <para/>
-		/// Returns the full path of the game folder (C:/.../steamapps/common/Starbound) or <see langword="null"/> if it was not
-		/// found.
-		/// </summary>
-		/// <returns></returns>
-		public static string? GetStarboundDirectory() {
-			string? steamapps = GetSteamappsContainingStarbound();
-			if (steamapps == null) return null;
-			return Path2.Combine(steamapps, "common", "Starbound");
-		}
-
-		/// <summary>
-		/// Creates a series of commands which 
+		/// Creates a series of commands which are executed by SteamCMD to download one or more workshop mods to disk.
 		/// </summary>
 		/// <param name="ids">An array of workshop item IDs to download.</param>
 		/// <param name="skipIfInstalled">If true, workshop items that appear to be already installed are skipped.</param>
 		/// <param name="cancellationToken">Can be used to cancel the process.</param>
 		/// <returns></returns>
 		/// <exception cref="InvalidOperationException"></exception>
+		/// <exception cref="OperationCanceledException"></exception>
 		public static async Task DownloadWorkshopModsAsync(ulong[] ids, bool skipIfInstalled, CancellationToken cancellationToken) {
 			if (ids.Length == 0) return;
 
-			if (!SteamCMD.HasSteamCMD) throw new InvalidOperationException("SteamCMD is not available.");
 			string workshopDir = Directories.GetLocalWorkshopCacheDirectory();
-			string scriptDir = Directories.GetLocalSteamCMDTempScriptDirectory();
+			string scriptDir = Directories.GetSteamCMDTempScriptDirectory();
 			string scriptFile = Path2.Combine(scriptDir, Path.GetRandomFileName() + ".txt");
 			Directory.CreateDirectory(workshopDir);
 			Directory.CreateDirectory(scriptDir);
@@ -93,7 +83,7 @@ namespace SBModManager.SteamInterop {
 			script.AppendLine("login anonymous");
 			bool hadAny = false;
 			for (int i = 0; i < ids.Length; i++) {
-				if (cancellationToken.IsCancellationRequested) return;
+				cancellationToken.ThrowIfCancellationRequested();
 
 				if (skipIfInstalled) {
 					string itemPath = Path2.Combine(workshopDir, ids[i].ToString());
@@ -107,10 +97,10 @@ namespace SBModManager.SteamInterop {
 			File.WriteAllText(scriptFile, script.ToString());
 			try {
 				await SteamCMD.RunSteamCMDScriptAsync(scriptFile, cancellationToken);
-				string baseInstallPath = Path2.Combine(Directories.GetLocalSteamCMDInstallationDirectory(), "steamapps", "content", "app_211820");
+				string baseInstallPath = Path2.Combine(Directories.GetSteamCMDInstallationDirectory(), "steamapps", "content", "app_211820");
 
 				for (int i = 0; i < ids.Length; i++) {
-					if (cancellationToken.IsCancellationRequested) return;
+					cancellationToken.ThrowIfCancellationRequested();
 
 					string itemPath = Path2.Combine(baseInstallPath, $"item_{ids[i]}");
 					string destination = Path2.Combine(workshopDir, ids[i].ToString());
@@ -121,7 +111,6 @@ namespace SBModManager.SteamInterop {
 					}
 					Directory.Move(itemPath, destination);
 				}
-			} catch (OperationCanceledException) {
 			} finally {
 				File.Delete(scriptFile);
 			}
@@ -132,6 +121,7 @@ namespace SBModManager.SteamInterop {
 		/// Returns a list of every installed mod ID.
 		/// </summary>
 		/// <returns></returns>
+		/// <exception cref="OperationCanceledException"></exception>
 		public static ulong[] CopyAllCurrentSubscriptionsToCache(bool skipDuplicates, CancellationToken cancellationToken) {
 			List<ulong> installed = [];
 
@@ -141,7 +131,7 @@ namespace SBModManager.SteamInterop {
 				string workshopContent = Path2.Combine(sbPath, "workshop", "content", "211820");
 				string[] subdirectories = Directory.GetDirectories(workshopContent);
 				for (int i = 0; i < subdirectories.Length; i++) {
-					if (cancellationToken.IsCancellationRequested) return [];
+					cancellationToken.ThrowIfCancellationRequested();
 
 					string workshopSubdirectory = subdirectories[i];
 					string? name = Path.GetFileName(workshopSubdirectory);
@@ -159,7 +149,7 @@ namespace SBModManager.SteamInterop {
 							} catch (DirectoryNotFoundException) { }
 						}
 
-						Directories.CopyDirectory(workshopSubdirectory, destination);
+						Directories.CopyDirectory(workshopSubdirectory, destination, cancellationToken);
 						installed.Add(workshopID);
 					}
 				}

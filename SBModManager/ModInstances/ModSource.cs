@@ -9,13 +9,12 @@ using SBModManager.Other;
 namespace SBModManager.ModInstances {
 
 	/// <summary>
-	/// While this may seem useless at first, this exists to address an edge case where it is possible for a modder to include several .pak files
-	/// or directories within their Workshop upload. Only like 4 modders actually do this, but it's a thing and can be useful, so it has to be accounted for.
-	/// </summary>
-	/// <remarks>
-	/// This class reference can be shared across many modpacks since it is immutable.
+	/// Reprensets a set of multiple mods. It is possible for Workshop uploaders to store several mods in one upload, which this addresses.
+	/// <para/>
+	/// Note that conceptually, a <see cref="ModSource"/> is just a set of mods. It has no context to any specific <see cref="Modpack"/>, and
+	/// indeed one instance of this type can be shared across many modpacks. This just represents the mods, and that's it.
 	/// </remarks>
-	public class ModSource : IEquatable<ModSource> {
+	public class ModSource : IEquatable<ModSource>, IComparable<ModSource> {
 
 		/// <summary>
 		/// If <see langword="true"/>, this is a workshop mod (and will thus use the workshop catalog folder).
@@ -124,5 +123,21 @@ namespace SBModManager.ModInstances {
 		}
 
 		public static bool operator !=(ModSource? left, ModSource? right) => !(left == right);
+
+		/// <summary>
+		/// Sorts mods by the name of the first mod included in the source.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public int CompareTo(ModSource? other) {
+			if (other is null) return 1;
+			if (Mods.Length == 0) {
+				if (other.Mods.Length == 0) return 0;
+				return -1;
+			} else {
+				if (other.Mods.Length == 0) return 1;
+				return Mods[0].Metadata.FriendlyName.CompareTo(other.Mods[0].Metadata.FriendlyName);
+			}
+		}
 	}
 }

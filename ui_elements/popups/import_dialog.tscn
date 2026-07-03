@@ -1,0 +1,163 @@
+[gd_scene format=3 uid="uid://bgsfhxcgnstw1"]
+
+[ext_resource type="Script" uid="uid://vfb01c624vvb" path="res://SBModManager/GUI/RichTooltipElements/TooltipLabel.cs" id="2_m84do"]
+[ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="3_sjcc7"]
+
+[node name="ImportDialog" type="Window" unique_id=939907019]
+oversampling_override = 1.0
+title = "Import Mods"
+initial_position = 2
+size = Vector2i(1000, 196)
+unresizable = true
+sharp_corners = true
+minimize_disabled = true
+maximize_disabled = true
+content_scale_aspect = 1
+
+[node name="FileDialog" type="FileDialog" parent="." unique_id=1353012234]
+title = "Open a File or Directory"
+file_mode = 3
+display_mode = 1
+access = 2
+filters = PackedStringArray("")
+
+[node name="Panel" type="Panel" parent="." unique_id=143099214]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=1980975647]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=2014518090]
+layout_mode = 2
+
+[node name="TipCursor" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=1792516454]
+layout_mode = 2
+bbcode_enabled = true
+text = "You can use this menu to import mods from multiple sources. Choose one:
+[font_size=12][color=#aaa][i]Hover your cursor over an option's name to view information.[/i][/color][/font_size]"
+fit_content = true
+
+[node name="ColumnatedEntries" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=66019466]
+layout_mode = 2
+
+[node name="Names" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries" unique_id=1289704878]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="ModPakFile" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=770685637]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+tooltip_text = "Most Starbound mods that aren't on the Steam Workshop exist in the form of [color=#afa].pak[/color] files.
+
+More rarely, mods can exist as a folder, but this is typically done by mod developers."
+mouse_filter = 0
+mouse_default_cursor_shape = 16
+text = "Option 1: From a .pak file, or a folder"
+vertical_alignment = 1
+script = ExtResource("2_m84do")
+
+[node name="FromWorkshopID" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=1565741806]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 16
+text = "Option 2: From the Steam Workshop"
+vertical_alignment = 1
+script = ExtResource("2_m84do")
+
+[node name="FromSBMMList" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=1753600831]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+tooltip_text = "The location of the .zip file containing OpenStarbound. This is used to extract the actual playable game."
+mouse_filter = 0
+mouse_default_cursor_shape = 16
+text = "Option 3: From SBMM List"
+vertical_alignment = 1
+script = ExtResource("2_m84do")
+
+[node name="Entries" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries" unique_id=1664576331]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SingleModFile" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=645753225]
+layout_mode = 2
+
+[node name="SingleModFileInput" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SingleModFile" unique_id=574240037]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Path to .pak file or mod folder..."
+
+[node name="ChooseModPak" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SingleModFile" unique_id=947000851]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 2
+tooltip_text = "Choose a mod being stored as a .pak file."
+text = "🗜"
+script = ExtResource("3_sjcc7")
+
+[node name="ChooseModFolder" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SingleModFile" unique_id=967068195]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 2
+tooltip_text = "Choose a mod being stored as a directory (you probably don't want this)."
+text = "📂"
+script = ExtResource("3_sjcc7")
+
+[node name="Workshop" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=1755945794]
+layout_mode = 2
+
+[node name="WorkshopURLOrIDInput" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/Workshop" unique_id=1701370491]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Input Steam Workshop ID or link..."
+
+[node name="SBMMList" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=45857800]
+layout_mode = 2
+
+[node name="SBMMListInput" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SBMMList" unique_id=665011648]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Path to .sbmm file..."
+
+[node name="ChooseSBMMFile" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SBMMList" unique_id=204479591]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 2
+text = "📂"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1952991835]
+layout_mode = 2
+
+[node name="OKButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=602063553]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Import"
+script = ExtResource("3_sjcc7")
+
+[node name="CancelButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=571414361]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel"
+script = ExtResource("3_sjcc7")

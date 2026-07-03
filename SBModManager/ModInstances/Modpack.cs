@@ -62,7 +62,7 @@ namespace SBModManager.ModInstances {
 		/// <summary>
 		/// The mods that are part of this pack, then their state (enabled or disabled).
 		/// </summary>
-		public Dictionary<ModSource, bool> ModSources { get; } = [];
+		public SortedDictionary<ModSource, bool> ModSources { get; } = [];
 
 		/// <summary>
 		/// Create a new, blank modpack.
@@ -88,7 +88,7 @@ namespace SBModManager.ModInstances {
 				return null;
 			}
 
-			GDDictionary data = (GDDictionary)Json.ParseString(File.ReadAllText(packJson));
+			GDDictionary data = (GDDictionary)StarboundJsonSanitizer.ParseString(File.ReadAllText(packJson));
 			Modpack pack = new Modpack(id) {
 				Name = data.GetValueAsStringOrDefault("name", "No name"),
 				Creator = data.GetValueAsStringOrDefault("creator", ""),
@@ -139,7 +139,13 @@ namespace SBModManager.ModInstances {
 			return pack;
 		}
 
-		public async Task SaveAndUpdateInitAsync(CancellationToken cancellationToken) {
+		/// <summary>
+		/// Asynchronously updates and saves <c>sbinit.config</c>. For convenience, the path to the file is 
+		/// returned so that the game can be launched.
+		/// </summary>
+		/// <param name="cancellationToken">A <see cref="CancellationToken"/> which can be used to terminate the launch.</param>
+		/// <returns></returns>
+		public async Task<string> SaveAndUpdateInitAsync(CancellationToken cancellationToken) {
 			GDDictionary data = [];
 			data["name"] = Name;
 			data["creator"] = Creator;
@@ -162,6 +168,7 @@ namespace SBModManager.ModInstances {
 
 			GDDictionary sbInit = await MakeSBInitAsync(cancellationToken).ConfigureAwait(false);
 			File.WriteAllText(sbInitJson, Json.Stringify(sbInit));
+			return sbInitJson;
 		}
 
 		public void Delete() {
@@ -211,7 +218,7 @@ namespace SBModManager.ModInstances {
 					return ImageTexture.CreateFromImage(result);
 				}
 			} catch (FileNotFoundException) { }
-			return Core.GetStarboundIcon();
+			return Assets.DefaultStarboundIcon;
 		}
 
 		/// <summary>
@@ -254,7 +261,7 @@ namespace SBModManager.ModInstances {
 		/// <exception cref="OperationCanceledException"></exception>
 		private async Task<GDDictionary> MakeSBInitAsync(CancellationToken cancellationToken) {
 			GDArray assetDirectories = [];
-			assetDirectories.Add(Path2.Combine(Directories.GetPrivateStarboundInstallDirectory(), "assets"));
+			assetDirectories.Add(Path2.Combine(Directories.GetLocalStarboundInstallDirectory(), "assets"));
 			assetDirectories.Add(Directories.GetExtraAssetsDirectory(ID));
 
 			// This might prevent a lot of downloading.
@@ -278,12 +285,6 @@ namespace SBModManager.ModInstances {
 			sbInit["includeUGC"] = false;
 
 			return sbInit;
-		}
-
-
-		public void Launch() {
-			CancellationTokenSource canceller = new CancellationTokenSource();
-
 		}
 	}
 }

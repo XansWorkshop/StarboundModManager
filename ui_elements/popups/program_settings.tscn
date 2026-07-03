@@ -1,0 +1,250 @@
+[gd_scene format=3 uid="uid://dii41rl1tytuv"]
+
+[ext_resource type="Script" uid="uid://b0hrrunhp410w" path="res://SBModManager/Menus/Windows/ProgramSettingsWindow.cs" id="1_8qtix"]
+[ext_resource type="Script" uid="uid://vfb01c624vvb" path="res://SBModManager/GUI/RichTooltipElements/TooltipLabel.cs" id="2_jiimp"]
+[ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="3_8qtix"]
+
+[node name="ProgramSettings" type="Window" unique_id=939907019]
+oversampling_override = 1.0
+title = "SBMM Settings"
+initial_position = 2
+size = Vector2i(1000, 252)
+unresizable = true
+sharp_corners = true
+minimize_disabled = true
+maximize_disabled = true
+content_scale_aspect = 1
+script = ExtResource("1_8qtix")
+
+[node name="SteamCMDFileDialog" type="FileDialog" parent="." unique_id=1701175138]
+unique_name_in_owner = true
+title = "Open a File"
+initial_position = 2
+size = Vector2i(800, 400)
+ok_button_text = "Select"
+file_mode = 0
+display_mode = 1
+access = 2
+filters = PackedStringArray("steamcmd.*")
+use_native_dialog = true
+
+[node name="StarboundFileDialog" type="FileDialog" parent="." unique_id=1096174430]
+unique_name_in_owner = true
+title = "Open a Directory"
+initial_position = 2
+size = Vector2i(800, 400)
+ok_button_text = "Select"
+file_mode = 2
+display_mode = 1
+access = 2
+use_native_dialog = true
+
+[node name="OpenStarboundFileDialog" type="FileDialog" parent="." unique_id=320320322]
+unique_name_in_owner = true
+title = "Open a File"
+initial_position = 2
+size = Vector2i(800, 400)
+ok_button_text = "Select"
+file_mode = 0
+display_mode = 1
+access = 2
+filters = PackedStringArray("OpenStarbound*.zip")
+use_native_dialog = true
+
+[node name="Panel" type="Panel" parent="." unique_id=143099214]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=1980975647]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=2014518090]
+layout_mode = 2
+
+[node name="TipCursor" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=1792516454]
+self_modulate = Color(1, 1, 1, 0.7529412)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
+bbcode_enabled = true
+text = "[i]Hover your cursor over an option's name to view information.[/i]"
+fit_content = true
+
+[node name="ColumnatedEntries" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=66019466]
+layout_mode = 2
+
+[node name="Names" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries" unique_id=1289704878]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="SteamCMDLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=770685637]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+tooltip_text = "[color=#afa]SteamCMD[/color] allows SBMM to install mods from the Steam Workshop, even if you don't have access to the game.
+
+You don't need this to use SBMM, but if you want to share modpacks, you won't be able to install Workshop mods without it."
+mouse_filter = 0
+mouse_default_cursor_shape = 16
+text = "SteamCMD Location"
+vertical_alignment = 1
+script = ExtResource("2_jiimp")
+
+[node name="DummySpacerForSteamCMD" type="Control" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=1132306644]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+
+[node name="StarboundInstallLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=1565741806]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+tooltip_text = "The location of your Starbound folder. This is used to acquire [b]packed.pak[/b] and [b]tiled[/b] which are required by the game."
+mouse_filter = 0
+mouse_default_cursor_shape = 16
+text = "Starbound Location"
+vertical_alignment = 1
+script = ExtResource("2_jiimp")
+
+[node name="OpenStarboundInstallLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=1753600831]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+tooltip_text = "The location of the .zip file containing OpenStarbound. This is used to extract the actual playable game."
+mouse_filter = 0
+mouse_default_cursor_shape = 16
+text = "OpenStarbound Download Location"
+vertical_alignment = 1
+script = ExtResource("2_jiimp")
+
+[node name="PruneCatalog" type="Control" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=666610516]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+tooltip_text = "The location of the .zip file containing OpenStarbound. This is used to extract the actual playable game."
+mouse_default_cursor_shape = 16
+
+[node name="Entries" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries" unique_id=1664576331]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SteamCMDLocation" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=645753225]
+layout_mode = 2
+
+[node name="SteamCMDLocationInput" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SteamCMDLocation" unique_id=574240037]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Path to SteamCMD"
+
+[node name="SteamCMDFileDialogButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SteamCMDLocation" unique_id=947000851]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 2
+tooltip_text = "Pick a file from a menu."
+text = "📂"
+script = ExtResource("3_8qtix")
+
+[node name="SteamCMDNote" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=1337040939]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
+bbcode_enabled = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="StarboundLocation" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=1755945794]
+layout_mode = 2
+
+[node name="StarboundLocationInput" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/StarboundLocation" unique_id=1701370491]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Path to your Starbound folder (../steamapps/common/Starbound)"
+
+[node name="StarboundFileDialogButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/StarboundLocation" unique_id=972350432]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 2
+tooltip_text = "Pick a file from a menu."
+text = "📂"
+script = ExtResource("3_8qtix")
+
+[node name="OpenStarboundLocation" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=45857800]
+layout_mode = 2
+
+[node name="OpenStarboundLocationInput" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/OpenStarboundLocation" unique_id=665011648]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Path to the .zip file you downloaded for OpenStarbound"
+
+[node name="OpenStarboundDownload" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/OpenStarboundLocation" unique_id=1744631666]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(-1, 31)
+layout_mode = 2
+tooltip_text = "Open the page to download the latest version of OpenStarbound.
+
+Scroll to the bottom of the page, and find the .zip file for you. If you are on windows, you want [b]OpenStarbound-Windows-Client.zip[/b]"
+text = "Download"
+script = ExtResource("3_8qtix")
+
+[node name="OpenStarboundFileDialogButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/OpenStarboundLocation" unique_id=204479591]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 2
+text = "📂"
+
+[node name="PruneModCatalogButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries" unique_id=784141859]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Observes all current modpacks, and deletes any downloaded mods that aren't installed by any of your packs. Use this if you have recently deleted a large modpack and need to try to free up some disk space.
+
+Mods that are installed but disabled are still considered to be \"in use\", so they will not get deleted."
+text = "Prune Mod Catalog"
+script = ExtResource("3_8qtix")
+
+[node name="NoStarboundRequiredNotice" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=421200612]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 14
+theme_override_font_sizes/bold_font_size = 14
+theme_override_font_sizes/bold_italics_font_size = 14
+theme_override_font_sizes/italics_font_size = 14
+theme_override_font_sizes/mono_font_size = 14
+bbcode_enabled = true
+text = "[color=#7ff][b]Notice:[/b] A Starbound installation has already been created for SBMM - You do not need to fill out the two things up above.[/color]"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=462202287]
+layout_mode = 2
+
+[node name="OKButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1916669494]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OK"
+script = ExtResource("3_8qtix")

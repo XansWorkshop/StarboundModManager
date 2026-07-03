@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://bi8vb3vx4tanv"
+path="res://.godot/imported/loading.png-21549bc3c2c4ea502f2223a8bad3dfca.image"
+
+[deps]
+
+source_file="res://icons/loading.png"
+dest_files=["res://.godot/imported/loading.png-21549bc3c2c4ea502f2223a8bad3dfca.image"]
+
+[params]
+

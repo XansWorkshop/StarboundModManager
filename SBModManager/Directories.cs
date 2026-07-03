@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 using Godot;
 
 using SBModManager.ModInstances;
 using SBModManager.Other;
+using SBModManager.SteamInterop;
 
 namespace SBModManager {
 
@@ -14,6 +16,39 @@ namespace SBModManager {
 	/// Helper methods to get various directories for a modpack
 	/// </summary>
 	public static class Directories {
+
+		/// <summary>
+		/// Returns the location of the Starbound executable.
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">This is run on an unsupported operating system.</exception>
+		public static string GetLocalStarboundProgram() {
+			string baseDir = GetLocalStarboundInstallDirectory();
+			string os = OS.GetName();
+			if (os == "Windows") {
+				return Path2.Combine(baseDir, "win", "Starbound.exe");
+			} else if (os == "macOS") {
+				return Path2.Combine(baseDir, "osx", "Starbound.app");
+			} else if (os == "Linux") {
+				return Path2.Combine(baseDir, "linux", "starbound");
+			} else {
+				throw new InvalidOperationException($"Cannot get Starbond installation on OS: {os}");
+			}
+		}
+
+		/// <summary>
+		/// Returns the path to the executable program or script for SteamCMD
+		/// </summary>
+		/// <returns></returns>
+		public static string GetSteamCMDProgram() {
+			string baseDir = GetSteamCMDInstallationDirectory();
+			string os = OS.GetName();
+			if (os == "Windows") {
+				return Path2.Combine(baseDir, "steamcmd.exe");
+			} else {
+				return Path2.Combine(baseDir, "steamcmd.sh");
+			}
+		}
 
 		/// <summary>
 		/// Returns the location of the program's configuration file.
@@ -27,27 +62,8 @@ namespace SBModManager {
 		/// Returns the location of the launcher's install of Starbound.
 		/// </summary>
 		/// <returns></returns>
-		public static string GetPrivateStarboundInstallDirectory() {
+		public static string GetLocalStarboundInstallDirectory() {
 			return ProjectSettings.GlobalizePath("user://starbound");
-		}
-
-		/// <summary>
-		/// Returns the location of the Starbound executable.
-		/// </summary>
-		/// <returns></returns>
-		public static string GetPrivateStarboundProgram() {
-			string baseDir = GetPrivateStarboundInstallDirectory();
-			string os = OS.GetName();
-			if (os == "Windows") {
-				return Path2.Combine(baseDir, "win", "Starbound.exe");
-			} else if (os == "macOS") {
-				return Path2.Combine(baseDir, "osx", "Starbound.app");
-			} else if (os == "Linux") {
-				return Path2.Combine(baseDir, "linux", "starbound");
-			} else {
-				OS.Alert($"Cannot get Starbond installation on OS: {os}");
-				throw new InvalidOperationException($"Cannot get Starbond installation on OS: {os}");
-			}
 		}
 
 		/// <summary>
@@ -106,7 +122,7 @@ namespace SBModManager {
 		/// Returns the path to the SteamCMD installation that is automatically set up on Windows when the user requests it.
 		/// </summary>
 		/// <returns></returns>
-		public static string GetLocalSteamCMDInstallationDirectory() {
+		public static string GetSteamCMDInstallationDirectory() {
 			return ProjectSettings.GlobalizePath("user://steamcmd");
 		}
 
@@ -114,7 +130,7 @@ namespace SBModManager {
 		/// Returns the path to a folder used to store temporary files for scripts.
 		/// </summary>
 		/// <returns></returns>
-		public static string GetLocalSteamCMDTempScriptDirectory() {
+		public static string GetSteamCMDTempScriptDirectory() {
 			return ProjectSettings.GlobalizePath("user://steamcmd_tempscripts");
 		}
 
@@ -172,28 +188,23 @@ namespace SBModManager {
 		}
 
 		/// <summary>
-		/// Launches the game using the selected profile.
-		/// </summary>
-		/// <param name="profileName"></param>
-		public static void LaunchGame(Guid modpackID) {
-			string sbInit = GetPackSBInitFile(modpackID);
-		}
-
-		/// <summary>
 		/// Copies the <paramref name="source"/> directory to the <paramref name="target"/> location.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void CopyDirectory(string source, string target) {
+		public static void CopyDirectory(string source, string target, CancellationToken cancellationToken) {
+			cancellationToken.ThrowIfCancellationRequested();
 			if (source.Equals(target, StringComparison.OrdinalIgnoreCase)) {
 				return;
 			}
+
 			Directory.CreateDirectory(target);
 			foreach (string file in Directory.GetFiles(source)) {
+				cancellationToken.ThrowIfCancellationRequested();
 				File.Copy(file, Path2.Combine(target, Path.GetFileName(file)), true);
 			}
 			foreach (string subdirectory in Directory.GetDirectories(source)) {
-				CopyDirectory(subdirectory, Path2.Combine(target, Path.GetFileName(subdirectory)));
+				CopyDirectory(subdirectory, Path2.Combine(target, Path.GetFileName(subdirectory)), cancellationToken);
 			}
 		}
 	}
