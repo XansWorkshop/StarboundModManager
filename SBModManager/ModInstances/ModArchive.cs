@@ -31,9 +31,14 @@ namespace SBModManager.ModInstances {
 		public bool IsDirectory { get; }
 
 		/// <summary>
+		/// The name of the archive only.
+		/// </summary>
+		public string Name { get; }
+
+		/// <summary>
 		/// The absolute path to the archive.
 		/// </summary>
-		public string Path { get; }
+		public string AbsolutePath { get; }
 
 		/// <summary>
 		/// The metadata of this mod.
@@ -52,18 +57,22 @@ namespace SBModManager.ModInstances {
 
 		/// <summary>
 		/// Create a new <see cref="ModArchive"/> within the provided <see cref="ModSource"/> and with the provided archive or directory name.
+		/// <para/>
+		/// <strong>You probably shouldn't be creating this.</strong> When a <see cref="ModSource"/> is instantiated, it enumerates the directory,
+		/// and does not accept manually created archives.
 		/// </summary>
 		/// <param name="owner"></param>
 		/// <param name="path"></param>
 		public ModArchive(ModSource owner, string name) {
+			Name = name;
 			Owner = owner;
 			IsDisabledByForce = name.StartsWith('_');
-			Path = Path2.Combine(owner.Path, name);
-			IsDirectory = File.GetAttributes(Path).HasFlag(FileAttributes.Directory); // Let this throw.
+			AbsolutePath = Path2.Combine(owner.AbsolutePath, name);
+			IsDirectory = File.GetAttributes(AbsolutePath).HasFlag(FileAttributes.Directory); // Let this throw.
 			Metadata = new ModMetadata(this);
 
 			if (!IsDirectory) {
-				FileSizeBytes = new FileInfo(Path).Length;
+				FileSizeBytes = new FileInfo(AbsolutePath).Length;
 			} else {
 				static void GetDirectorySize(DirectoryInfo dir, ref long fileSizeBytes) {
 					foreach (FileInfo file in dir.GetFiles()) {
@@ -74,20 +83,30 @@ namespace SBModManager.ModInstances {
 					}
 				}
 				long fsb = 0;
-				GetDirectorySize(new DirectoryInfo(Path), ref fsb);
+				GetDirectorySize(new DirectoryInfo(AbsolutePath), ref fsb);
 				FileSizeBytes = fsb;
 			}
 		}
 
+		/// <summary>
+		/// Create a <see cref="ModArchive"/> as a <see cref="ModSource"/>.
+		/// <para/>
+		/// <strong>You probably shouldn't be creating this.</strong> When a <see cref="ModSource"/> is instantiated, it enumerates the directory,
+		/// and does not accept manually created archives.
+		/// </summary>
+		/// <param name="owner"></param>
+		/// <param name="fullPath"></param>
+		/// <param name="metadata"></param>
 		internal ModArchive(ModSource owner, string fullPath, ModMetadata metadata) {
+			Name = Path.GetFileName(fullPath);
 			Owner = owner;
-			IsDisabledByForce = System.IO.Path.GetFileName(fullPath)!.StartsWith('_');
-			Path = fullPath;
+			IsDisabledByForce = Name.StartsWith('_');
+			AbsolutePath = fullPath;
 			IsDirectory = File.GetAttributes(fullPath).HasFlag(FileAttributes.Directory);
 			Metadata = metadata;
 
 			if (!IsDirectory) {
-				FileSizeBytes = new FileInfo(Path).Length;
+				FileSizeBytes = new FileInfo(AbsolutePath).Length;
 			} else {
 				static void GetDirectorySize(DirectoryInfo dir, ref long fileSizeBytes) {
 					foreach (FileInfo file in dir.GetFiles()) {
@@ -98,7 +117,7 @@ namespace SBModManager.ModInstances {
 					}
 				}
 				long fsb = 0;
-				GetDirectorySize(new DirectoryInfo(Path), ref fsb);
+				GetDirectorySize(new DirectoryInfo(AbsolutePath), ref fsb);
 				FileSizeBytes = fsb;
 			}
 		}

@@ -57,7 +57,8 @@ namespace SBModManager.GUI {
 		/// The modpack that holds this mod.
 		/// </summary>
 		[AllowNull]
-		public Modpack Pack { get; private set;  }
+		public Modpack Pack { get; private set; }
+
 
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
@@ -65,8 +66,6 @@ namespace SBModManager.GUI {
 
 			EnableMod.Toggled += OnEnableModToggled;
 			UninstallModButton.Pressed += OnUninstallPressed;
-
-
 		}
 
 		private void OnEnableModToggled(bool toggledOn) {
@@ -100,7 +99,7 @@ namespace SBModManager.GUI {
 			UninstallModButton.Visible = mod.IsExclusive; // Flat out hide it.
 			EnableMod.SetPressedNoSignal(mod.Owner.IsEnabledIn(modpack) && !mod.IsDisabledByForce);
 			ModIcon.Texture = mod.Metadata.PreviewImage;
-			
+
 			if (mod.IsDisabledByForce) {
 				EnableMod.TooltipText = "This mod's archive name begins with an underscore.\nStarbound itself actually uses this to forcibly skip loading a mod.";
 				Modulate = new Color(1, 1, 1, 0.5f);

@@ -25,18 +25,20 @@ namespace SBModManager.ModInstances {
 		/// <summary>
 		/// The name of this modpack, in a user-friendly format. Cannot be null or whitespace.
 		/// </summary>
-		public required string Name {
+		public string Name {
 			get;
 			set {
+				value = value ?? throw new ArgumentNullException(nameof(Name));
+				value = value.Trim();
 				if (string.IsNullOrWhiteSpace(value)) value = "No Name";
-				field = value?.Trim() ?? throw new ArgumentNullException(nameof(Name));
+				field = value;
 			}
 		} = "No Name";
 
 		/// <summary>
 		/// The person or entity who created this modpack. Cannot be null.
 		/// </summary>
-		public required string Creator {
+		public string Creator {
 			get;
 			set => field = value?.Trim() ?? throw new ArgumentNullException(nameof(Creator));
 		} = "";
@@ -67,7 +69,6 @@ namespace SBModManager.ModInstances {
 		/// <summary>
 		/// Create a new, blank modpack.
 		/// </summary>
-		[SetsRequiredMembers]
 		public Modpack() {
 			ID = Guid.NewGuid();
 		}
@@ -96,7 +97,7 @@ namespace SBModManager.ModInstances {
 			};
 
 			GDArray modSources = (GDArray)data["mod_sources"];
-			HashSet<ulong> alreadyGotWorkshop = [];
+			HashSet<long> alreadyGotWorkshop = [];
 			HashSet<string> alreadyGotNamed = [];
 			foreach (Variant innerArrayVar in modSources) {
 				GDArray innerArray = innerArrayVar.As<GDArray>();
@@ -106,7 +107,7 @@ namespace SBModManager.ModInstances {
 				bool isEnabled = (flags & 1) != 0;
 
 				if (isWorkshop) {
-					if (ulong.TryParse(key, out ulong workshopID)) {
+					if (long.TryParse(key, out long workshopID)) {
 						if (!alreadyGotWorkshop.Add(workshopID)) {
 							GD.PushError($"Workshop mod {workshopID} has already been added to this pack, but its mod_sources lookup included it more than once.");
 							continue;
@@ -223,7 +224,7 @@ namespace SBModManager.ModInstances {
 		}
 
 		/// <summary>
-		/// Sets the modpack icon based on an image file.
+		/// Sets the modpack icon based on an image file. This just writes the file to disk.
 		/// </summary>
 		/// <param name="imageFile"></param>
 		public Texture2D? TrySetIcon(string imageFile) {
@@ -269,13 +270,13 @@ namespace SBModManager.ModInstances {
 			SteamTools.CopyAllCurrentSubscriptionsToCache(true, cancellationToken);
 			cancellationToken.ThrowIfCancellationRequested();
 
-			ulong[] workshopMods = ModSources.Keys.Select(src => src.WorkshopID).Where(id => id != 0).ToArray();
+			long[] workshopMods = ModSources.Keys.Select(src => src.WorkshopID).Where(id => id != 0).ToArray();
 			await SteamTools.DownloadWorkshopModsAsync(workshopMods, true, cancellationToken);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			foreach (KeyValuePair<ModSource, bool> binding in ModSources) {
 				if (!binding.Value) continue;
-				assetDirectories.Add(binding.Key.Path);
+				assetDirectories.Add(binding.Key.AbsolutePath);
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 

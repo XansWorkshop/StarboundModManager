@@ -77,7 +77,7 @@ namespace SBModManager.ModInstances {
 		/// <summary>
 		/// Corresponds to the "steamContentId" field.
 		/// </summary>
-		public ulong WorkshopID { get; }
+		public long WorkshopID { get; }
 
 		/// <summary>
 		/// Corresponds to the "tags" field.
@@ -110,10 +110,10 @@ namespace SBModManager.ModInstances {
 		/// </summary>
 		/// <param name="modArchive">The archive that this belongs to.</param>
 		/// <param name="fallbackWorkshopID">To be used by multi-mod sources from the Workshop.</param>
-		public ModMetadata(ModArchive modArchive, ulong fallbackWorkshopID = 0) {
-			GDDictionary? dictionary = MetadataReader.ReadMetadataFromDisk(modArchive.Path);
+		public ModMetadata(ModArchive modArchive, long fallbackWorkshopID = 0) {
+			GDDictionary? dictionary = MetadataReader.ReadMetadataFromDisk(modArchive.AbsolutePath);
 
-			ModID = Path.GetFileName(modArchive.Path);
+			ModID = Path.GetFileName(modArchive.AbsolutePath);
 			FriendlyName = ModID;
 			Description = string.Empty;
 			Author = string.Empty;
@@ -147,7 +147,7 @@ namespace SBModManager.ModInstances {
 		/// Create a <see cref="ModMetadata"/> directly from a dictionary loaded from <see cref="MetadataReader"/>
 		/// </summary>
 		/// <param name="json"></param>
-		public ModMetadata(GDDictionary json, ulong fallbackWorkshopID) {
+		public ModMetadata(GDDictionary json, long fallbackWorkshopID) {
 			ArgumentNullException.ThrowIfNull(json);
 			ModID = json.GetValueAsStringOrDefault("name", string.Empty);
 			FriendlyName = json.GetValueAsStringOrDefault("friendlyName", ModID);
@@ -185,14 +185,14 @@ namespace SBModManager.ModInstances {
 			return [];
 		}
 
-		private static ulong ReadWorkshopIDSpecial(GDDictionary dictionary, string key, ulong @default) {
+		private static long ReadWorkshopIDSpecial(GDDictionary dictionary, string key, long @default) {
 			if (dictionary.TryGetValue(key, out Variant value)) {
 				if (value.VariantType == Variant.Type.String || value.VariantType == Variant.Type.StringName) {
-					if (ulong.TryParse((string)value, out ulong integerValue)) {
+					if (long.TryParse((string)value, out long integerValue)) {
 						return integerValue;
 					}
 				} else if (value.VariantType == Variant.Type.Int) {
-					return (ulong)value;
+					return (long)value;
 				}
 			}
 			return @default;

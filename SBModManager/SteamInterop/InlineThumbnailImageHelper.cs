@@ -35,7 +35,7 @@ namespace SBModManager.SteamInterop {
 		/// <summary>
 		/// Used to prevent a comical amount of downloads from occurring at once. Prevents you from getting blocked by Steam.
 		/// </summary>
-		private static readonly Semaphore RATE_LIMITER = new Semaphore(4, 4);
+		private static readonly Semaphore RATE_LIMITER = new Semaphore(16, 16);
 
 		/// <summary>
 		/// Replace all image tags with a valid Godot resource on the fly. This may have a serious performance impact.
@@ -51,6 +51,20 @@ namespace SBModManager.SteamInterop {
 				string res = EnqueueImageDownloadIfNeeded(url);
 				return $"[img]{res}[/img]";
 			});
+		}
+
+		/// <summary>
+		/// Disposes of all known textures so that they don't consume memory.
+		/// </summary>
+		public static void Purge() {
+			KeyValuePair<string, Task<Texture2D>>[] loaders = IMAGE_ACQUISITIONS.ToArray();
+			foreach (KeyValuePair<string, Task<Texture2D>> loader in loaders) {
+				if (loader.Value.IsCompleted) {
+					Texture2D result = loader.Value.Result;
+					result.Dispose();
+					IMAGE_ACQUISITIONS.Remove(loader.Key, out _);
+				}
+			}
 		}
 
 		/// <summary>
@@ -73,17 +87,23 @@ namespace SBModManager.SteamInterop {
 		/// <param name="md5"></param>
 		/// <returns></returns>
 		private static async Task<Texture2D> DownloadImageIntoTexture2DImpl(string url, string md5) {
+
+			// FIXME:
+			// The current implementation bogs down the task scheduler and grinds most of the downloads to a halt.
+			// In The Conservatory (my game, where most of the threading code from here comes from) this is solved
+			// with LimitedConcurrencyTaskScheduler.
+
 			Image actualImage = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
 			actualImage.SetPixel(0, 0, Colors.Magenta);
 
 			string path = $"res://workshop_image_cache/{md5}";
 			ImageTexture result = ImageTexture.CreateFromImage(Assets.PlaceholderWorkshopImageLoading);
 			result.TakeOverPath(path);
+			
 
 			string imgCache = Directories.GetSteamImageCacheDirectory();
 			Directory.CreateDirectory(imgCache);
 
-			await Task.Yield();
 			RATE_LIMITER.WaitOne();
 			try {
 				byte[]? buffer = null;
@@ -142,7 +162,7 @@ namespace SBModManager.SteamInterop {
 
 				result.SetImage(actualImage);
 				actualImage.SavePng(Path2.Combine(imgCache, $"{md5}.png"));
-				await Task.Delay(1000).ConfigureAwait(false);
+				await Task.Delay(100).ConfigureAwait(false);
 				return result;
 			} catch {
 				result.Dispose();

@@ -156,9 +156,9 @@ namespace SBModManager.Menus {
 				GD.PushError("Failed to import from Workshop because the dialog is open but no modpack is being edited.");
 				return;
 			}
-			ulong[] workshopIDs = SteamTools.CopyAllCurrentSubscriptionsToCache(true, default);
-			HashSet<ulong> alreadyUsedIDs = EditingModpack.ModSources.Keys.Select(key => key.WorkshopID).Where(key => key != 0).ToHashSet();
-			foreach (ulong id in workshopIDs) {
+			long[] workshopIDs = SteamTools.CopyAllCurrentSubscriptionsToCache(true, default);
+			HashSet<long> alreadyUsedIDs = EditingModpack.ModSources.Keys.Select(key => key.WorkshopID).Where(key => key != 0).ToHashSet();
+			foreach (long id in workshopIDs) {
 				if (!alreadyUsedIDs.Add(id)) continue;
 				EditingModpack.ModSources[new ModSource(id)] = true;
 			}

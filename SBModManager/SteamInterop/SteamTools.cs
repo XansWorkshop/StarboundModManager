@@ -69,7 +69,7 @@ namespace SBModManager.SteamInterop {
 		/// <returns></returns>
 		/// <exception cref="InvalidOperationException"></exception>
 		/// <exception cref="OperationCanceledException"></exception>
-		public static async Task DownloadWorkshopModsAsync(ulong[] ids, bool skipIfInstalled, CancellationToken cancellationToken) {
+		public static async Task DownloadWorkshopModsAsync(long[] ids, bool skipIfInstalled, CancellationToken cancellationToken) {
 			if (ids.Length == 0) return;
 
 			string workshopDir = Directories.GetLocalWorkshopCacheDirectory();
@@ -122,8 +122,8 @@ namespace SBModManager.SteamInterop {
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="OperationCanceledException"></exception>
-		public static ulong[] CopyAllCurrentSubscriptionsToCache(bool skipDuplicates, CancellationToken cancellationToken) {
-			List<ulong> installed = [];
+		public static long[] CopyAllCurrentSubscriptionsToCache(bool skipDuplicates, CancellationToken cancellationToken) {
+			List<long> installed = [];
 
 			string? sbPath = GetSteamappsContainingStarbound();
 			string workshopCacheDir = Directories.GetLocalWorkshopCacheDirectory();
@@ -136,7 +136,7 @@ namespace SBModManager.SteamInterop {
 					string workshopSubdirectory = subdirectories[i];
 					string? name = Path.GetFileName(workshopSubdirectory);
 
-					if (name != null && ulong.TryParse(name, out ulong workshopID)) {
+					if (name != null && long.TryParse(name, out long workshopID)) {
 						string destination = Path2.Combine(workshopCacheDir, workshopID.ToString());
 						if (Directory.Exists(destination)) {
 							if (skipDuplicates) {

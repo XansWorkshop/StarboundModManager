@@ -37,12 +37,12 @@ namespace SBModManager.ModInstances {
 		/// <summary>
 		/// The workshop ID of this mod, or 0 if it is not a workshop mod.
 		/// </summary>
-		public ulong WorkshopID { get; }
+		public long WorkshopID { get; }
 
 		/// <summary>
-		/// The path to this mod source.
+		/// The absolute directory path to this mod source.
 		/// </summary>
-		public string Path { get; }
+		public string AbsolutePath { get; }
 
 		/// <summary>
 		/// The persistent name of this source is what gets saved in the mod_sources dictionary of a pack.
@@ -53,13 +53,13 @@ namespace SBModManager.ModInstances {
 		/// Create a mod source from a workshop mod. This loads from the workshop catalog.
 		/// </summary>
 		/// <param name="workshopID"></param>
-		public ModSource(ulong workshopID) {
-			Path = Path2.Combine(Directories.GetLocalWorkshopCacheDirectory(), workshopID.ToString());
-			if (!Directory.Exists(Path)) throw new DirectoryNotFoundException($"No directory exists at {Path}");
+		public ModSource(long workshopID) {
+			AbsolutePath = Path2.Combine(Directories.GetLocalWorkshopCacheDirectory(), workshopID.ToString());
+			if (!Directory.Exists(AbsolutePath)) throw new DirectoryNotFoundException($"No directory exists at {AbsolutePath}");
 
 			IsWorkshopMod = true;
 			WorkshopID = workshopID;
-			Mods = CreateModList(Path, workshopID);
+			Mods = CreateModList(AbsolutePath, workshopID);
 			PersistentName = workshopID.ToString();
 		}
 
@@ -68,14 +68,14 @@ namespace SBModManager.ModInstances {
 		/// </summary>
 		/// <param name="name"></param>
 		public ModSource(string name) {
-			if (name.ContainsAny(System.IO.Path.GetInvalidFileNameChars())) throw new InvalidOperationException("The provided name is not a valid file name.");
+			if (name.ContainsAny(Path.GetInvalidFileNameChars())) throw new InvalidOperationException("The provided name is not a valid file name.");
 
-			Path = Path2.Combine(Directories.GetLocalManualModCacheDirectory(), name);
-			if (!Directory.Exists(Path)) throw new DirectoryNotFoundException($"No directory exists at {Path}");
+			AbsolutePath = Path2.Combine(Directories.GetLocalManualModCacheDirectory(), name);
+			if (!Directory.Exists(AbsolutePath)) throw new DirectoryNotFoundException($"No directory exists at {AbsolutePath}");
 
 			IsWorkshopMod = false;
 			WorkshopID = 0;
-			Mods = CreateModList(Path, 0);
+			Mods = CreateModList(AbsolutePath, 0);
 			PersistentName = name;
 		}
 
@@ -91,22 +91,23 @@ namespace SBModManager.ModInstances {
 			return false;
 		}
 
-		private ImmutableArray<ModArchive> CreateModList(string path, ulong workshopID) {
+		private ImmutableArray<ModArchive> CreateModList(string path, long workshopID) {
 			List<ModArchive> result = [];
 			foreach (string file in Directory.GetFiles(path)) {
 				GDDictionary? data = MetadataReader.GetMetadataFromPak(new FileInfo(file), out bool hadMalformedHeader);
 				if (hadMalformedHeader) continue;
 				if (data == null) continue;
 				if (!data.ContainsKey("name")) {
-					data["name"] = System.IO.Path.GetFileNameWithoutExtension(file);
+					data["name"] = Path.GetFileNameWithoutExtension(file);
 				}
+				
 				result.Add(new ModArchive(this, file, new ModMetadata(data, workshopID)));
 			}
 			foreach (string directory in Directory.GetDirectories(path)) {
 				GDDictionary? data = MetadataReader.GetMetadataFromDirectory(new DirectoryInfo(directory));
 				if (data == null) continue;
 				if (!data.ContainsKey("name")) {
-					data["name"] = System.IO.Path.GetFileNameWithoutExtension(directory);
+					data["name"] = Path.GetFileNameWithoutExtension(directory);
 				}
 				result.Add(new ModArchive(this, directory, new ModMetadata(data, workshopID)));
 			}
@@ -116,13 +117,13 @@ namespace SBModManager.ModInstances {
 		/// <inheritdoc/>
 		public bool Equals(ModSource? other) {
 			if (other is null) return false;
-			return Path == other.Path;
+			return AbsolutePath == other.AbsolutePath;
 		}
 
 		/// <inheritdoc/>
 		public override bool Equals(object? obj) => Equals(obj as ModSource);
 
-		public override int GetHashCode() => Path.GetHashCode();
+		public override int GetHashCode() => AbsolutePath.GetHashCode();
 
 		public static bool operator ==(ModSource? left, ModSource? right) {
 			if (left is null && right is null) return true;

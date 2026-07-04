@@ -20,9 +20,10 @@ namespace SBModManager {
 		/// </summary>
 		/// <param name="modpack">The modpack to launch.</param>
 		/// <param name="progressWindow">The progress of the launch. This is an exclusive window, so it doubles as a means to lock out the UI as well.</param>
+		/// <param name="completeWhenStarboundCloses">If true, the task completes when Starbound closes. Otherwise, it completes once it launches.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken"/> used to terminate launching or exit the game.</param>
 		/// <returns></returns>
-		public static async Task LaunchAsync(Modpack modpack, GeneralProgressWindow progressWindow, CancellationToken cancellationToken) {
+		public static async Task LaunchAsync(Modpack modpack, GeneralProgressWindow progressWindow, bool completeWhenStarboundCloses, CancellationToken cancellationToken) {
 			ArgumentNullException.ThrowIfNull(modpack);
 			ArgumentNullException.ThrowIfNull(progressWindow);
 			if (!cancellationToken.CanBeCanceled) throw new ArgumentException("The CancellationToken must be valid.");
@@ -43,11 +44,12 @@ namespace SBModManager {
 			};
 			starbound.Start();
 
-			progressWindow.SetStatus("Starbound is running.");
-			progressWindow.CancelButton.Text = "Force Quit Starbound";
-
 			try {
-				await starbound.WaitForExitAsync(cancellationToken);
+				if (completeWhenStarboundCloses) {
+					progressWindow.SetStatus("Starbound is now running.\nIn order to use the mod manager,\nyou must exit the game.", "Starbound Is Running!");
+					progressWindow.CancelButton.SetDeferred("text", "Force Quit Starbound");
+					await starbound.WaitForExitAsync(cancellationToken);
+				}
 			} catch (OperationCanceledException) {
 				starbound.Kill();
 			}

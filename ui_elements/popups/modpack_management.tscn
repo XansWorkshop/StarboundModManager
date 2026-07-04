@@ -36,13 +36,12 @@ grow_vertical = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 1
+current_tab = 0
 tab_0/title = "Edit Modpack Details"
 tab_1/title = "View Mod List"
 
 [node name="EditModpackDetails" type="MarginContainer" parent="VBoxContainer/Tabs" unique_id=1980975647]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
@@ -126,6 +125,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Enter a custom description here, if you want to..."
+wrap_mode = 1
 
 [node name="ModpackIcon" type="TextureRect" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer" unique_id=2018210441]
 unique_name_in_owner = true
@@ -168,6 +168,7 @@ use_native_dialog = true
 
 [node name="ViewModList" type="MarginContainer" parent="VBoxContainer/Tabs" unique_id=848081395]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8

@@ -11,6 +11,7 @@ using Godot;
 
 using SBModManager.Attributes;
 using SBModManager.GUI;
+using SBModManager.IO;
 using SBModManager.Menus;
 using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
@@ -87,6 +88,12 @@ namespace SBModManager {
 		public RichTextLabel Status { get; }
 
 		/// <summary>
+		/// A label shown before loading is done to tell people that not all the modpacks are there.
+		/// </summary>
+		[Import, AllowNull]
+		public Label StillLoadingLabel { get; }
+
+		/// <summary>
 		/// Every current modpack that is known.
 		/// </summary>
 		internal List<Modpack> CurrentModpacks { get; } = [];
@@ -94,6 +101,8 @@ namespace SBModManager {
 		private ModpackEntryElement? _currentSelectedEntryButton;
 		private Modpack? _currentSelectedModpack;
 		private Task? _starbound;
+
+		private List<Guid> _pendingPacksToLoad = [];
 
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
@@ -116,11 +125,14 @@ namespace SBModManager {
 			foreach (string subdirectory in Directory.GetDirectories(modpacks)) {
 				string nameOnly = Path.GetFileName(subdirectory);
 				if (Guid.TryParse(nameOnly, out Guid modpackID)) {
+					_pendingPacksToLoad.Add(modpackID);
+					/*
 					Modpack? modpack = Modpack.LoadFromDisk(modpackID);
 					if (modpack != null) {
 						CurrentModpacks.Add(modpack);
 						CreateButtonForModpack(modpack);
 					}
+					*/
 				}
 			}
 
@@ -134,6 +146,33 @@ namespace SBModManager {
 								_starbound = null;
 								ShowButtons();
 							}, TaskScheduler.FromCurrentSynchronizationContext());
+			}
+		}
+
+		public override void _Process(double delta) {
+			int count = _pendingPacksToLoad.Count;
+			if (count > 0) {
+				Guid modpackID = _pendingPacksToLoad[^1];
+				_pendingPacksToLoad.RemoveAt(count - 1);
+				Modpack? modpack = Modpack.LoadFromDisk(modpackID);
+				if (modpack != null) {
+					CurrentModpacks.Add(modpack);
+					CreateButtonForModpack(modpack);
+					ModpacksList.MoveChild(StillLoadingLabel, ModpacksList.GetChildCount());
+				}
+			} else {
+				StillLoadingLabel.Visible = false;
+				SetProcess(false);
+			}
+		}
+
+		public override void _UnhandledKeyInput(InputEvent @event) {
+			if (@event is InputEventKey key && @event.IsPressed()) {
+				if (key.Keycode == Key.Pageup) {
+					MovingRichTextLabel.MostRecentTooltip?.ScrollUp();
+				} else if (key.Keycode == Key.Pagedown) {
+					MovingRichTextLabel.MostRecentTooltip?.ScrollDown();
+				}
 			}
 		}
 
@@ -169,16 +208,6 @@ namespace SBModManager {
 				}, TaskScheduler.FromCurrentSynchronizationContext());
 			} catch (Exception exc) {
 				OS.Alert(exc.Message, "Failed to import modpack!");
-			}
-		}
-
-		public override void _UnhandledKeyInput(InputEvent @event) {
-			if (@event is InputEventKey key && @event.IsPressed()) {
-				if (key.Keycode == Key.Pageup) {
-					MovingRichTextLabel.MostRecentTooltip?.ScrollUp();
-				} else if (key.Keycode == Key.Pagedown) {
-					MovingRichTextLabel.MostRecentTooltip?.ScrollDown();
-				}
 			}
 		}
 
@@ -255,12 +284,6 @@ namespace SBModManager {
 			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
-		/*
-		private void OnConfigButtonPressed() {
-			ProgramSettings.Show();
-		}
-		*/
-
 		#region Helpers
 
 		private void Launch(Modpack modpack, ModpackEntryElement clicked) {
@@ -268,7 +291,7 @@ namespace SBModManager {
 			CancellationTokenSource cts = new CancellationTokenSource();
 			HideButtons();
 			AddChild(progress);
-			_starbound = progress.ShowWithCancellation(() => Launcher.LaunchAsync(modpack, progress, cts.Token), cts, true)
+			_starbound = progress.ShowWithCancellation(() => Launcher.LaunchAsync(modpack, progress, false, cts.Token), cts, true)
 						.ContinueWith(delegate {
 							_starbound = null;
 							ShowButtons();

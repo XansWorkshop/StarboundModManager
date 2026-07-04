@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://crmsvkhu31qrh"]
+
+[node name="PutThatDownItsAPrototype" type="AcceptDialog" unique_id=1920998751]
+oversampling_override = 1.0
+title = "Hold on just a moment!"
+initial_position = 2
+size = Vector2i(542, 300)
+visible = true
+ok_button_text = "Got it"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=781762072]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(526, 0)
+custom_maximum_size = Vector2(526, -1)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "Thanks for trying out Starbound Mod Manager!
+Before you begin, remember: [b]This is a beta test.[/b]
+
+It's going to run kind of poorly. It's going to look like garbage. Your mod lists might get messed up and things might randomly uninstall.
+
+If you run into any problems, or even just have a little bit of a gripe, tell me! There's a link at the bottom where you can submit bugs and feature requests."
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 
 using SBModManager.Attributes;
+using SBModManager.IO;
 using SBModManager.ModInstances;
 
 using SBModManager.Other;
@@ -149,6 +150,8 @@ namespace SBModManager.Menus.Windows {
 			ImportModFileDialog.Hide();
 			ImportModFolderDialog.Hide();
 
+			_importTask?.Wait();
+			_importTask = null;
 			Hide();
 		}
 
@@ -288,10 +291,10 @@ namespace SBModManager.Menus.Windows {
 			progress.SetProgress(float.NaN);
 			AddChild(progress);
 			progress.ShowWithCancellation(async delegate {
-				if (!ulong.TryParse(workshopURLOrID, out ulong id)) {
+				if (!long.TryParse(workshopURLOrID, out long id)) {
 					if (Uri.TryCreate(workshopURLOrID, default, out Uri? resultUri)) {
 						// https://steamcommunity.com/sharedfiles/filedetails/?id=00000000000
-						if (!ulong.TryParse(HttpUtility.ParseQueryString(resultUri.Query).Get("id"), out id)) {
+						if (!long.TryParse(HttpUtility.ParseQueryString(resultUri.Query).Get("id"), out id)) {
 							OS.Alert($"Failed to find id parameter in URL {workshopURLOrID}.", "Import failed!");
 						}
 					} else {
@@ -346,6 +349,7 @@ namespace SBModManager.Menus.Windows {
 				if (isDirectory) {
 					Directories.CopyDirectory(pakOrFolderPath, destination, CancellationToken.None);
 				} else {
+					Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
 					File.Copy(pakOrFolderPath, destination);
 				}
 				EditingModpack.ModSources.TryAdd(new ModSource(name), true);

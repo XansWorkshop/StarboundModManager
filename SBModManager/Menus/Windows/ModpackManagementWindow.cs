@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 using SBModManager.Attributes;
 using SBModManager.GUI;
+using SBModManager.IO;
 using SBModManager.Menus;
 using SBModManager.ModInstances;
+using SBModManager.SteamInterop;
 
 namespace SBModManager.Menus.Windows {
 
@@ -120,6 +123,7 @@ namespace SBModManager.Menus.Windows {
 			if (CurrentModpack != null) {
 				Core.Instance.RefreshModpackDisplay(CurrentModpack);
 			}
+			InlineThumbnailImageHelper.Purge();
 			Hide();
 		}
 
