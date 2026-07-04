@@ -87,7 +87,7 @@ namespace SBModManager.GUI {
 			} else if (hasDescription) {
 				ModpackIcon.TooltipText = $"{pack.Name}\nLast played: {lastPlayed}\n\n{pack.Description}";
 			} else {
-				ModpackIcon.TooltipText = pack.Name;
+				ModpackIcon.TooltipText = pack.Name + $"\nLast played: {lastPlayed}";
 			}
 			ModpackName.TooltipText = ModpackIcon.TooltipText;
 		}
