@@ -19,7 +19,7 @@ config/custom_user_dir_name="Xan's Workshop/StarboundModManager"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 boot_splash/show_image=false
 boot_splash/use_filter=false
-config/icon="res://icon.svg"
+config/icon="uid://1vkt0comhivi"
 
 [debug]
 
