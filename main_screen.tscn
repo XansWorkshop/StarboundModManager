@@ -82,7 +82,7 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Duplicate the selected modpack.
 
-Settings, characters, and unvierses are not copied. Only the mods and the pack's information gets copied."
+Settings, characters, and universes are not copied. Only the mods and the pack's information gets copied."
 texture_normal = ExtResource("5_7sxnj")
 ignore_texture_size = true
 stretch_mode = 0
