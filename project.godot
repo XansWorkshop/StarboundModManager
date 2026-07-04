@@ -12,6 +12,7 @@ config_version=5
 
 config/name="Starbound Mod Manager"
 config/description="A tool which basically does glorified directory management for Starbound."
+config/version="0.1.0-beta"
 run/main_scene="uid://ehcuhykhn26h"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Xan's Workshop/StarboundModManager"
@@ -48,3 +49,4 @@ timers/tooltip_delay_sec=0.0
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+textures/vram_compression/import_etc2_astc=true

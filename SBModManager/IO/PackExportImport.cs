@@ -5,6 +5,7 @@ using System.Formats.Tar;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -319,6 +320,7 @@ namespace SBModManager.IO {
 			if (isDirectory) {
 				ReadAndExtractDirectoryContents(reader, archiveBasePath, progressWindow, cancellationToken);
 			} else {
+				Directory.CreateDirectory(Path.GetDirectoryName(archiveBasePath)!);
 				long length = reader.ReadInt64();
 				using FileStream fs = File.OpenWrite(archiveBasePath);
 				byte[] buffer = new byte[length];

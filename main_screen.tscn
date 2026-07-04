@@ -64,17 +64,6 @@ ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
 
-[node name="DuplicateModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=733481348]
-unique_name_in_owner = true
-texture_filter = 1
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-tooltip_text = "Create a copy of the current selected modpack, carrying over every mod, setting, character, and world."
-texture_normal = ExtResource("5_7sxnj")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("3_4sclt")
-
 [node name="ImportModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=1291402901]
 unique_name_in_owner = true
 texture_filter = 1
@@ -82,6 +71,17 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Import a modpack from a list or archive."
 texture_normal = ExtResource("6_cxp7d")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("3_4sclt")
+
+[node name="DuplicateModpackButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools" unique_id=733481348]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "Create a copy of the current selected modpack, carrying over every mod, setting, character, and world."
+texture_normal = ExtResource("5_7sxnj")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
