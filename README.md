@@ -1,6 +1,6 @@
 # Starbound Mod Manager
 
-> ![WARNING]
+> [!WARNING]
 > SBMM is currently a **beta test.** It may have issues managing your modpacks, and mod lists might be broken spontaneously. I did my testing, but it might not be perfect.
 
 Starbound Mod Manager (SBMM) is a cross-platform tool which manages modpacks for Starbound.

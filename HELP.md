@@ -63,7 +63,7 @@ By default the app looks for a Steam installation, and will fail if it can't fin
 
 ## Part 1: OpenStarbound Download
 
-> ![NOTE]
+> [!NOTE]
 > If the error said "OpenStarbound installation is incomplete", skip to Part 2!
 
 1. Download OpenStarbound.
