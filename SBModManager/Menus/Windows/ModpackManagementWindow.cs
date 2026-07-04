@@ -66,7 +66,7 @@ namespace SBModManager.Menus.Windows {
 			ImportAttribute.ImportAll(this);
 
 			CloseRequested += OnCloseRequested;
-			AboutToPopup += OnAboutToPopUp;
+			VisibilityChanged += OnVisibilityChanged;
 			ApplyButton.Pressed += EmitSignalCloseRequested;
 			ExportButton.Pressed += OnExportModPressed;
 			ExportModpackDialog.FileSelected += OnExportFileConfirmed;
@@ -81,13 +81,14 @@ namespace SBModManager.Menus.Windows {
 
 			try {
 				FileStream writer = File.Open(path, FileMode.Create, System.IO.FileAccess.Write, FileShare.None);
+				GZipStream compressor = new GZipStream(writer, CompressionLevel.SmallestSize);
 				GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
 				CancellationTokenSource cts = new CancellationTokenSource();
 				Modpack currentModpack = CurrentModpack;
 				AddChild(progress);
 				progress.ShowWithCancellation(async delegate {
 					try {
-						await PackExportImport.ExportModpackAsync(currentModpack, writer, progress, cts.Token);
+						await PackExportImport.ExportModpackAsync(currentModpack, compressor, progress, cts.Token);
 					} catch (Exception exc) {
 						OS.Alert(exc.Message, "Failed to export modpack!");
 					}
@@ -113,8 +114,10 @@ namespace SBModManager.Menus.Windows {
 			}
 		}
 
-		private void OnAboutToPopUp() {
-			Tabs.CurrentTab = 0;
+		private void OnVisibilityChanged() {
+			if (Visible) {
+				Tabs.CurrentTab = 0;
+			}
 		}
 
 		private void OnCloseRequested() {
@@ -123,7 +126,6 @@ namespace SBModManager.Menus.Windows {
 			if (CurrentModpack != null) {
 				Core.Instance.RefreshModpackDisplay(CurrentModpack);
 			}
-			InlineThumbnailImageHelper.Purge();
 			Hide();
 		}
 

@@ -1,50 +1,48 @@
 # Starbound Mod Manager
 
-Starbound Mod Manager (SBMM) is a tool which works in concert with Starbound's launch config system. It is designed to be an efficient and simple to use modpack manager, allowing you to set up many distinct sets of mods for Starbound quickly and easily.
+> ![WARNING]
+> SBMM is currently a **beta test.** It may have issues managing your modpacks, and mod lists might be broken spontaneously. I did my testing, but it might not be perfect.
+
+Starbound Mod Manager (SBMM) is a cross-platform tool which manages modpacks for Starbound.
+
+It supports the use of the Steam Workshop (even if you don't own it on Steam, yes, even you, person who strangely enjoys the number 470), and allows exporting and importing modpacks to share with your friends.
+
+It was made in about 3 days using the Godot game engine, C#.
 
 **Note:** SBMM is not affiliated with Chucklefish. This is a piece of fan-made software.
 
-## Features
+# Features
 
-SBMM offers a lot of really awesome features.
+**Before you ask for a feature, check the [to-do list](https://github.com/EtiTheSpirit/StarboundModManager/blob/master/TODO.md)!**
 
-### Cross-Platform Support
+## Cross-Platform Support
 
-SBMM works on Windows, Mac, and several Linux distributions. It is powered by Godot.
+SBMM works on Windows, Mac, and several Linux distributions.
 
-### Easy Installation, One-Time Setup
+## Use the Steam Workshop without worrying about Subscriptions
 
-SBMM tries to be as easy to use as possible. You can have it up and running in just 3 steps:
+SBMM has the ability to download mods from the Steam Workshop directly - **even if you don't have a Steam account nor own the game!**
 
-1. Install Starbound, and select the folder in SBMM
-2. Download an OpenStarbound .zip file, and select it in SBMM
-3. Press a button to download and install SteamCMD\*
+Instead of using Subscriptions, SBMM uses the Steam Workshop as a download provider. No more worrying about if you have the right collection installed, no more worrying about if you forgot to uninstall that mod you were testing. SBMM ignores your subscriptions and only uses the mods you put into your modpack, no fuss, no accidents.
 
-###### * Windows Only. Mac and Linux require using your package manager and then manually locating the executable program.
+## Separate Saves
 
-### OpenStarbound Support
+Each modpack has its own save settings, its own universe, and its own characters. This is kind of a given I think, but it is a valid thing to wonder about.
 
-SBMM supports [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound), an incredible community project which fixes countless bugs, and dramatically improves performance and stability. It does all of this while keeping the rest of the game in tact.
+## One-Click Setup
 
-### Steam Workshop Support
+No fiddling around with weird settings, no jank. Just launch the app, wait on the initial setup, and It Just Works(TM).
 
-SBMM integrates the Steam Workshop for *everyone* - even if you don't have a Steam account.
+###### If it does not, in fact, "just work", please visit [the help page](https://github.com/EtiTheSpirit/StarboundModManager/blob/master/HELP.md) and consider filing a bug report.
 
-SBMM keeps track of installed Workshop mods on its own, allowing you to import your subscriptions only when you want it to. Once imported, SBMM will store them in the list, just like any other mod. 
+## OpenStarbound Natively
 
-This means....
+SBMM uses [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound). OpenStarbound is a community project which patches countless bugs, memory leaks, and crashes found in the base game. It is a direct upgrade that works significantly better than the base game.
 
-1. You can freely subscribe to and unsubscribe from any mod, at no risk to your save file or universes.
-2. Workshop mods work on dedicated servers too, no extra setup required.
+## Import and Export Mod Lists
 
-###### Steam Workshop Support requires the installation of `SteamCMD`, an official Valve tool. Starbound's workshop supports *anonymous access*, meaning no login is required to access it.
+SBMM allows you to export entire modpacks in a space-efficient way, making it so that most modpacks can be sent over chat applications like Discord without hitting file size limits.
 
-### Mod List Sharing
+## Efficient Mod Installations
 
-SBMM implements the same mod list feature commonly seen in modpack managers for other games. Instead of requiring potential gigabytes of mods to be stored in an archive, you can share a small .zip file with a list of Workshop IDs to your friends. SBMM will download the mods for them.\*
-
-###### \* Where possible. This only supports Workshop mods, which make up the overwhelming vast majority of all Starbound mods in existence.
-
-### Local Mod Catalogue
-
-Using a catalogue system, SBMM can keep a local archive of every mod you've installed. This way, a mod only needs to be downloaded once, and then it can be reused in an unlimited number of modpacks without needing any additional disk space.
+SBMM only ever needs to install a mod once. Once it's there, it can be shared by all of your modpacks. Got 3 modpacks with Frackin' Universe? You only need to install it once, and then it works for all 3!

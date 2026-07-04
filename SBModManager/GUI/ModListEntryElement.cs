@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -62,7 +63,11 @@ namespace SBModManager.GUI {
 
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
-			if (Pack != null && Mod != null) AssignModRoutine(Pack, Mod);
+			if (Pack != null && Mod != null) {
+				AssignModRoutine(Pack, Mod);
+			} else {
+				;
+			}
 
 			EnableMod.Toggled += OnEnableModToggled;
 			UninstallModButton.Pressed += OnUninstallPressed;
@@ -177,11 +182,12 @@ namespace SBModManager.GUI {
 
 			string ttTextStored = ModNameAndAuthor.TooltipText;
 			ModNameAndAuthor.TooltipText = "[i](This description is loading in the background to not freeze the menu. Try again in a bit.)[/i]\n\n" + ModNameAndAuthor.TooltipText;
+
 			Task.Run(() => {
 				string? description = mod.Metadata.SBMMFixedDescription;
 				if (description == null) {
 					if (!string.IsNullOrWhiteSpace(mod.Metadata.Description)) {
-						description = FormatTools.ReparseStarboundIntoBBCode(mod.Metadata.Description);
+						description = FormatTools.ReparseStarboundIntoBBCode(mod.Metadata.Description, mod.Metadata.SBMMInlineImageHashes);
 					} else {
 						description = "[i]No description was provided for this mod.[/i]";
 					}

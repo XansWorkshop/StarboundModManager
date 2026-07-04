@@ -127,6 +127,20 @@ size_flags_vertical = 3
 placeholder_text = "Enter a custom description here, if you want to..."
 wrap_mode = 1
 
+[node name="ProfileLocation" type="RichTextLabel" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=331903254]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+custom_maximum_size = Vector2(-1, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
+bbcode_enabled = true
+scroll_active = false
+
 [node name="ModpackIcon" type="TextureRect" parent="VBoxContainer/Tabs/EditModpackDetails/VBoxContainer/HBoxContainer" unique_id=2018210441]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(256, 256)

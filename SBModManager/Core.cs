@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,6 +65,12 @@ namespace SBModManager {
 		public TextureButton DeleteModpackButton { get; }
 
 		/// <summary>
+		/// The button to open help.md
+		/// </summary>
+		[Import, AllowNull]
+		public TextureButton HelpButton { get; }
+
+		/// <summary>
 		/// The list of modpacks.
 		/// </summary>
 		[AllowNull, Import]
@@ -108,6 +115,7 @@ namespace SBModManager {
 			ImportAttribute.ImportAll(this);
 			Instance = this;
 			ProgramSettings.Load();
+			ResourceLoader.SetAbortOnMissingResources(false);
 
 			RunButton.Pressed += OnRunPressed;
 			NewModpackButton.Pressed += OnNewModpackButtonPressed;
@@ -115,6 +123,7 @@ namespace SBModManager {
 			ImportModpackButton.Pressed += OnImportModpackButtonPressed;
 			EditModpackButton.Pressed += OnEditModpackButtonPressed;
 			DeleteModpackButton.Pressed += OnDeleteModpackButtonPressed;
+			HelpButton.Pressed += OnHelpButtonPressed;
 			ImportModpackDialog.FileSelected += OnModpackImportSelected;
 			Status.MetaClicked += OnStatusMetaClicked;
 
@@ -176,6 +185,10 @@ namespace SBModManager {
 			}
 		}
 
+		private void OnHelpButtonPressed() {
+			OS.ShellOpen("https://github.com/EtiTheSpirit/StarboundModManager/blob/master/HELP.md");
+		}
+
 		private void OnStatusMetaClicked(Variant meta) {
 			if (meta.VariantType == Variant.Type.String && Uri.TryCreate((string)meta, default, out _)) {
 				OS.ShellOpen((string)meta);
@@ -185,6 +198,7 @@ namespace SBModManager {
 		private void OnModpackImportSelected(string path) {
 			try {
 				FileStream stream = File.OpenRead(path);
+				GZipStream decompressor = new GZipStream(stream, CompressionMode.Decompress);
 				GDDictionary options = ImportModpackDialog.GetSelectedOptions();
 				int mode = (int)options["Duplicate Modpack Behavior"];
 
@@ -193,7 +207,7 @@ namespace SBModManager {
 				AddChild(progress);
 				progress.ShowWithCancellation(async delegate {
 					try {
-						Modpack modpack = await PackExportImport.ImportModpackAsync(stream, mode == 0, progress, cts.Token);
+						Modpack modpack = await PackExportImport.ImportModpackAsync(decompressor, mode == 0, progress, cts.Token);
 						CurrentModpacks.Add(modpack);
 						return modpack;
 					} catch (Exception exc) {

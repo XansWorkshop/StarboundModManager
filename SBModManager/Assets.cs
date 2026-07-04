@@ -96,6 +96,11 @@ namespace SBModManager {
 		public static ConfirmDeleteDialog CreateConfirmDeleteDialog() => ConfirmDeleteDialogPrefab.Instantiate<ConfirmDeleteDialog>();
 
 		/// <summary>
+		/// A 1x1 texture.
+		/// </summary>
+		public static ImageTexture Dummy1x1 => field ??= ImageTexture.CreateFromImage(Image.CreateEmpty(1, 1, false, Image.Format.Rgba8));
+
+		/// <summary>
 		/// Create a new tooltip using the custom rich-text version. Returns <see langword="null"/> if the text is null.
 		/// </summary>
 		/// <param name="forText">The bbcode text to display.</param>

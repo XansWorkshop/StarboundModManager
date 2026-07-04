@@ -46,7 +46,9 @@ namespace SBModManager {
 		/// </summary>
 		/// <returns></returns>
 		public static bool NeedsToInstallOpenStarbound() {
+			string starboundDir = Directories.GetLocalStarboundInstallDirectory();
 			string starboundApp = Directories.GetLocalStarboundProgram();
+			if (!File.Exists(Path2.Combine(starboundDir, "assets", "opensb.pak"))) return true;
 			return !File.Exists(starboundApp);
 		}
 
@@ -82,7 +84,7 @@ namespace SBModManager {
 				"Windows" => "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip",
 				"macOS" => "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_osx.tar.gz",
 				"Linux" => "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz",
-				_ => throw new NotSupportedException($"Operating System {os} is not supported.")
+				_ => throw new NotSupportedException($"SteamCMD: Operating System {os} is not supported.")
 			};
 
 			using HttpClient client = new HttpClient();
@@ -114,7 +116,7 @@ namespace SBModManager {
 				UseShellExecute = false,
 				CreateNoWindow = true
 			});
-			if (steamCMDProcess == null) throw new InvalidOperationException("Failed to perform first-time startup of SteamCMD");
+			if (steamCMDProcess == null) throw new InvalidOperationException("Failed to perform first-time startup of SteamCMD.");
 			await steamCMDProcess.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
 		}
@@ -137,7 +139,6 @@ namespace SBModManager {
 
 					string name = entry.Name;
 					if (name[0] == '/') name = name[1..];
-					if (name.Contains("/../") || name.EndsWith("/..") || name.Contains("//")) throw new InvalidDataException("Unexpected and possibly malicious file path in tar file.");
 					if (entry.EntryType is not TarEntryType.GlobalExtendedAttributes) {
 						// ^ This is how TarFile.ExtractToDir does it.
 						string dst = Path2.Combine(steamCMDDir, name);
@@ -159,7 +160,7 @@ namespace SBModManager {
 				UseShellExecute = false,
 				CreateNoWindow = true
 			});
-			if (steamCMDProcess == null) throw new InvalidOperationException("Failed to perform first-time startup of SteamCMD");
+			if (steamCMDProcess == null) throw new InvalidOperationException("Failed to perform first-time startup of SteamCMD.");
 			await steamCMDProcess.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
 		}
@@ -203,7 +204,7 @@ namespace SBModManager {
 					installationName = "OpenStarbound-macOS-Intel-Client.zip";
 				}
 			} else {
-				throw new NotSupportedException($"Operating System {os} is not supported.");
+				throw new NotSupportedException($"OpenStarbound: Operating System {os} is not supported.");
 			}
 
 			// Try downloading it from GitHub. If the latest version fails, fall back.
@@ -248,15 +249,15 @@ namespace SBModManager {
 		public static Task ImportGameAssetsAsync(CancellationToken cancellationToken) {
 			string localSBInstallDir = Directories.GetLocalStarboundInstallDirectory();
 			string? steamSBInstall = SteamTools.GetStarboundDirectory();
-			if (steamSBInstall == null) throw new InvalidOperationException("Steam installation directory of Starbound was not found.");
+			if (steamSBInstall == null) throw new InvalidOperationException($"OpenStarbound installation is incomplete: Steam installation directory of Starbound was not found. Please install Starbound and relaunch the app.");
 			
 			string packedPak = Path2.Combine(steamSBInstall, "assets", "packed.pak");
 			string tiledDir = Path2.Combine(steamSBInstall, "tiled");
 			if (!File.Exists(packedPak)) {
-				throw new InvalidOperationException("Required file \"packed.pak\" (in the assets folder) does not exist in your Steam installation of Starbound.");
+				throw new InvalidOperationException("OpenStarbound installation is incomplete: Required file \"packed.pak\" (in the assets folder) does not exist in your Steam installation of Starbound.");
 			}
 			if (!Directory.Exists(tiledDir)) {
-				throw new InvalidOperationException("Required folder \"tiled\" does not exist in your Steam installation of Starbound.");
+				throw new InvalidOperationException("OpenStarbound installation is incomplete: Required folder \"tiled\" does not exist in your Steam installation of Starbound.");
 			}
 
 			return Task.Run(() => {

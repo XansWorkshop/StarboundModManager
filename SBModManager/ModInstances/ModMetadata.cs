@@ -60,6 +60,12 @@ namespace SBModManager.ModInstances {
 		public string? SBMMFixedDescription { get; set; }
 
 		/// <summary>
+		/// Every res:// path used by inline images in the <see cref="SBMMInlineImageHashes"/>. Specifically,
+		/// this is just the md5 part which is how they are saved on disk.
+		/// </summary>
+		public List<string> SBMMInlineImageHashes { get; } = [];
+
+		/// <summary>
 		/// Corresponds to the "author" field.
 		/// </summary>
 		public string Author { get; }

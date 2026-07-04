@@ -209,7 +209,7 @@ namespace SBModManager.IO {
 			Modpack modpack;
 			string appended = string.Empty;
 			if (ignoreGuid) {
-				reader.BaseStream.Seek(16, SeekOrigin.Current);
+				reader.ReadBytes(16); // No seeking.
 				modpack = new Modpack();
 				appended = $" (Imported {DateTime.Now})";
 			} else {
@@ -224,9 +224,10 @@ namespace SBModManager.IO {
 			string directory = Directories.GetPackDirectory(modpack.ID);
 			string icon = Path2.Combine(directory, "icon.png");
 			if (iconLength > 0) {
-				using FileStream fs = File.Open(icon, FileMode.Create, FileAccess.Write, FileShare.None);
-				using StreamWindow window = StreamWindow.FromCurrentPositionIn(reader.BaseStream, iconLength);
-				window.CopyTo(fs);
+				using FileStream fs = File.OpenWrite(icon);
+				byte[] buffer = new byte[iconLength];
+				reader.BaseStream.ReadExactly(buffer);
+				fs.Write(buffer);
 			}
 
 			int sources = reader.ReadInt32();
@@ -240,7 +241,7 @@ namespace SBModManager.IO {
 				}
 			}
 
-			progressWindow?.SetStatus("Downloading Workshop Mods...\nThis might take a while.");
+			progressWindow?.SetStatus("Importing Workshop Mods...\nThis might take a while.");
 			progressWindow?.SetProgress(float.NaN);
 
 			SteamTools.DownloadWorkshopModsAsync(workshopMods.Keys.ToArray(), true, cancellationToken).Wait(CancellationToken.None);
@@ -320,8 +321,9 @@ namespace SBModManager.IO {
 			} else {
 				long length = reader.ReadInt64();
 				using FileStream fs = File.OpenWrite(archiveBasePath);
-				using StreamWindow window = StreamWindow.FromCurrentPositionIn(reader.BaseStream, length);
-				window.CopyTo(fs);
+				byte[] buffer = new byte[length];
+				reader.ReadExactly(buffer);
+				fs.Write(buffer);
 			}
 		}
 
@@ -354,8 +356,9 @@ namespace SBModManager.IO {
 				StreamValidators.AssertModPathIsValid(fileDestination);
 
 				using FileStream fs = File.OpenWrite(Path2.Combine(archiveBasePath, fileDestination));
-				using StreamWindow window = StreamWindow.FromCurrentPositionIn(reader.BaseStream, length);
-				window.CopyTo(fs);
+				byte[] buffer = new byte[length];
+				reader.ReadExactly(buffer);
+				fs.Write(buffer);
 			}
 
 			for (int i = 0; i < dirCount; i++) {

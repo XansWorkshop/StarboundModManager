@@ -43,8 +43,9 @@ namespace SBModManager.GUI {
 		/// I'm so sorry for the bullshit you're about to lay your eyes upon.
 		/// </summary>
 		/// <param name="sbOrWorkshopDesc">The description of a mod, using either Steam markup or Starbound markup.</param>
+		/// <param name="hashesForImages">Loaded by the image loader, this stores the md5 hashes for every inline image so that they can be quickly reloaded.</param>
 		/// <returns></returns>
-		public static string ReparseStarboundIntoBBCode(string sbOrWorkshopDesc) {
+		public static string ReparseStarboundIntoBBCode(string sbOrWorkshopDesc, List<string> hashesForImages) {
 			// Starbound markup:
 			sbOrWorkshopDesc = StarboundMarkupToBBCode(sbOrWorkshopDesc);
 
@@ -81,7 +82,7 @@ namespace SBModManager.GUI {
 
 			// Image Fixers
 			// The idea here is to create a dummy texture and then download it in the background.
-			return InlineThumbnailImageHelper.ReplaceImages(sbOrWorkshopDesc);
+			return InlineThumbnailImageHelper.ReplaceImages(sbOrWorkshopDesc, hashesForImages);
 		}
 
 		/// <summary>

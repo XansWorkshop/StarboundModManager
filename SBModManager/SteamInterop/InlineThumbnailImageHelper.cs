@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using SBModManager.GUI;
 using SBModManager.Other;
 
+using static Godot.HttpRequest;
+
 using HttpClient = System.Net.Http.HttpClient;
 using Semaphore = System.Threading.Semaphore;
 
@@ -27,10 +29,7 @@ namespace SBModManager.SteamInterop {
 	/// </summary>
 	public static partial class InlineThumbnailImageHelper {
 
-		/// <summary>
-		/// Binds a hash to an asynchronous task which represents the operation of downloading the texture.
-		/// </summary>
-		private static readonly ConcurrentDictionary<string, Task<Texture2D>> IMAGE_ACQUISITIONS = [];
+		private static readonly ConcurrentDictionary<string, Task<Texture2D>> CONCURRENT_IMAGE_LOADS = [];
 
 		/// <summary>
 		/// Used to prevent a comical amount of downloads from occurring at once. Prevents you from getting blocked by Steam.
@@ -42,40 +41,33 @@ namespace SBModManager.SteamInterop {
 		/// </summary>
 		/// <param name="bbcode"></param>
 		/// <returns></returns>
-		public static string ReplaceImages(string bbcode) {
+		public static string ReplaceImages(string bbcode, List<string> hashesForImages) {
 			Regex regex = FormatTools.IMGBBCodeResolver();
 			return regex.Replace(bbcode, delegate (Match match) {
 				if (!match.Success) return match.Value;
 
 				string url = match.Groups[1].Value;
-				string res = EnqueueImageDownloadIfNeeded(url);
-				return $"[img]{res}[/img]";
-			});
-		}
-
-		/// <summary>
-		/// Disposes of all known textures so that they don't consume memory.
-		/// </summary>
-		public static void Purge() {
-			KeyValuePair<string, Task<Texture2D>>[] loaders = IMAGE_ACQUISITIONS.ToArray();
-			foreach (KeyValuePair<string, Task<Texture2D>> loader in loaders) {
-				if (loader.Value.IsCompleted) {
-					Texture2D result = loader.Value.Result;
-					result.Dispose();
-					IMAGE_ACQUISITIONS.Remove(loader.Key, out _);
+				if (!url.StartsWith("res://")) {
+					string res = EnqueueImageDownloadIfNeeded(url, hashesForImages);
+					return $"[img]{res}[/img]";
 				}
-			}
+				return $"[img]{url}[/img]";
+			});
 		}
 
 		/// <summary>
 		/// Checks the <see cref="IMAGE_ACQUISITIONS"/> and, if a url is new, enqueues a download for that image.
 		/// </summary>
 		/// <param name="url"></param>
-		private static string EnqueueImageDownloadIfNeeded(string url) {
+		private static string EnqueueImageDownloadIfNeeded(string url, List<string> hashesForImages) {
 			string md5 = Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(url)));
+			hashesForImages.Add(md5);
+
 			string path = $"res://workshop_image_cache/{md5}";
-			if (!IMAGE_ACQUISITIONS.TryGetValue(md5, out Task<Texture2D>? existingTask)) {
-				IMAGE_ACQUISITIONS[md5] = DownloadImageIntoTexture2DImpl(url, md5);
+			if (!ResourceLoader.Exists(path)) {
+				if (!CONCURRENT_IMAGE_LOADS.ContainsKey(md5)) {
+					CONCURRENT_IMAGE_LOADS[md5] = DownloadImageIntoTexture2DImpl(url, md5);
+				}
 			}
 			return path;
 		}
@@ -93,18 +85,21 @@ namespace SBModManager.SteamInterop {
 			// In The Conservatory (my game, where most of the threading code from here comes from) this is solved
 			// with LimitedConcurrencyTaskScheduler.
 
+			string path = $"res://workshop_image_cache/{md5}";
+
 			Image actualImage = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
 			actualImage.SetPixel(0, 0, Colors.Magenta);
 
-			string path = $"res://workshop_image_cache/{md5}";
 			ImageTexture result = ImageTexture.CreateFromImage(Assets.PlaceholderWorkshopImageLoading);
 			result.TakeOverPath(path);
-			
 
 			string imgCache = Directories.GetSteamImageCacheDirectory();
 			Directory.CreateDirectory(imgCache);
 
-			RATE_LIMITER.WaitOne();
+			// This *should* fix it getting slowed down?
+			while (!RATE_LIMITER.WaitOne(0)) {
+				await Task.Yield();
+			}
 			try {
 				byte[]? buffer = null;
 				try {
@@ -132,6 +127,9 @@ namespace SBModManager.SteamInterop {
 							int rng = Random.Shared.Next();
 							rng &= 0xFFF;
 							await Task.Delay(5000 + rng).ConfigureAwait(false);
+						} else if (request.StatusCode == HttpStatusCode.NotFound) {
+							download = null;
+							break;
 						} else {
 							throw;
 						}
@@ -139,6 +137,7 @@ namespace SBModManager.SteamInterop {
 				}
 				if (download == null) {
 					result.SetImage(Assets.PlaceholderWorkshopImageError);
+					Assets.PlaceholderWorkshopImageError.SavePng(Path2.Combine(imgCache, $"{md5}.png"));
 					return result;
 				}
 
@@ -156,6 +155,7 @@ namespace SBModManager.SteamInterop {
 					if (error != Error.Ok) {
 						// Nope :(
 						result.SetImage(Assets.PlaceholderWorkshopImageError);
+						Assets.PlaceholderWorkshopImageError.SavePng(Path2.Combine(imgCache, $"{md5}.png"));
 						return result;
 					}
 				}
@@ -167,6 +167,7 @@ namespace SBModManager.SteamInterop {
 			} catch {
 				result.Dispose();
 				actualImage.Dispose();
+				Assets.PlaceholderWorkshopImageError.SavePng(Path2.Combine(imgCache, $"{md5}.png"));
 				return new PlaceholderTexture2D();
 			} finally {
 				RATE_LIMITER.Release();

@@ -57,6 +57,12 @@ namespace SBModManager.Menus {
 		[Import, AllowNull]
 		public Button ChangeModpackIconButton { get; }
 
+		/// <summary>
+		/// A label which displays the location of the profile.
+		/// </summary>
+		[Import, AllowNull]
+		public RichTextLabel ProfileLocation { get; }
+
 		/// <inheritdoc/>
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
@@ -66,6 +72,13 @@ namespace SBModManager.Menus {
 			ChangeModpackIconButton.Pressed += OnChangeIconPressed;
 
 			FindIconDialog.FileSelected += OnIconSelected;
+			ProfileLocation.MetaClicked += OnMetaClicked;
+		}
+
+		private void OnMetaClicked(Variant meta) {
+			if (EditingModpack != null) {
+				OS.ShellOpen(Directories.GetPackDirectory(EditingModpack.ID));
+			}
 		}
 
 		private void OnIconSelected(string path) {
@@ -111,6 +124,8 @@ namespace SBModManager.Menus {
 			ModpackCreatorEntry.Text = modpack.Creator;
 			DescriptionEntry.Text = modpack.Description;
 			ModpackIcon.Texture = modpack.GetIcon();
+
+			ProfileLocation.Text = $"[url=Open]ID: {EditingModpack.ID:D} - Click to open in file explorer.[/url]";
 		}
 
 	}

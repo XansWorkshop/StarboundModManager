@@ -20,6 +20,10 @@ boot_splash/show_image=false
 boot_splash/use_filter=false
 config/icon="res://icon.svg"
 
+[debug]
+
+file_logging/log_path="user://sbmm_logs/godot.log"
+
 [display]
 
 window/size/viewport_width=1200
