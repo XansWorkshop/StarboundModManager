@@ -13,7 +13,7 @@ body:
       options:
         - label: I made sure nobody else submitted this issue (if they did, go comment or upvote it).
           required: true
-        - label: This isn't on the [planned features list](https://github.com/XansWorkshop/StarboundModManager/blob/master/WISHLIST.md).
+        - label: This isn't on the [planned features list](https://github.com/XansWorkshop/StarboundModManager/blob/master/TODO.md).
           required: true
   - type: textarea
     id: the-request
