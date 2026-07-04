@@ -35,7 +35,7 @@ namespace SBModManager {
 			ProcessStartInfo starboundStartInfo = new ProcessStartInfo {
 				FileName = Directories.GetLocalStarboundProgram()
 			};
-			starboundStartInfo.ArgumentList.Add("-bootstrap");
+			starboundStartInfo.ArgumentList.Add("-bootconfig");
 			starboundStartInfo.ArgumentList.Add(sbinitConfig);
 
 			Process starbound = new Process() {

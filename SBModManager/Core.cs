@@ -62,9 +62,15 @@ namespace SBModManager {
 		[AllowNull, Import]
 		public TextureButton DeleteModpackButton { get; }
 
+		/// <summary>
+		/// The list of modpacks.
+		/// </summary>
 		[AllowNull, Import]
 		public HFlowContainer ModpacksList { get; }
 
+		/// <summary>
+		/// The entire window for managing modpacks.
+		/// </summary>
 		[AllowNull, Import]
 		public ModpackManagementWindow ModpackManagement { get; }
 
@@ -73,6 +79,12 @@ namespace SBModManager {
 		/// </summary>
 		[Import, AllowNull]
 		public FileDialog ImportModpackDialog { get; }
+
+		/// <summary>
+		/// The status label at the bottom of the window.
+		/// </summary>
+		[Import, AllowNull]
+		public RichTextLabel Status { get; }
 
 		/// <summary>
 		/// Every current modpack that is known.
@@ -95,6 +107,7 @@ namespace SBModManager {
 			EditModpackButton.Pressed += OnEditModpackButtonPressed;
 			DeleteModpackButton.Pressed += OnDeleteModpackButtonPressed;
 			ImportModpackDialog.FileSelected += OnModpackImportSelected;
+			Status.MetaClicked += OnStatusMetaClicked;
 
 			string modpacks = Directories.GetPackDirectory();
 			Directory.CreateDirectory(modpacks);
@@ -121,6 +134,12 @@ namespace SBModManager {
 								_starbound = null;
 								ShowButtons();
 							}, TaskScheduler.FromCurrentSynchronizationContext());
+			}
+		}
+
+		private void OnStatusMetaClicked(Variant meta) {
+			if (meta.VariantType == Variant.Type.String && Uri.TryCreate((string)meta, default, out _)) {
+				OS.ShellOpen((string)meta);
 			}
 		}
 
