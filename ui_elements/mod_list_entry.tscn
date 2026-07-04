@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bgstufxnhq8wt" path="res://SBModManager/GUI/RichTooltipElements/TooltipCheckButton.cs" id="1_dbo7l"]
 [ext_resource type="Script" uid="uid://bhnu5j1fv15t4" path="res://SBModManager/GUI/ModListEntryElement.cs" id="1_ysqsd"]
 [ext_resource type="Script" uid="uid://vl5rinndcuu5" path="res://SBModManager/GUI/RichTooltipElements/TooltipRichTextLabel.cs" id="3_ysqsd"]
+[ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="5_udqm2"]
 
 [node name="ModEntry" type="ColorRect" unique_id=1954689346]
 custom_minimum_size = Vector2(0, 36)
@@ -93,3 +94,14 @@ text = "Version 0
 0 Bytes On Disk"
 scroll_active = false
 autowrap_mode = 0
+
+[node name="UninstallModButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=857689382]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+custom_maximum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Remove this mod from the list."
+theme_override_constants/line_spacing = -26
+text = "❌
+ "
+script = ExtResource("5_udqm2")

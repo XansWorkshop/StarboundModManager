@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 using SBModManager.Attributes;
 using SBModManager.GUI;
@@ -46,6 +49,12 @@ namespace SBModManager.Menus.Windows {
 		public Button ApplyButton { get; }
 
 		/// <summary>
+		/// The file dialog to export a modpack.
+		/// </summary>
+		[Import, AllowNull]
+		public FileDialog ExportModpackDialog { get; }
+
+		/// <summary>
 		/// The modpack being managed.
 		/// </summary>
 		public Modpack? CurrentModpack { get; private set; }
@@ -56,10 +65,39 @@ namespace SBModManager.Menus.Windows {
 			CloseRequested += OnCloseRequested;
 			AboutToPopup += OnAboutToPopUp;
 			ApplyButton.Pressed += EmitSignalCloseRequested;
+			ExportButton.Pressed += OnExportModPressed;
+			ExportModpackDialog.FileSelected += OnExportFileConfirmed;
 			if (CurrentModpack != null) {
 				AssignModpackImpl(CurrentModpack);
 			}
 			Tabs.CurrentTab = 0;
+		}
+
+		private void OnExportFileConfirmed(string path) {
+			if (CurrentModpack == null) return;
+
+			try {
+				FileStream writer = File.Open(path, FileMode.Create, System.IO.FileAccess.Write, FileShare.None);
+				GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
+				CancellationTokenSource cts = new CancellationTokenSource();
+				Modpack currentModpack = CurrentModpack;
+				AddChild(progress);
+				progress.ShowWithCancellation(async delegate {
+					try {
+						await PackExportImport.ExportModpackAsync(currentModpack, writer, progress, cts.Token);
+					} catch (Exception exc) {
+						OS.Alert(exc.Message, "Failed to export modpack!");
+					}
+				}, cts, true).ContinueWith(delegate {
+					writer.Close();
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			} catch (Exception exc) {
+				OS.Alert(exc.Message, "Failed to export modpack!");
+			}
+		}
+
+		private void OnExportModPressed() {
+			ExportModpackDialog.Show();
 		}
 
 		public override void _UnhandledKeyInput(InputEvent @event) {

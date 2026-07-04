@@ -62,29 +62,22 @@ namespace SBModManager {
 		[AllowNull, Import]
 		public TextureButton DeleteModpackButton { get; }
 
-		/*
-		/// <summary>
-		/// The topbar button to configure the program.
-		/// </summary>
-		[AllowNull, Import]
-		public TextureButton ConfigureAppButton { get; }
-		*/
-
 		[AllowNull, Import]
 		public HFlowContainer ModpacksList { get; }
-
-		/*
-		[AllowNull, Import]
-		public ProgramSettingsWindow ProgramSettings { get; }
-		*/
 
 		[AllowNull, Import]
 		public ModpackManagementWindow ModpackManagement { get; }
 
 		/// <summary>
+		/// The file dialog to export a modpack.
+		/// </summary>
+		[Import, AllowNull]
+		public FileDialog ImportModpackDialog { get; }
+
+		/// <summary>
 		/// Every current modpack that is known.
 		/// </summary>
-		private List<Modpack> CurrentModpacks { get; } = [];
+		internal List<Modpack> CurrentModpacks { get; } = [];
 
 		private ModpackEntryElement? _currentSelectedEntryButton;
 		private Modpack? _currentSelectedModpack;
@@ -95,17 +88,13 @@ namespace SBModManager {
 			Instance = this;
 			ProgramSettings.Load();
 
-			// StarboundJsonSanitizer.ParseString(File.ReadAllText("F:\\Users\\Xan\\source\\godot\\sb_mod_manager\\fuckass_json_test.json"));
-
 			RunButton.Pressed += OnRunPressed;
 			NewModpackButton.Pressed += OnNewModpackButtonPressed;
 			DuplicateModpackButton.Pressed += OnDuplicateModpackButtonPressed;
 			ImportModpackButton.Pressed += OnImportModpackButtonPressed;
 			EditModpackButton.Pressed += OnEditModpackButtonPressed;
 			DeleteModpackButton.Pressed += OnDeleteModpackButtonPressed;
-			//ConfigureAppButton.Pressed += OnConfigButtonPressed;
-
-			// ProgramSettings.VisibilityChanged += UpdateButtonUsability;
+			ImportModpackDialog.FileSelected += OnModpackImportSelected;
 
 			string modpacks = Directories.GetPackDirectory();
 			Directory.CreateDirectory(modpacks);
@@ -135,6 +124,35 @@ namespace SBModManager {
 			}
 		}
 
+		private void OnModpackImportSelected(string path) {
+			try {
+				FileStream stream = File.OpenRead(path);
+				GDDictionary options = ImportModpackDialog.GetSelectedOptions();
+				int mode = (int)options["Duplicate Modpack Behavior"];
+
+				GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
+				CancellationTokenSource cts = new CancellationTokenSource();
+				AddChild(progress);
+				progress.ShowWithCancellation(async delegate {
+					try {
+						Modpack modpack = await PackExportImport.ImportModpackAsync(stream, mode == 0, progress, cts.Token);
+						CurrentModpacks.Add(modpack);
+						return modpack;
+					} catch (Exception exc) {
+						OS.Alert(exc.Message, "Failed to import modpack!");
+						return null;
+					}
+				}, cts, true).ContinueWith(delegate (Task<Modpack?> task) {
+					stream.Dispose();
+					if (task.IsCompletedSuccessfully) {
+						CreateButtonForModpack(task.Result!);
+					}
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			} catch (Exception exc) {
+				OS.Alert(exc.Message, "Failed to import modpack!");
+			}
+		}
+
 		public override void _UnhandledKeyInput(InputEvent @event) {
 			if (@event is InputEventKey key && @event.IsPressed()) {
 				if (key.Keycode == Key.Pageup) {
@@ -152,78 +170,6 @@ namespace SBModManager {
 				Launch(_currentSelectedModpack, _currentSelectedEntryButton);
 			}
 		}
-
-		/*
-		private void Launch(Modpack modpack, ModpackEntryElement clicked) {
-			PackedScene launchPromptScene = GD.Load<PackedScene>("res://popups/progress_window.tscn");
-			GeneralProgressWindow launching = launchPromptScene.Instantiate<GeneralProgressWindow>();
-			_cancelPreppingLaunch = new CancellationTokenSource();
-			launching.ShowWithCancellation(_cancelPreppingLaunch);
-			AddChild(launching);
-			UpdateButtonUsability();
-			_starboundLaunchAndRunTask = LaunchAsync(modpack, launching);
-		}
-
-		private async Task LaunchAsync(Modpack modpack, GeneralProgressWindow launching) {
-			launching.SetStatus("Downloading mods...");
-			try {
-				await modpack.SaveAndUpdateInitAsync(_cancelPreppingLaunch!.Token);
-				ProcessStartInfo game = new ProcessStartInfo {
-					FileName = Directories.GetLocalStarboundProgram()
-				};
-				game.ArgumentList.Add("-bootconfig");
-				game.ArgumentList.Add(modpack.SBInitPath);
-				_starbound = Process.Start(game);
-				if (_starbound == null) {
-					throw new InvalidOperationException("Failed to launch Starbound.");
-				} else {
-					launching.SetStatus("Starbound is running!");
-					launching.SetProgress(1.0f);
-					launching.CancelButton.Text = "Exit Starbound";
-					await _starbound.WaitForExitAsync(_cancelPreppingLaunch.Token);
-					_starbound = null;
-					if (IsInstanceValid(launching)) {
-						launching.QueueFree();
-					}
-				}
-			} catch (OperationCanceledException) {
-				if (_starbound != null) {
-					_starbound.Kill();
-					_starbound = null;
-				}
-			} finally {
-				if (IsInstanceValid(launching)) {
-					launching.QueueFree();
-				}
-				_cancelPreppingLaunch = null;
-				_starboundLaunchAndRunTask = null;
-				UpdateButtonUsability();
-			}
-		}
-		*/
-
-		/*
-		private void UpdateButtonUsability() {
-			if (!IsFullySetUp() || (_starbound != null && !_starbound.HasExited) || _cancelPreppingLaunch != null) {
-				NewModpackButton.Disabled = true;
-				DuplicateModpackButton.Disabled = true;
-				ImportModpackButton.Disabled = true;
-				EditModpackButton.Disabled = true;
-				DeleteModpackButton.Disabled = true;
-				if (ModpackManagement.Visible) ModpackManagement.Hide();
-				
-
-				// TODO: Alert icon for config.
-			} else {
-				NewModpackButton.Disabled = false;
-				DuplicateModpackButton.Disabled = false;
-				ImportModpackButton.Disabled = false;
-				EditModpackButton.Disabled = false;
-				DeleteModpackButton.Disabled = false;
-
-			}
-		}
-		*/
 
 		private void OnNewModpackButtonPressed() {
 			if (_starbound != null && !_starbound.IsCompleted) return;
@@ -248,7 +194,7 @@ namespace SBModManager {
 		private void OnImportModpackButtonPressed() {
 			if (_starbound != null && !_starbound.IsCompleted) return;
 
-			throw new NotImplementedException();
+			ImportModpackDialog.Show();
 		}
 
 		private void OnEditModpackButtonPressed() {
@@ -264,8 +210,7 @@ namespace SBModManager {
 
 			if (_currentSelectedModpack == null) return;
 			Modpack modpack = _currentSelectedModpack;
-			PackedScene popupScene = GD.Load<PackedScene>("res://popups/confirm_delete.tscn");
-			ConfirmDeleteDialog popup = popupScene.Instantiate<ConfirmDeleteDialog>();
+			ConfirmDeleteDialog popup = Assets.CreateConfirmDeleteDialog();
 			AddChild(popup);
 
 			popup.ShowAndGetResultAsync(_currentSelectedModpack.Name).ContinueWith(task => {

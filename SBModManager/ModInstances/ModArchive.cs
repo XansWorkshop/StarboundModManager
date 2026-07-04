@@ -31,7 +31,7 @@ namespace SBModManager.ModInstances {
 		public bool IsDirectory { get; }
 
 		/// <summary>
-		/// The absolute path to is archive.
+		/// The absolute path to the archive.
 		/// </summary>
 		public string Path { get; }
 

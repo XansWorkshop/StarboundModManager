@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Threading.Tasks;
 
 using SBModManager.Attributes;
+using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
 
 namespace SBModManager.GUI {
@@ -13,17 +15,36 @@ namespace SBModManager.GUI {
 	/// </summary>
 	public partial class ModBundleElement : Control {
 
+		/// <summary>
+		/// The container that stores the list of child mods.
+		/// </summary>
 		[Import, AllowNull]
 		public FoldableContainer Container { get; }
 
+		/// <summary>
+		/// A checkbox to toggle the entire bundle.
+		/// </summary>
 		[Import, AllowNull]
 		public CheckButton CategoryEnabled { get; }
 
+		/// <summary>
+		/// The header text to display.
+		/// </summary>
 		[Import, AllowNull]
 		public Label Header { get; }
 
+		/// <summary>
+		/// The container where the <see cref="ModListEntryElement"/>s are actually stored.
+		/// </summary>
 		[Import, AllowNull]
 		public VBoxContainer Children { get; }
+
+		/// <summary>
+		/// The X button used to uninstall mods.
+		/// </summary>
+
+		[Import, AllowNull]
+		public Button UninstallModButton { get; }
 
 		/// <summary>
 		/// The <see cref="Modpack"/> that this represents.
@@ -46,6 +67,7 @@ namespace SBModManager.GUI {
 			ImportAttribute.ImportAll(this);
 			CategoryEnabled.Toggled += OnCategoryToggled;
 			Container.ItemRectChanged += OnContainerResized;
+			UninstallModButton.Pressed += OnUninstallPressed;
 			if (Pack != null && Source != null) {
 				CategoryEnabled.SetPressedNoSignal(Source.IsEnabledIn(Pack));
 			}
@@ -69,6 +91,17 @@ namespace SBModManager.GUI {
 				}
 			}
 			Visible = anyVisible;
+		}
+
+		private void OnUninstallPressed() {
+			ConfirmDeleteDialog dialog = Assets.CreateConfirmDeleteDialog();
+			dialog.ShowAndGetResultCustomAsync("Are you sure you want to remove these mods from the list?").ContinueWith(delegate (Task<bool> result) {
+				if (result.Result) {
+					Pack.ModSources.Remove(Source);
+					QueueFree();
+				}
+			}, TaskScheduler.FromCurrentSynchronizationContext());
+			AddChild(dialog);
 		}
 
 		private void OnContainerResized() {

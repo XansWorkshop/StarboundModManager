@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://lo8aqvl4m0jw" path="res://icons/starbound.png" id="3_lxa52"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="5_0sis3"]
 [ext_resource type="Script" uid="uid://dq4ktxrpkdv2i" path="res://SBModManager/Menus/ViewModListPanel.cs" id="5_ghlnl"]
+[ext_resource type="PackedScene" uid="uid://bgsfhxcgnstw1" path="res://ui_elements/popups/import_dialog.tscn" id="7_e55jo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ysqsd"]
 bg_color = Color(0.1015625, 0.1015625, 0.1015625, 1)
@@ -212,61 +213,17 @@ tooltip_text = "Copies all of your current Steam Workshop subscriptions into thi
 text = "Import Subscriptions"
 script = ExtResource("5_0sis3")
 
-[node name="ImportFromListButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=876757866]
+[node name="ImportOtherButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=876757866]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "Collects the mods from a mod list that was exported by this program, and adds them all to this list."
-text = "Import List"
+tooltip_text = "Opens a dialog which allows you to import a mod (packed or unpacked), a Steam Workshop URL/ID, or a mod list (to combine into this pack)."
+text = "Import Other..."
 script = ExtResource("5_0sis3")
 
-[node name="ImportFromCatalogButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=875390124]
+[node name="ImportDialog" parent="VBoxContainer/Tabs/ViewModList" unique_id=1969111323 instance=ExtResource("7_e55jo")]
 unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-tooltip_text = "Choose a mod from the local catalog (which consists of mods used by other packs or which have been made available due to being installed in the past), and add it to the list.
-
-This option requires no additional disk space, because mods are shared across many installations."
-text = "Add From Catalog"
-script = ExtResource("5_0sis3")
-
-[node name="ImportManuallyButton" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/HBoxContainer" unique_id=1570532514]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-tooltip_text = "Choose a mod from a .zip archive, folder, or .pak file, and add it to the list."
-text = "Add Manually"
-script = ExtResource("5_0sis3")
-
-[node name="FindModListDialog" type="FileDialog" parent="VBoxContainer/Tabs/ViewModList" unique_id=259777594]
-unique_name_in_owner = true
-oversampling_override = 1.0
-title = "Import Modlist"
-initial_position = 2
-size = Vector2i(800, 400)
-ok_button_text = "Import"
-dialog_hide_on_ok = true
-mode_overrides_title = false
-file_mode = 0
-display_mode = 1
-access = 2
-filters = PackedStringArray("*.sbmm;Starbound Mod Manager Archive")
-use_native_dialog = true
-
-[node name="FindModFileDialog" type="FileDialog" parent="VBoxContainer/Tabs/ViewModList" unique_id=92049171]
-unique_name_in_owner = true
-oversampling_override = 1.0
-title = "Import Mod"
-initial_position = 2
-size = Vector2i(800, 400)
-ok_button_text = "Import"
-dialog_hide_on_ok = true
-mode_overrides_title = false
-file_mode = 0
-display_mode = 1
-access = 2
-filters = PackedStringArray("*.pak;Mod Pack File")
-use_native_dialog = true
+visible = false
 
 [node name="Buttons" type="HBoxContainer" parent="VBoxContainer" unique_id=1569252826]
 layout_mode = 2
@@ -278,19 +235,22 @@ size_flags_horizontal = 3
 text = "OK"
 script = ExtResource("5_0sis3")
 
-[node name="CancelButton" type="Button" parent="VBoxContainer/Buttons" unique_id=1274163312]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-tooltip_text = "Press this button to take note of every installed mod from the Steam Workshop. These mods will be copied to the Workshop Mod Pool, and the mod list for this pack will be updated to note all of those Workshop mods in use."
-text = "Cancel"
-script = ExtResource("5_0sis3")
-
 [node name="ExportButton" type="Button" parent="VBoxContainer/Buttons" unique_id=1484732401]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "Make a list of every mod you have installed. You can send this list to your friends, and then they can import it to get the same mods as you."
+tooltip_text = "Export a list of every mod you have installed (either by workshop ID, or by packing in your manually installed mods) which you can send to other people to share your modpack.
+
+[color=#f77]This may freeze the app for a moment while exporting.[/color]"
 text = "Export Modpack..."
 script = ExtResource("5_0sis3")
+
+[node name="ExportModpackDialog" type="FileDialog" parent="." unique_id=1450441310]
+unique_name_in_owner = true
+title = "Export Modpack"
+initial_position = 2
+mode_overrides_title = false
+display_mode = 1
+access = 2
+filters = PackedStringArray("*.sbmm;Starbound Mod Manager List")
+use_native_dialog = true

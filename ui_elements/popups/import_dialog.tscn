@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://bgsfhxcgnstw1"]
 
+[ext_resource type="Script" uid="uid://bcefqs1opytk1" path="res://SBModManager/Menus/Windows/ImportDialog.cs" id="1_w6u8s"]
 [ext_resource type="Script" uid="uid://vfb01c624vvb" path="res://SBModManager/GUI/RichTooltipElements/TooltipLabel.cs" id="2_m84do"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="3_sjcc7"]
 
@@ -7,19 +8,15 @@
 oversampling_override = 1.0
 title = "Import Mods"
 initial_position = 2
-size = Vector2i(1000, 196)
+size = Vector2i(1000, 212)
+transient = true
+exclusive = true
 unresizable = true
 sharp_corners = true
 minimize_disabled = true
 maximize_disabled = true
 content_scale_aspect = 1
-
-[node name="FileDialog" type="FileDialog" parent="." unique_id=1353012234]
-title = "Open a File or Directory"
-file_mode = 3
-display_mode = 1
-access = 2
-filters = PackedStringArray("")
+script = ExtResource("1_w6u8s")
 
 [node name="Panel" type="Panel" parent="." unique_id=143099214]
 anchors_preset = 15
@@ -47,7 +44,8 @@ layout_mode = 2
 layout_mode = 2
 bbcode_enabled = true
 text = "You can use this menu to import mods from multiple sources. Choose one:
-[font_size=12][color=#aaa][i]Hover your cursor over an option's name to view information.[/i][/color][/font_size]"
+[font_size=12][color=#aaa][i]Hover your cursor over an option's name to view information.[/i][/color]
+[color=#faa]Entering text into a box selects that option. To change options, erase the text.[/color][/font_size]"
 fit_content = true
 
 [node name="ColumnatedEntries" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=66019466]
@@ -102,7 +100,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Path to .pak file or mod folder..."
 
-[node name="ChooseModPak" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SingleModFile" unique_id=947000851]
+[node name="ChooseModPakButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SingleModFile" unique_id=947000851]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(31, 31)
 custom_maximum_size = Vector2(31, 31)
@@ -111,7 +109,7 @@ tooltip_text = "Choose a mod being stored as a .pak file."
 text = "🗜"
 script = ExtResource("3_sjcc7")
 
-[node name="ChooseModFolder" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SingleModFile" unique_id=967068195]
+[node name="ChooseModFolderButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SingleModFile" unique_id=967068195]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(31, 31)
 custom_maximum_size = Vector2(31, 31)
@@ -138,7 +136,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Path to .sbmm file..."
 
-[node name="ChooseSBMMFile" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SBMMList" unique_id=204479591]
+[node name="ChooseSBMMFileButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SBMMList" unique_id=204479591]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(31, 31)
 custom_maximum_size = Vector2(31, 31)
@@ -161,3 +159,44 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Cancel"
 script = ExtResource("3_sjcc7")
+
+[node name="ImportModpackDialog" type="FileDialog" parent="." unique_id=503537390]
+unique_name_in_owner = true
+title = "Import Modpack"
+initial_position = 2
+ok_button_text = "Import Modpack"
+mode_overrides_title = false
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.sbmm;Starbound Mod Manager List")
+use_native_dialog = true
+
+[node name="ImportModFileDialog" type="FileDialog" parent="." unique_id=195614005]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Import Mod"
+initial_position = 2
+size = Vector2i(800, 400)
+ok_button_text = "Import"
+dialog_hide_on_ok = true
+mode_overrides_title = false
+file_mode = 0
+display_mode = 1
+access = 2
+filters = PackedStringArray("*.pak;Starbound Mod")
+use_native_dialog = true
+
+[node name="ImportModFolderDialog" type="FileDialog" parent="." unique_id=883043994]
+unique_name_in_owner = true
+oversampling_override = 1.0
+title = "Import Mod"
+initial_position = 2
+size = Vector2i(800, 400)
+ok_button_text = "Import"
+dialog_hide_on_ok = true
+mode_overrides_title = false
+file_mode = 2
+display_mode = 1
+access = 2
+filters = PackedStringArray("*.pak;Starbound Mod")
+use_native_dialog = true

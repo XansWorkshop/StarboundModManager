@@ -5,12 +5,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 using Godot.NativeInterop;
 
 using SBModManager.Attributes;
 using SBModManager.GUI;
+using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
+using SBModManager.Other;
 using SBModManager.SteamInterop;
 
 namespace SBModManager.Menus {
@@ -34,28 +37,16 @@ namespace SBModManager.Menus {
 		public Button ImportFromWorkshopButton { get; }
 
 		/// <summary>
-		/// The button to import mods from a list.
+		/// The button to import mods from somewhere else.
 		/// </summary>
 		[Import, AllowNull]
-		public Button ImportFromListButton { get; }
+		public Button ImportOtherButton { get; }
 
 		/// <summary>
-		/// The button to import a mod from the catalog.
+		/// The import dialog to show.
 		/// </summary>
 		[Import, AllowNull]
-		public Button ImportFromCatalogButton { get; }
-
-		/// <summary>
-		/// The button to import a mod from a downloaded file or directory, or a workshop ID.
-		/// </summary>
-		[Import, AllowNull]
-		public Button ImportManuallyButton { get; }
-
-		/// <summary>
-		/// The file dialog to find mod lists.
-		/// </summary>
-		[Import, AllowNull]
-		public FileDialog FindModListDialog { get; }
+		public ImportDialog ImportDialog { get; }
 
 		/// <summary>
 		/// The search bar.
@@ -73,12 +64,12 @@ namespace SBModManager.Menus {
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
 			ImportFromWorkshopButton.Pressed += OnImportFromWorkshopPressed;
-			ImportFromListButton.Pressed += OnImportFromListPressed;
-			ImportFromCatalogButton.Pressed += OnImportFromCatalogPressed;
-			ImportManuallyButton.Pressed += OnImportFromFilePressed;
-			FindModListDialog.FileSelected += OnModlistFileSelected;
+			ImportOtherButton.Pressed += OnImportOtherPressed;
+
 			SearchMods.TextChanged += OnSearchTextChanged;
 		}
+
+		#region Search
 
 		public override void _Process(double delta) {
 			if (_pendingSearchString != null) {
@@ -89,16 +80,14 @@ namespace SBModManager.Menus {
 					scoped StringSearchEnumerator enumerator = EnumerateSearchResults(_pendingSearchString);
 					_pendingSearchString = null;
 
-					// To prevent a huge processing toll, this has to be done:
-					RemoveChild(ModsList);
+					ModsList.SetBlockSignals(true); // Prevent a huge processor toll from the constant NOTIFICATION_SORT_CHILDREN invocation.
 					try {
-						// ^ This is the only way that NOTIFICATION_SORT_CHILDREN is suppressed.
 						while (enumerator.MoveNext()) {
 							(ModListEntryElement element, bool qualifies) = enumerator.Current;
 							element.Visible = qualifies;
 						}
 					} finally {
-						AddChild(ModsList);
+						ModsList.SetBlockSignals(false);
 					}
 				}
 			}
@@ -131,7 +120,9 @@ namespace SBModManager.Menus {
 			return new StringSearchEnumerator(query, _sortedElementsByDisplayName);
 		}
 
-		private void RebuildList() {
+		#endregion
+
+		internal void RebuildList() {
 			if (EditingModpack == null) {
 				GD.PushError("Failed to rebuild the mod list because the dialog is open but no modpack is being edited.");
 				return;
@@ -174,24 +165,16 @@ namespace SBModManager.Menus {
 			RebuildList();
 		}
 
+		private void OnImportOtherPressed() {
+			if (EditingModpack == null) return;
 
-		private void OnImportFromListPressed() {
-			throw new NotImplementedException();
-		}
+			ImportDialog.AssignToModpack(EditingModpack, this);
+			ImportDialog.Show();
 
-		private void OnImportFromCatalogPressed() {
-			throw new NotImplementedException();
-		}
-
-		private void OnImportFromFilePressed() {
-			throw new NotImplementedException();
-		}
-
-		private void OnModlistFileSelected(string path) {
 		}
 
 		public void OnClosing() {
-			FindModListDialog.Hide();
+			ImportDialog.Hide();
 		}
 
 		/// <summary>
@@ -201,7 +184,7 @@ namespace SBModManager.Menus {
 		internal void SetModpack(Modpack modpack) {
 			ArgumentNullException.ThrowIfNull(modpack);
 			EditingModpack = modpack;
-			FindModListDialog.Hide();
+			ImportDialog?.Hide();
 			RebuildList();
 		}
 

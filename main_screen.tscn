@@ -151,7 +151,7 @@ theme_override_font_sizes/mono_font_size = 12
 bbcode_enabled = true
 text = "[font_size=14]Starbound Mod Manager
 Version: Beta 0.1.0[/font_size]
-To report bugs or request features, visit [color=#aff][url]https://github.com/XansWorkshop/StarboundModManager[/url][/color]"
+To report bugs or request features, visit [color=#aff][url]https://github.com/EtiTheSpirit/StarboundModManager[/url][/color]"
 fit_content = true
 scroll_active = false
 vertical_alignment = 2
@@ -163,3 +163,17 @@ visible = false
 [node name="ModpackManagement" parent="." unique_id=1489936823 instance=ExtResource("5_ywh4s")]
 unique_name_in_owner = true
 visible = false
+
+[node name="ImportModpackDialog" type="FileDialog" parent="." unique_id=2057900752]
+unique_name_in_owner = true
+title = "Import Modpack"
+initial_position = 2
+ok_button_text = "Import Modpack"
+mode_overrides_title = false
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.sbmm;Starbound Mod Manager List")
+use_native_dialog = true
+option_count = 1
+option_0/name = "Duplicate Modpack Behavior"
+option_0/values = PackedStringArray("Import as New Modpack", "Overwrite Existing Modpack")

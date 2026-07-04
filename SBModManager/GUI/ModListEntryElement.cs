@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using SBModManager.Attributes;
+using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
 using SBModManager.SteamInterop;
 
@@ -16,17 +17,35 @@ namespace SBModManager.GUI {
 	/// </summary>
 	public partial class ModListEntryElement : ColorRect {
 
+		/// <summary>
+		/// A checkbox which is used to enable or disable the mod.
+		/// </summary>
 		[Import, AllowNull]
 		public CheckButton EnableMod { get; }
 
+		/// <summary>
+		/// The thumbnail image of the mod.
+		/// </summary>
 		[Import, AllowNull]
 		public TextureRect ModIcon { get; }
 
+		/// <summary>
+		/// The name of the mod and its author.
+		/// </summary>
 		[Import, AllowNull]
 		public RichTextLabel ModNameAndAuthor { get; }
 
+		/// <summary>
+		/// Information about the mod's version and size on disk.
+		/// </summary>
 		[Import, AllowNull]
 		public RichTextLabel ModVersionAndSize { get; }
+
+		/// <summary>
+		/// The X button used to remove the mod from the list.
+		/// </summary>
+		[Import, AllowNull]
+		public Button UninstallModButton { get; }
 
 		/// <summary>
 		/// The mod that this represents.
@@ -45,11 +64,26 @@ namespace SBModManager.GUI {
 			if (Pack != null && Mod != null) AssignModRoutine(Pack, Mod);
 
 			EnableMod.Toggled += OnEnableModToggled;
+			UninstallModButton.Pressed += OnUninstallPressed;
+
+
 		}
 
 		private void OnEnableModToggled(bool toggledOn) {
 			Pack.ModSources[Mod.Owner] = toggledOn;
 			Modulate = new Color(1, 1, 1, toggledOn ? 1 : 0.5f);
+		}
+
+		private void OnUninstallPressed() {
+			if (Mod.Owner.Mods.Length > 1) return;
+			ConfirmDeleteDialog dialog = Assets.CreateConfirmDeleteDialog();
+			dialog.ShowAndGetResultCustomAsync("Are you sure you want to remove this mod from the list?").ContinueWith(delegate (Task<bool> result) {
+				if (result.Result) {
+					Pack.ModSources.Remove(Mod.Owner);
+					QueueFree();
+				}
+			}, TaskScheduler.FromCurrentSynchronizationContext());
+			AddChild(dialog);
 		}
 
 		public void AssignMod(Modpack modpack, ModArchive mod) {
@@ -63,6 +97,7 @@ namespace SBModManager.GUI {
 			Pack = modpack;
 			Mod = mod;
 			EnableMod.Disabled = !mod.IsExclusive || mod.IsDisabledByForce;
+			UninstallModButton.Visible = mod.IsExclusive; // Flat out hide it.
 			EnableMod.SetPressedNoSignal(mod.Owner.IsEnabledIn(modpack) && !mod.IsDisabledByForce);
 			ModIcon.Texture = mod.Metadata.PreviewImage;
 			
@@ -136,8 +171,8 @@ namespace SBModManager.GUI {
 			}
 			ModNameAndAuthor.TooltipText += "[font_size=10][color=#aaa][i]Use Page Up and Page Down to scroll...[/i][/color]\n[/font_size]";
 			if (mod.IsDirectory) {
-				Color = Colors.Wheat;
-				ModNameAndAuthor.TooltipText += "[color=wheat]Unpacked mod![/color] This mod may take longer to load.\n\n";
+				Color = new Color(0.23f, 0.08f, 0.02f);
+				ModNameAndAuthor.TooltipText += "[color=#f77]Unpacked mod![/color] This mod may take longer to load.\n\n";
 			}
 			ModNameAndAuthor.TooltipText += "[hr]\n";
 

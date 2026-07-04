@@ -102,6 +102,14 @@ namespace SBModManager.ModInstances {
 				}
 				result.Add(new ModArchive(this, file, new ModMetadata(data, workshopID)));
 			}
+			foreach (string directory in Directory.GetDirectories(path)) {
+				GDDictionary? data = MetadataReader.GetMetadataFromDirectory(new DirectoryInfo(directory));
+				if (data == null) continue;
+				if (!data.ContainsKey("name")) {
+					data["name"] = System.IO.Path.GetFileNameWithoutExtension(directory);
+				}
+				result.Add(new ModArchive(this, directory, new ModMetadata(data, workshopID)));
+			}
 			return result.ToImmutableArray();
 		}
 

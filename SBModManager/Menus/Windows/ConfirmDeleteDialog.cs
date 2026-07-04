@@ -57,5 +57,34 @@ namespace SBModManager.Menus.Windows {
 			};
 			return _tcs.Task;
 		}
+
+		/// <summary>
+		/// Shows this popup, and then waits until an option is selected, returning <see langword="true"/>
+		/// if accept was clicked, and <see langword="false"/> if cancel was clicked or the dialog was exited.
+		/// </summary>
+		/// <param name="customText">Fully custom text to display. Can have bbcode.</param>
+		/// <returns></returns>
+		public Task<bool> ShowAndGetResultCustomAsync(string customText) {
+			if (_tcs != null) throw new InvalidOperationException("Make a new dialog, don't reuse an old one.");
+			_tcs = new TaskCompletionSource<bool>();
+			_pendingText = customText;
+			if (IsNodeReady()) {
+				RichTextLabel.Text = _pendingText;
+				Show();
+			}
+			Confirmed += delegate {
+				_tcs.SetResult(true);
+				QueueFree();
+			};
+			Canceled += delegate {
+				_tcs.SetResult(false);
+				QueueFree();
+			};
+			CloseRequested += delegate {
+				_tcs.TrySetResult(false); // TrySet because confirm/cancel take precedence.
+				QueueFree();
+			};
+			return _tcs.Task;
+		}
 	}
 }

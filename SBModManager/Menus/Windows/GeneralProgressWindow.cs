@@ -34,6 +34,7 @@ namespace SBModManager.Menus.Windows {
 
 		[AllowNull] private string _nextStatus;
 		[AllowNull] private string _nextTitle;
+		private float _nextProgress;
 		private Task? _trackedTask;
 		private CancellationTokenSource? _cancellationTokenSource;
 		private bool _statusOrProgressDirty = false;
@@ -59,17 +60,36 @@ namespace SBModManager.Menus.Windows {
 			_trackedTask = Task.Run(trackedTask);
 			_cancellationTokenSource = cancellationTokenSource;
 			if (freeWhenTaskCompleted) {
-				if (_trackedTask == null) {
-					throw new ArgumentException($"Cannot set {nameof(freeWhenTaskCompleted)} to true when {nameof(trackedTask)} is null.", nameof(freeWhenTaskCompleted));
-				} else {
-					_trackedTask.ContinueWith(delegate (Task task) {
-						if (IsInstanceValid(this)) {
-							QueueFree();
-						}
-					});
-				}
+				_trackedTask.ContinueWith(delegate (Task task) {
+					if (IsInstanceValid(this)) {
+						QueueFree();
+					}
+				}, TaskScheduler.FromCurrentSynchronizationContext());
 			}
 			return _trackedTask;
+		}
+
+		/// <summary>
+		/// Shows this window, and assigns its <see cref="CancellationTokenSource"/>.
+		/// <para/>
+		/// This can only be used once; if you need a different operation to cancel, open a new window.
+		/// </summary>
+		/// <param name="trackedTask">The task to track. This is required for <paramref name="freeWhenTaskCompleted"/>.</param>
+		/// <param name="cancellationTokenSource">The <see cref="CancellationTokenSource"/> bound to the <paramref name="trackedTask"/> that is assigned to the Cancel button.</param>
+		/// <param name="freeWhenTaskCompleted">If true, this will call <see cref="Node.QueueFree"/> on itself as soon as the task is completed.</param>
+		public Task<TResult> ShowWithCancellation<TResult>(Func<Task<TResult>> trackedTask, CancellationTokenSource cancellationTokenSource, bool freeWhenTaskCompleted = true) {
+			Show();
+			Task<TResult> trackedTaskRunning = Task.Run(trackedTask);
+			_trackedTask = trackedTaskRunning;
+			_cancellationTokenSource = cancellationTokenSource;
+			if (freeWhenTaskCompleted) {
+				trackedTaskRunning.ContinueWith(delegate (Task<TResult> task) {
+					if (IsInstanceValid(this)) {
+						QueueFree();
+					}
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			}
+			return trackedTaskRunning;
 		}
 
 		private void OnCancelled() {
@@ -92,12 +112,7 @@ namespace SBModManager.Menus.Windows {
 		public void SetProgress(float percent) {
 			if (_cancellationTokenSource == null) return;
 			if (_cancellationTokenSource.IsCancellationRequested) return;
-			if (float.IsNaN(percent)) {
-				ProgressBar.Indeterminate = true;
-			} else {
-				ProgressBar.Indeterminate = false;
-				ProgressBar.Value = ((ProgressBar.MaxValue - ProgressBar.MinValue) * percent) + ProgressBar.MinValue;
-			}
+			_nextProgress = percent;
 			_statusOrProgressDirty = true;
 		}
 
@@ -132,6 +147,13 @@ namespace SBModManager.Menus.Windows {
 					} else {
 						Title = _nextStatus;
 					}
+				}
+
+				if (float.IsNaN(_nextProgress)) {
+					ProgressBar.Indeterminate = true;
+				} else {
+					ProgressBar.Indeterminate = false;
+					ProgressBar.Value = ((ProgressBar.MaxValue - ProgressBar.MinValue) * _nextProgress) + ProgressBar.MinValue;
 				}
 			}
 		}

@@ -72,7 +72,7 @@ namespace SBModManager.ModInstances {
 			ID = Guid.NewGuid();
 		}
 
-		private Modpack(Guid id) {
+		internal Modpack(Guid id) {
 			ID = id;
 		}
 
@@ -202,6 +202,7 @@ namespace SBModManager.ModInstances {
 
 		/// <summary>
 		/// Returns a <see cref="Texture2D"/> representing the icon of this modpack.
+		/// If no icon is found, this returns <see cref="Assets.DefaultStarboundIcon"/>.
 		/// </summary>
 		/// <returns></returns>
 		public Texture2D GetIcon() {
