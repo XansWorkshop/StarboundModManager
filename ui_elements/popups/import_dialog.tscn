@@ -59,9 +59,7 @@ size_flags_stretch_ratio = 0.5
 [node name="ModPakFile" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=770685637]
 custom_minimum_size = Vector2(0, 31)
 layout_mode = 2
-tooltip_text = "Most Starbound mods that aren't on the Steam Workshop exist in the form of [color=#afa].pak[/color] files.
-
-More rarely, mods can exist as a folder, but this is typically done by mod developers."
+tooltip_text = "This option allows you to directly import a .pak file. It also allows you to directly import an unpacked mod, or a folder that has many mods within it."
 mouse_filter = 0
 mouse_default_cursor_shape = 16
 text = "Option 1: From a .pak file, or a folder"
@@ -71,6 +69,9 @@ script = ExtResource("2_m84do")
 [node name="FromWorkshopID" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=1565741806]
 custom_minimum_size = Vector2(0, 31)
 layout_mode = 2
+tooltip_text = "Enter the URL or ID for something on the Steam Workshop to import it.
+
+[color=#f77]Note:[/color] You can't import mods that are unlisted, friends-only, or private."
 mouse_filter = 0
 mouse_default_cursor_shape = 16
 text = "Option 2: From the Steam Workshop"
@@ -80,7 +81,7 @@ script = ExtResource("2_m84do")
 [node name="FromSBMMList" type="Label" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Names" unique_id=1753600831]
 custom_minimum_size = Vector2(0, 31)
 layout_mode = 2
-tooltip_text = "The location of the .zip file containing OpenStarbound. This is used to extract the actual playable game."
+tooltip_text = "Import a .sbmm mod list, but instead of creating a new modpack, the mods from that list are merged into the mods in this list."
 mouse_filter = 0
 mouse_default_cursor_shape = 16
 text = "Option 3: From SBMM List"
@@ -114,7 +115,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(31, 31)
 custom_maximum_size = Vector2(31, 31)
 layout_mode = 2
-tooltip_text = "Choose a mod being stored as a directory (you probably don't want this)."
+tooltip_text = "Choose an unpacked mod to import, or import a folder containing many mods."
 text = "📂"
 script = ExtResource("3_sjcc7")
 
@@ -141,7 +142,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(31, 31)
 custom_maximum_size = Vector2(31, 31)
 layout_mode = 2
-text = "📂"
+text = "🗜W"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1952991835]
 layout_mode = 2
