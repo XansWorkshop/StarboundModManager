@@ -29,15 +29,15 @@ namespace SBModManager {
 			ArgumentNullException.ThrowIfNull(progressWindow);
 			if (!cancellationToken.CanBeCanceled) throw new ArgumentException("The CancellationToken must be valid.");
 
-			progressWindow.SetStatus("Preparing launch configuration...\nIf any mods are missing, they will be downloaded during this step.");
+			progressWindow.SetStatus("Preparing launch configuration...\nIf any mods are missing, they will be downloaded during this step.", "Launching Starbound");
 			progressWindow.SetProgress(float.NaN);
 			modpack.LastPlayed = DateTime.Now;
 			(string sbInitClientPath, string sbInitServerPath) = await modpack.SaveAndUpdateInitsAsync(cancellationToken);
 
 			if (launchServer) {
-				progressWindow.SetStatus("Launching Starbound Server...");
+				progressWindow.SetStatus("Launching Starbound Server...", "Launching Starbound");
 			} else {
-				progressWindow.SetStatus("Launching Starbound...");
+				progressWindow.SetStatus("Launching Starbound...", "Launching Starbound");
 			}
 			ProcessStartInfo starboundStartInfo = new ProcessStartInfo {
 				FileName = launchServer ? Directories.GetLocalStarboundServerProgram() : Directories.GetLocalStarboundProgram()

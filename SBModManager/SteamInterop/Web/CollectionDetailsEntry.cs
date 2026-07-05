@@ -38,7 +38,11 @@ namespace SBModManager.SteamInterop.Web {
 		public CollectionDetailsEntry(GDDictionary json) {
 			publishedFileID = long.Parse((string)json["publishedfileid"]);
 			result = (EResult)(int)json["result"];
-			children = ((GDArray)json["children"]).Select(static element => new CollectionDetailsEntryChild((GDDictionary)element)).ToArray();
+			if (result == EResult.OK) {
+				children = ((GDArray)json["children"]).Select(static element => new CollectionDetailsEntryChild((GDDictionary)element)).ToArray();
+			} else {
+				children = [];
+			}
 		}
 
 	}

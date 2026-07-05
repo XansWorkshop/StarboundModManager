@@ -208,6 +208,8 @@ namespace SBModManager.SteamInterop {
 			string steamCmdStagingDirectory = Path2.Combine(Directories.GetSteamCMDInstallationDirectory(), "steamapps", "content", "app_211820");
 			Directory.CreateDirectory(sbmmWorkshopStorageDirectory);
 			Directory.CreateDirectory(sbmmSteamCMDScriptDirectory);
+			Directory.CreateDirectory(steamCmdStagingDirectory); // We make this so the watcher doesn't shit the bed.
+			// Not the slugcat I mean FileSystemWatcher.
 
 			// To begin, we need to generate a script.
 			// FIXME: Figure out why I can't use stdin to send commands to SteamCMD.

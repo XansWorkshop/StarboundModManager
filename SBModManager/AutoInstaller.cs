@@ -322,7 +322,7 @@ namespace SBModManager {
 			
 			progressWindow.SetProgress(0.00f);
 			if (NeedsToInstallSteamCMD()) {
-				progressWindow.SetStatus("Installing SteamCMD...\n(This will take about 20 seconds)", "Performing first-time setup...");
+				progressWindow.SetStatus("Installing SteamCMD...\n(This will take about 20 seconds)", "Performing first-time setup");
 				try {
 					await InstallSteamCMDAsync(cancellationToken);
 				} catch (OperationCanceledException) {
@@ -333,7 +333,7 @@ namespace SBModManager {
 
 			progressWindow.SetProgress(0.25f);
 			if (NeedsToInstallOpenStarboundClient()) {
-				progressWindow.SetStatus("Installing OpenStarbound Client...", "Performing first-time setup...");
+				progressWindow.SetStatus("Installing OpenStarbound Client...", "Performing first-time setup");
 				try {
 					await InstallOpenStarboundAsync(false, cancellationToken);
 				} catch (OperationCanceledException) {
@@ -344,7 +344,7 @@ namespace SBModManager {
 
 			progressWindow.SetProgress(0.50f);
 			if (NeedsToInstallOpenStarboundServer()) {
-				progressWindow.SetStatus("Installing OpenStarbound Server...", "Performing first-time setup...");
+				progressWindow.SetStatus("Installing OpenStarbound Server...", "Performing first-time setup");
 				try {
 					await InstallOpenStarboundAsync(true, cancellationToken);
 				} catch (OperationCanceledException) {
@@ -355,7 +355,7 @@ namespace SBModManager {
 
 			progressWindow.SetProgress(0.75f);
 			if (NeedsToInstallStarboundAssets()) {
-				progressWindow.SetStatus("Importing Starbound Assets...", "Performing first-time setup...");
+				progressWindow.SetStatus("Importing Starbound Assets...", "Performing first-time setup");
 				try {
 					await ImportGameAssetsAsync(cancellationToken);
 				} catch (OperationCanceledException) {
@@ -364,7 +364,7 @@ namespace SBModManager {
 				}
 			}
 
-			progressWindow.SetStatus("Done!");
+			progressWindow.SetStatus("Done!", "Done!");
 			progressWindow.SetProgress(1.000f);
 		}
 

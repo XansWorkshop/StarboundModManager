@@ -43,7 +43,7 @@ namespace SBModManager.SteamInterop {
 			try {
 				await steamCMD.WaitForExitAsync(cancellationToken);
 			} catch (OperationCanceledException) {
-				steamCMD.Kill(true);
+				steamCMD.Kill(false);
 				throw;
 			}
 		}

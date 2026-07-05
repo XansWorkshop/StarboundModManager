@@ -117,37 +117,24 @@ namespace SBModManager.Menus.Windows {
 		}
 
 		/// <summary>
-		/// Sets the displayed status string and the title of the window. If this string has multiple lines, only the first
-		/// line is used for the title of the window, but the popup will display all of the text.
+		/// Sets the displayed status string and the title of the window. 
 		/// <para/>
 		/// This can be used outside of the main thread.
 		/// </summary>
 		/// <param name="status">The text to display.</param>
 		/// <param name="title">An optional title to use instead of the first line of the status.</param>
-		public void SetStatus(string status, string? title = null) {
+		public void SetStatus(string status, string? title) {
 			if (_cancellationTokenSource == null) return;
 			if (_cancellationTokenSource.IsCancellationRequested) return;
 			_nextStatus = status ?? string.Empty;
-			if (title != null) {
-				_nextTitle = title;
-			}
+			_nextTitle = title;
 			_statusOrProgressDirty = true;
 		}
 
 		public override void _Process(double delta) {
 			if (_statusOrProgressDirty) {
 				StatusLabel.Text = _nextStatus;
-				if (_nextTitle != null) {
-					Title = _nextTitle;
-					_nextTitle = null;
-				} else {
-					if (_nextStatus.Contains('\n')) {
-						string[] parts = _nextStatus.Split('\n', 2);
-						Title = parts[0];
-					} else {
-						Title = _nextStatus;
-					}
-				}
+				Title = _nextTitle;
 
 				if (float.IsNaN(_nextProgress)) {
 					ProgressBar.Indeterminate = true;

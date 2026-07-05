@@ -57,7 +57,7 @@ namespace SBModManager.IO {
 		/// <returns></returns>
 		/// <exception cref="OperationCanceledException"></exception>
 		public static Task<Modpack> ImportModpackAsync(Stream stream, bool importAsNewModpack, GeneralProgressWindow? progressWindow, CancellationToken cancellationToken) {
-			progressWindow?.SetStatus("Importing modpack...", "Importing MOdpack");
+			progressWindow?.SetStatus("Importing modpack...", "Importing Modpack");
 			progressWindow?.SetProgress(float.NaN);
 
 			return Task.Run(delegate {
@@ -197,6 +197,8 @@ namespace SBModManager.IO {
 
 		/// <summary>
 		/// Reads the metadata of the modpack and sets the values in a newly created instance.
+		/// <para/>
+		/// <strong>Returns a corrupted modpack. If the task is successful, set <see cref="Modpack.IsCorruptedDeleteOnNextRead"/> to <see langword="false"/>!</strong>
 		/// </summary>
 		/// <remarks>
 		/// This runs synchronously with the intent that it is run on a background thread. The division of work
@@ -216,6 +218,7 @@ namespace SBModManager.IO {
 			} else {
 				modpack = new Modpack(new Guid(reader.ReadBytes(16)));
 			}
+			modpack.IsCorruptedDeleteOnNextRead = true; // Remember to set this to false afterwards
 			modpack.Name = reader.ReadString() + appended;
 			modpack.Creator = reader.ReadString();
 			modpack.Description = reader.ReadString();
@@ -242,7 +245,7 @@ namespace SBModManager.IO {
 				}
 			}
 
-			progressWindow?.SetStatus("Importing Workshop Mods...\nThis might take a while.");
+			progressWindow?.SetStatus("Importing Workshop Mods...\nThis might take a while.", "Importing Modpack");
 			progressWindow?.SetProgress(float.NaN);
 
 			HashSet<long> failed = SteamTools.DownloadWorkshopModsAsync(workshopMods.Keys.ToArray(), true, progressWindow, cancellationToken).Result.ToHashSet();

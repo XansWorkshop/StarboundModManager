@@ -67,6 +67,13 @@ namespace SBModManager.ModInstances {
 		public SortedDictionary<ModSource, bool> ModSources { get; } = [];
 
 		/// <summary>
+		/// When importing a modpack, this is set to true. The intent is that if the modpack is stored on disk,
+		/// but then the import is cancelled or fails, this will have been saved as true. The next time the game
+		/// reads this modpack, it will delete it instead of loading a corrupted pack.
+		/// </summary>
+		public bool IsCorruptedDeleteOnNextRead { get; set; }
+
+		/// <summary>
 		/// Create a new, blank modpack.
 		/// </summary>
 		public Modpack() {
@@ -90,6 +97,14 @@ namespace SBModManager.ModInstances {
 			}
 
 			GDDictionary data = (GDDictionary)StarboundJsonSanitizer.ParseString(File.ReadAllText(packJson));
+			if (data.TryGetValue("is_corrupted_delete_next_time", out Variant isCorrupted)) {
+				if (isCorrupted.AsBool()) {
+					GD.Print("Deleted a corrupted modpack.");
+					Directory.Delete(Directories.GetPackDirectory(id), true);
+					return null;
+				}
+			}
+
 			Modpack pack = new Modpack(id) {
 				Name = data.GetValueAsStringOrDefault("name", "No name"),
 				Creator = data.GetValueAsStringOrDefault("creator", ""),
@@ -163,6 +178,7 @@ namespace SBModManager.ModInstances {
 			data["creator"] = Creator;
 			data["description"] = Description;
 			data["last_played"] = LastPlayed.ToBinary();
+			data["is_corrupted_delete_next_time"] = IsCorruptedDeleteOnNextRead;
 
 			// This is an array because of a possible edge case where a mod's name is just numbers.
 			GDArray modSources = [];

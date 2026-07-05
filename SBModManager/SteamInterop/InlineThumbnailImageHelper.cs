@@ -100,7 +100,11 @@ namespace SBModManager.SteamInterop {
 			try {
 				byte[]? buffer = null;
 				try {
-					buffer = File.ReadAllBytes(Path2.Combine(imgCache, $"{md5}.png"));
+					string cachePath = Path2.Combine(imgCache, $"{md5}.png");
+					if (File.Exists(cachePath)) {
+						// ^ Test this anyway. Exception handling is slow and this needs to be fast.
+						buffer = File.ReadAllBytes(cachePath);
+					}
 				} catch (FileNotFoundException) {
 				} catch (DirectoryNotFoundException) {
 				}

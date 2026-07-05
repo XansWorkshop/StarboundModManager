@@ -266,10 +266,12 @@ namespace SBModManager.Menus.Windows {
 					using FileStream stream = File.OpenRead(sbmm);
 					using GZipStream decompressor = new GZipStream(stream, CompressionMode.Decompress);
 					Modpack modpack = await PackExportImport.ImportModpackAsync(decompressor, true, progress, cts.Token);
+					modpack.IsCorruptedDeleteOnNextRead = true; // It's not actually corrupted, but it's a garbage pack that we don't want to save.
+
 					foreach (KeyValuePair<ModSource, bool> binding in modpack.ModSources) {
 						editing.ModSources.TryAdd(binding.Key, binding.Value);
 					}
-				} catch (Exception exc) {
+				} catch (Exception exc) when (!exc.IsCancellation()) {
 					OS.Alert(exc.Message, "Failed to import modpack!");
 				}
 			}, cts, true).ContinueWith(delegate {

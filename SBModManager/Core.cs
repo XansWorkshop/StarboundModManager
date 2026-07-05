@@ -237,7 +237,7 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 				GDDictionary options = ImportModpackDialog.GetSelectedOptions();
 				int mode = (int)options["Duplicate Modpack Behavior"];
 				OnModpackImportSelected(decompressor, path, mode == 0);
-			} catch (Exception exc) {
+			} catch (Exception exc) when (!exc.IsCancellation()) {
 				OS.Alert(exc.Message, "Failed to import modpack!");
 			}
 		}
@@ -251,17 +251,21 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 					Modpack modpack = await PackExportImport.ImportModpackAsync(stream, importAsNewModpack, progress, cts.Token);
 					CurrentModpacks.Add(modpack);
 					return modpack;
-				} catch (Exception exc) {
+				} catch (Exception exc) when (!exc.IsCancellation()) {
 					OS.Alert(exc.Message, "Failed to import modpack!");
 					return null;
 				}
 			}, cts, true).ContinueWith(delegate (Task<Modpack?> task) {
 				stream.Dispose();
 				if (task.IsCompletedSuccessfully) {
+					task.Result!.IsCorruptedDeleteOnNextRead = false;
+					task.Result.SaveAndUpdateInitsAsync(CancellationToken.None).Wait();
 					CreateButtonForModpack(task.Result!);
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
+			
 		}
+
 
 		public void OnRunPressed() {
 			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
