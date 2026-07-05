@@ -301,8 +301,10 @@ namespace SBModManager.Menus.Windows {
 						OS.Alert($"Failed to parse {workshopURLOrID} as a number or a URL.", "Import failed!");
 					}
 				}
-				await SteamTools.DownloadWorkshopModsAsync([id], true, cts.Token);
-				editing.ModSources.TryAdd(new ModSource(id), true);
+				long[] failed = await SteamTools.DownloadWorkshopModsAsync([id], true, cts.Token);
+				if (failed.Length == 0) {
+					editing.ModSources.TryAdd(new ModSource(id), true);
+				}
 
 			}, cts, true).ContinueWith(delegate {
 				if (IsInstanceValid(ViewModListPanel)) {
@@ -319,49 +321,8 @@ namespace SBModManager.Menus.Windows {
 			if (_importTask != null) return;
 
 			_importTask = Task.CompletedTask;
-			try {
-				bool isDirectory = File.GetAttributes(pakOrFolderPath).HasFlag(FileAttributes.Directory);
-				GDDictionary? metadata = MetadataReader.ReadMetadataFromDisk(pakOrFolderPath);
-				string name = Path.GetFileName(pakOrFolderPath);
-				if (metadata != null) {
-					name = metadata.GetValueAsStringOrDefault("name", name);
-				}
-				if (!name.EndsWith(".pak")) {
-					name += ".pak";
-				}
-
-				string manualModsDir = Directories.GetLocalManualModCacheDirectory();
-				string sourceDirectory = Path2.Combine(manualModsDir, name);
-				string destination = Path2.Combine(sourceDirectory, name);
-
-				if (pakOrFolderPath == destination) {
-					// Imported directly from the local cache.
-					EditingModpack.ModSources.TryAdd(new ModSource(name), true);
-				} else {
-
-					try {
-						if (File.Exists(destination)) {
-							File.Delete(destination);
-						} else if (Directory.Exists(destination)) {
-							Directory.Delete(destination, true);
-						}
-					} catch (FileNotFoundException) {
-					} catch (DirectoryNotFoundException) {
-					}
-
-					if (isDirectory) {
-						Directories.CopyDirectory(pakOrFolderPath, destination, CancellationToken.None);
-					} else {
-						Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
-						File.Copy(pakOrFolderPath, destination);
-					}
-					EditingModpack.ModSources.TryAdd(new ModSource(name), true);
-				}
-				ViewModListPanel.RebuildList();
-				OnCloseRequested();
-			} catch (Exception exc) {
-				OS.Alert(exc.Message, "Failed to import mod!");
-			}
+			Importers.PerformPakOrFolderImport(EditingModpack, ViewModListPanel, pakOrFolderPath);
+			OnCloseRequested();
 		}
 
 		#endregion

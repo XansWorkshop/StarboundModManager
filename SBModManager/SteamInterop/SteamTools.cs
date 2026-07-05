@@ -66,6 +66,7 @@ namespace SBModManager.SteamInterop {
 
 		/// <summary>
 		/// Creates a series of commands which are executed by SteamCMD to download one or more workshop mods to disk.
+		/// Returns a list of IDs that failed to load.
 		/// </summary>
 		/// <param name="ids">An array of workshop item IDs to download.</param>
 		/// <param name="skipIfInstalled">If true, workshop items that appear to be already installed are skipped.</param>
@@ -73,8 +74,8 @@ namespace SBModManager.SteamInterop {
 		/// <returns></returns>
 		/// <exception cref="InvalidOperationException"></exception>
 		/// <exception cref="OperationCanceledException"></exception>
-		public static async Task DownloadWorkshopModsAsync(long[] ids, bool skipIfInstalled, CancellationToken cancellationToken) {
-			if (ids.Length == 0) return;
+		public static async Task<long[]> DownloadWorkshopModsAsync(long[] ids, bool skipIfInstalled, CancellationToken cancellationToken) {
+			if (ids.Length == 0) return [];
 
 			string workshopDir = Directories.GetLocalWorkshopCacheDirectory();
 			string scriptDir = Directories.GetSteamCMDTempScriptDirectory();
@@ -82,42 +83,88 @@ namespace SBModManager.SteamInterop {
 			Directory.CreateDirectory(workshopDir);
 			Directory.CreateDirectory(scriptDir);
 
+			string baseInstallPath = Path2.Combine(Directories.GetSteamCMDInstallationDirectory(), "steamapps", "content", "app_211820");
+
 			StringBuilder script = new StringBuilder();
 			script.AppendLine("@ShutdownOnFailedCommand 0");
 			script.AppendLine("login anonymous");
 			bool hadAny = false;
-			for (int i = 0; i < ids.Length; i++) {
-				cancellationToken.ThrowIfCancellationRequested();
 
-				if (skipIfInstalled) {
-					string itemPath = Path2.Combine(workshopDir, ids[i].ToString());
-					if (Directory.Exists(itemPath)) continue;
-				}
-				script.AppendLine($"download_item 211820 {ids[i]}");
-				hadAny = true;
-			}
-			if (!hadAny) return;
-
-			File.WriteAllText(scriptFile, script.ToString());
-			try {
-				await SteamCMD.RunSteamCMDScriptAsync(scriptFile, cancellationToken);
-				string baseInstallPath = Path2.Combine(Directories.GetSteamCMDInstallationDirectory(), "steamapps", "content", "app_211820");
-
+			HashSet<long> unnecessaryIDs = [];
+			int tries = 2;
+			while (tries-- > 0) {
 				for (int i = 0; i < ids.Length; i++) {
 					cancellationToken.ThrowIfCancellationRequested();
 
-					string itemPath = Path2.Combine(baseInstallPath, $"item_{ids[i]}");
-					string destination = Path2.Combine(workshopDir, ids[i].ToString());
-					if (Directory.Exists(destination)) {
-						try {
-							Directory.Delete(destination, true);
-						} catch (DirectoryNotFoundException) { }
+					if (skipIfInstalled) {
+						string itemPath = Path2.Combine(workshopDir, ids[i].ToString());
+						if (Directory.Exists(itemPath)) {
+							unnecessaryIDs.Add(ids[i]);
+							continue;
+						}
+
+						string failedInstallPath = Path2.Combine(baseInstallPath, $"item_{ids[i]}");
+						if (Directory.Exists(failedInstallPath)) {
+							// If we make it here, there's another problem: The installation failed and it wasn't copied.
+							// Copy it over then add it to the ignore list.
+							string destination = Path2.Combine(workshopDir, ids[i].ToString());
+							if (Directory.Exists(destination)) {
+								try {
+									Directory.Delete(destination, true);
+								} catch (DirectoryNotFoundException) { }
+							}
+							Directory.Move(failedInstallPath, destination);
+							unnecessaryIDs.Add(ids[i]);
+							continue;
+						}
 					}
-					Directory.Move(itemPath, destination);
+					if (unnecessaryIDs.Contains(ids[i])) continue;
+
+					script.AppendLine($"download_item 211820 {ids[i]}");
+					hadAny = true;
 				}
-			} finally {
-				File.Delete(scriptFile);
+				if (!hadAny) return [];
+
+				File.WriteAllText(scriptFile, script.ToString());
+				try {
+					await SteamCMD.RunSteamCMDScriptAsync(scriptFile, cancellationToken);
+
+					List<long> seeminglyMissing = [];
+					for (int i = 0; i < ids.Length; i++) {
+						cancellationToken.ThrowIfCancellationRequested();
+						if (unnecessaryIDs.Contains(ids[i])) continue;
+
+						string itemPath = Path2.Combine(baseInstallPath, $"item_{ids[i]}");
+						string destination = Path2.Combine(workshopDir, ids[i].ToString());
+						if (Directory.Exists(destination)) {
+							try {
+								Directory.Delete(destination, true);
+							} catch (DirectoryNotFoundException) { }
+						}
+						if (!Directory.Exists(itemPath)) {
+							seeminglyMissing.Add(ids[i]);
+						} else {
+							Directory.Move(itemPath, destination);
+						}
+					}
+
+					if (seeminglyMissing.Count == 0) {
+						ids = [];
+						break;
+					} else {
+						ids = seeminglyMissing.ToArray();
+					}
+				} finally {
+					File.Delete(scriptFile);
+				}
 			}
+
+			if (ids.Length > 0) {
+				File.WriteAllText(Path2.Combine(workshopDir, "failedworkshop.txt"), string.Join('\n', ids));
+				OS.Alert($"{ids.Length} {(ids.Length == 1 ? "mod" : "mods")} failed to download (they are probably unlisted or private). The mods have been written to \"failedworkshop.txt\" in the mod_catalog_workshop directory.");
+				return ids;
+			}
+			return [];
 		}
 
 		/// <summary>

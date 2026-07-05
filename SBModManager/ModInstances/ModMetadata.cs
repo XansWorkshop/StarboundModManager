@@ -152,23 +152,40 @@ namespace SBModManager.ModInstances {
 		/// <summary>
 		/// Create a <see cref="ModMetadata"/> directly from a dictionary loaded from <see cref="MetadataReader"/>
 		/// </summary>
-		/// <param name="json"></param>
-		public ModMetadata(GDDictionary json, long fallbackWorkshopID) {
-			ArgumentNullException.ThrowIfNull(json);
-			ModID = json.GetValueAsStringOrDefault("name", string.Empty);
-			FriendlyName = json.GetValueAsStringOrDefault("friendlyName", ModID);
-			Description = json.GetValueAsStringOrDefault("description", string.Empty);
-			Author = json.GetValueAsStringOrDefault("author", string.Empty);
-			Version = json.GetValueAsStringOrDefault("version", string.Empty);
-			Link = json.GetValueAsStringOrDefault("link", string.Empty);
-			WorkshopID = ReadWorkshopIDSpecial(json, "steamContentId", fallbackWorkshopID);
+		/// <param name="fallbackModID">The name of the mod file archive being loaded. This is only used if <paramref name="json"/> is null.</param>
+		/// <param name="json">The json containing the metadata, if it exists.</param>
+		/// <param name="fallbackWorkshopID">In case the workshop ID can't be read from the json file, this is used</param>
+		public ModMetadata(string fallbackModID, GDDictionary? json, long fallbackWorkshopID) {
+			if (json != null) {
+				ModID = json.GetValueAsStringOrDefault("name", string.Empty);
+				FriendlyName = json.GetValueAsStringOrDefault("friendlyName", ModID);
+				Description = json.GetValueAsStringOrDefault("description", string.Empty);
+				Author = json.GetValueAsStringOrDefault("author", string.Empty);
+				Version = json.GetValueAsStringOrDefault("version", string.Empty);
+				Link = json.GetValueAsStringOrDefault("link", string.Empty);
+				WorkshopID = ReadWorkshopIDSpecial(json, "steamContentId", fallbackWorkshopID);
+				// TODO: Should a mismatch be an exception?
 
-			string tags = json.GetValueAsStringOrDefault("tags", string.Empty);
-			Tags = tags.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToImmutableArray();
-			OptionalDependencies = GetValueAsStringArrayOrDefault(json, "includes");
-			RequiredDependencies = GetValueAsStringArrayOrDefault(json, "requires");
-			Priority = GetValueAsIntOrDefault(json, "priority");
-			PreviewImage = (Texture2D)json.GetValueOrDefault("preview_image");
+				string tags = json.GetValueAsStringOrDefault("tags", string.Empty);
+				Tags = tags.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToImmutableArray();
+				OptionalDependencies = GetValueAsStringArrayOrDefault(json, "includes");
+				RequiredDependencies = GetValueAsStringArrayOrDefault(json, "requires");
+				Priority = GetValueAsIntOrDefault(json, "priority");
+				PreviewImage = (Texture2D)json.GetValueOrDefault("preview_image");
+			} else {
+				ModID = fallbackModID;
+				FriendlyName = ModID;
+				Description = string.Empty;
+				Author = string.Empty;
+				Version = string.Empty;
+				Link = string.Empty;
+				WorkshopID = fallbackWorkshopID;
+				Tags = [];
+				OptionalDependencies = [];
+				RequiredDependencies = [];
+				Priority = 0;
+				PreviewImage = null;
+			}
 		}
 
 		private static int GetValueAsIntOrDefault(GDDictionary dictionary, string key, int @default = 0) {

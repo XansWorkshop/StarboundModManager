@@ -262,7 +262,7 @@ namespace SBModManager {
 
 			return Task.Run(() => {
 				cancellationToken.ThrowIfCancellationRequested();
-				File.Copy(packedPak, Path2.Combine(localSBInstallDir, "assets", "packed.pak"));
+				File.Copy(packedPak, Path2.Combine(localSBInstallDir, "assets", "packed.pak"), true);
 				Directories.CopyDirectory(tiledDir, Path2.Combine(localSBInstallDir, "tiled"), cancellationToken);
 			}, cancellationToken);
 		}
@@ -276,7 +276,7 @@ namespace SBModManager {
 			string json = await client.GetStringAsync("https://raw.githubusercontent.com/OpenStarbound/OpenStarbound/refs/heads/main/assets/opensb/_metadata");
 			Variant parsed = StarboundJsonSanitizer.ParseString(json);
 			if (parsed.VariantType == Variant.Type.Dictionary) {
-				ModMetadata metadata = new ModMetadata((GDDictionary)parsed, 0);
+				ModMetadata metadata = new ModMetadata("opensb", (GDDictionary)parsed, 0);
 				return metadata.Version;
 			} else {
 				throw new InvalidOperationException("Failed to parse or download _metadata from OpenStarbound's repository.");

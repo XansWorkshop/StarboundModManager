@@ -107,6 +107,7 @@ namespace SBModManager.ModInstances {
 			GDArray modSources = (GDArray)data["mod_sources"];
 			HashSet<long> alreadyGotWorkshop = [];
 			HashSet<string> alreadyGotNamed = [];
+			List<string> missing = [];
 			foreach (Variant innerArrayVar in modSources) {
 				GDArray innerArray = innerArrayVar.As<GDArray>();
 				string key = innerArray[0].As<string>();
@@ -124,6 +125,7 @@ namespace SBModManager.ModInstances {
 							pack.ModSources[new ModSource(workshopID)] = isEnabled;
 						} catch (Exception ex) {
 							GD.PushError($"Workshop mod {workshopID} failed to load: {ex}");
+							missing.Add($"Workshop: {workshopID}");
 							continue;
 						}
 					} else {
@@ -140,9 +142,15 @@ namespace SBModManager.ModInstances {
 						pack.ModSources[new ModSource(lowerKey)] = isEnabled;
 					} catch (Exception ex) {
 						GD.PushError($"Named mod {key} failed to load: {ex}");
+						missing.Add(key);
 						continue;
 					}
 				}
+			}
+
+			if (missing.Count > 0) {
+				File.WriteAllText(Path.Combine(Directories.GetPackDirectory(id), "missingmods.txt"), string.Join('\n', missing));
+				OS.Alert("One or more mods have been deleted from disk and will not load. The list of missing mods has been written to missingmods.txt in this pack's profile folder.");
 			}
 
 			return pack;
@@ -281,11 +289,12 @@ namespace SBModManager.ModInstances {
 			cancellationToken.ThrowIfCancellationRequested();
 
 			long[] workshopMods = ModSources.Keys.Select(src => src.WorkshopID).Where(id => id != 0).ToArray();
-			await SteamTools.DownloadWorkshopModsAsync(workshopMods, true, cancellationToken);
+			HashSet<long> failed = (await SteamTools.DownloadWorkshopModsAsync(workshopMods, true, cancellationToken)).ToHashSet();
 			cancellationToken.ThrowIfCancellationRequested();
 
 			foreach (KeyValuePair<ModSource, bool> binding in ModSources) {
 				if (!binding.Value) continue;
+				if (binding.Key.IsWorkshopMod && failed.Contains(binding.Key.WorkshopID)) continue;
 				assetDirectories.Add(binding.Key.AbsolutePath);
 				cancellationToken.ThrowIfCancellationRequested();
 			}

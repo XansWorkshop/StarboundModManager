@@ -96,20 +96,21 @@ namespace SBModManager.ModInstances {
 			foreach (string file in Directory.GetFiles(path)) {
 				GDDictionary? data = MetadataReader.GetMetadataFromPak(new FileInfo(file), out bool hadMalformedHeader);
 				if (hadMalformedHeader) continue;
-				if (data == null) continue;
-				if (!data.ContainsKey("name")) {
-					data["name"] = Path.GetFileName(file);
+
+				string fileName = Path.GetFileName(file);
+				if (data != null && !data.ContainsKey("name")) {
+					data["name"] = fileName;
 				}
-				
-				result.Add(new ModArchive(this, file, new ModMetadata(data, workshopID)));
+				result.Add(new ModArchive(this, file, new ModMetadata(fileName, data, workshopID)));
 			}
 			foreach (string directory in Directory.GetDirectories(path)) {
 				GDDictionary? data = MetadataReader.GetMetadataFromDirectory(new DirectoryInfo(directory));
-				if (data == null) continue;
-				if (!data.ContainsKey("name")) {
-					data["name"] = Path.GetFileName(directory);
+
+				string fileName = Path.GetFileName(directory);
+				if (data != null && !data.ContainsKey("name")) {
+					data["name"] = fileName;
 				}
-				result.Add(new ModArchive(this, directory, new ModMetadata(data, workshopID)));
+				result.Add(new ModArchive(this, directory, new ModMetadata(fileName, data, workshopID)));
 			}
 			return result.ToImmutableArray();
 		}

@@ -11,6 +11,7 @@ using Godot.NativeInterop;
 
 using SBModManager.Attributes;
 using SBModManager.GUI;
+using SBModManager.IO;
 using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
 using SBModManager.Other;
@@ -67,6 +68,21 @@ namespace SBModManager.Menus {
 			ImportOtherButton.Pressed += OnImportOtherPressed;
 
 			SearchMods.TextChanged += OnSearchTextChanged;
+			GetWindow().FilesDropped += OnFilesDropped;
+		}
+
+		private void OnFilesDropped(string[] files) {
+			if (Visible && EditingModpack != null) {
+				foreach (string file in files) {
+					if (File.GetAttributes(file).HasFlag(FileAttributes.Directory)) {
+						Importers.PerformPakOrFolderImport(EditingModpack, this, file);
+					} else {
+						if (Path.GetExtension(file).Equals(".pak", StringComparison.OrdinalIgnoreCase)) {
+							Importers.PerformPakOrFolderImport(EditingModpack, this, file);
+						}
+					}
+				}
+			}
 		}
 
 		#region Search

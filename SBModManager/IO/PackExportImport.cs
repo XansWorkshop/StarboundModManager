@@ -245,8 +245,9 @@ namespace SBModManager.IO {
 			progressWindow?.SetStatus("Importing Workshop Mods...\nThis might take a while.");
 			progressWindow?.SetProgress(float.NaN);
 
-			SteamTools.DownloadWorkshopModsAsync(workshopMods.Keys.ToArray(), true, cancellationToken).Wait(CancellationToken.None);
+			HashSet<long> failed = SteamTools.DownloadWorkshopModsAsync(workshopMods.Keys.ToArray(), true, cancellationToken).Result.ToHashSet();
 			foreach ((long id, bool enabled) in workshopMods) {
+				if (failed.Contains(id)) continue;
 				ModSource source = new ModSource(id);
 				modpack.ModSources[source] = enabled;
 			}

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -156,6 +157,21 @@ namespace SBModManager {
 								ShowButtons();
 							}, TaskScheduler.FromCurrentSynchronizationContext());
 			}
+
+			GetWindow().FilesDropped += OnFilesDropped;
+		}
+
+		private void OnFilesDropped(string[] files) {
+			string path = files.First();
+			if (Path.GetExtension(path).Equals(".sbmm", StringComparison.OrdinalIgnoreCase)) {
+				try {
+					FileStream fs = File.OpenRead(path);
+					GZipStream decompressor = new GZipStream(fs, CompressionMode.Decompress);
+					OnModpackImportSelected(decompressor, path, true); // This closes the streams.
+				} catch (Exception exc) {
+					OS.Alert(exc.Message, "Failed to import.");
+				}
+			}
 		}
 
 		public override void _Process(double delta) {
@@ -201,28 +217,31 @@ namespace SBModManager {
 				GZipStream decompressor = new GZipStream(stream, CompressionMode.Decompress);
 				GDDictionary options = ImportModpackDialog.GetSelectedOptions();
 				int mode = (int)options["Duplicate Modpack Behavior"];
-
-				GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
-				CancellationTokenSource cts = new CancellationTokenSource();
-				AddChild(progress);
-				progress.ShowWithCancellation(async delegate {
-					try {
-						Modpack modpack = await PackExportImport.ImportModpackAsync(decompressor, mode == 0, progress, cts.Token);
-						CurrentModpacks.Add(modpack);
-						return modpack;
-					} catch (Exception exc) {
-						OS.Alert(exc.Message, "Failed to import modpack!");
-						return null;
-					}
-				}, cts, true).ContinueWith(delegate (Task<Modpack?> task) {
-					stream.Dispose();
-					if (task.IsCompletedSuccessfully) {
-						CreateButtonForModpack(task.Result!);
-					}
-				}, TaskScheduler.FromCurrentSynchronizationContext());
+				OnModpackImportSelected(decompressor, path, mode == 0);
 			} catch (Exception exc) {
 				OS.Alert(exc.Message, "Failed to import modpack!");
 			}
+		}
+
+		private Task OnModpackImportSelected(Stream stream, string path, bool importAsNewModpack) {
+			GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
+			CancellationTokenSource cts = new CancellationTokenSource();
+			AddChild(progress);
+			return progress.ShowWithCancellation(async delegate {
+				try {
+					Modpack modpack = await PackExportImport.ImportModpackAsync(stream, importAsNewModpack, progress, cts.Token);
+					CurrentModpacks.Add(modpack);
+					return modpack;
+				} catch (Exception exc) {
+					OS.Alert(exc.Message, "Failed to import modpack!");
+					return null;
+				}
+			}, cts, true).ContinueWith(delegate (Task<Modpack?> task) {
+				stream.Dispose();
+				if (task.IsCompletedSuccessfully) {
+					CreateButtonForModpack(task.Result!);
+				}
+			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
 		private void OnRunPressed() {
