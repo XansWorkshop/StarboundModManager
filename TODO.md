@@ -8,7 +8,8 @@ This is a collection of things I'd like to do in the future, as well as known bu
 
 ### Very Important
 
-Nothing left here!
+* Add the ability to import many pak files at once.
+    * You can still drag and drop more than one.
 
 ### Less Important (But Still Useful)
 
@@ -17,6 +18,8 @@ Nothing left here!
 3. Add the ability to detect updates to Workshop mods and prompt their installation.
 4. Add the ability to make categories in the mod list.
 
-## UX / Fixes
+## UX / Bugfixes
 
-Nothing left here!
+* Mods are sorted alphabetically in the list, but this sorting includes invisible formatting (like colors).
+    * This is not severe because of the search bar, but I'd still like to fix it.
+* The launch server button is ass.
