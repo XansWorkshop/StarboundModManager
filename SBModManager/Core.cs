@@ -90,10 +90,19 @@ namespace SBModManager {
 		public ModpackManagementWindow ModpackManagement { get; }
 
 		/// <summary>
-		/// The file dialog to export a modpack.
+		/// The file dialog to import a modpack.
 		/// </summary>
 		[Import, AllowNull]
 		public FileDialog ImportModpackDialog { get; }
+
+		/// <summary>
+		/// The file dialog to export a modpack.
+		/// </summary>
+		/// <remarks>
+		/// FIXME: This is a duplicate of the same dialog on <see cref="ModpackManagementWindow"/>.
+		/// </remarks>
+		[Import, AllowNull]
+		public FileDialog ExportModpackDialog { get; }
 
 		/// <summary>
 		/// The status label at the bottom of the window.
@@ -118,6 +127,11 @@ namespace SBModManager {
 
 		private List<Guid> _pendingPacksToLoad = [];
 
+		/// <summary>
+		/// FIXME: Spaghetti bullshit :(
+		/// </summary>
+		public bool specialHasPendingExport = false;
+
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
 			Instance = this;
@@ -132,6 +146,10 @@ namespace SBModManager {
 			DeleteModpackButton.Pressed += OnDeleteModpackButtonPressed;
 			HelpButton.Pressed += OnHelpButtonPressed;
 			ImportModpackDialog.FileSelected += OnModpackImportSelected;
+			ExportModpackDialog.FileSelected += OnModpackExportSelected;
+			ExportModpackDialog.Canceled += delegate {
+				specialHasPendingExport = false;
+			};
 			Status.MetaClicked += OnStatusMetaClicked;
 
 			if (OS.GetName() == "macOS") {
@@ -256,6 +274,35 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 				OnModpackImportSelected(decompressor, path, mode == 0);
 			} catch (Exception exc) when (!exc.IsCancellation()) {
 				OS.Alert(exc.Message, "Failed to import modpack!");
+			}
+		}
+
+		private void OnModpackExportSelected(string path) {
+			if (_currentSelectedModpack == null) {
+				specialHasPendingExport = false;
+				return;
+			}
+
+			try {
+				FileStream writer = File.Open(path, FileMode.Create, System.IO.FileAccess.Write, FileShare.None);
+				GZipStream compressor = new GZipStream(writer, CompressionLevel.SmallestSize);
+				GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
+				CancellationTokenSource cts = new CancellationTokenSource();
+				Modpack currentModpack = _currentSelectedModpack;
+				AddChild(progress);
+				progress.ShowWithCancellation(async delegate {
+					try {
+						await PackExportImport.ExportModpackAsync(currentModpack, compressor, progress, cts.Token);
+					} catch (Exception exc) {
+						OS.Alert(exc.Message, "Failed to export modpack!");
+					}
+				}, cts, true).ContinueWith(delegate {
+					writer.Close();
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			} catch (Exception exc) {
+				OS.Alert(exc.Message, "Failed to export modpack!");
+			} finally {
+				specialHasPendingExport = false;
 			}
 		}
 
@@ -410,6 +457,7 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 		/// <param name="clicked"></param>
 		private void SetSelection(Modpack modpack, ModpackEntryElement clicked) {
 			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
+			if (specialHasPendingExport) return; // no.
 
 			_currentSelectedEntryButton?.SetSelectedAppearance(false);
 			clicked.SetSelectedAppearance(true);

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using SBModManager.Attributes;
+using SBModManager.IO;
 using SBModManager.ModInstances;
 
 namespace SBModManager.GUI {
@@ -64,12 +65,15 @@ namespace SBModManager.GUI {
 				}
 				_lastPressedThisPack = now;
 			}
-			
+
 		}
 
 		private void OnRightClicked() {
 			if (IsInstanceValid(_popup)) {
 				_popup?.QueueFree();
+			}
+			if (Core.Instance.specialHasPendingExport) {
+				return;
 			}
 			PopupMenu menu = new PopupMenu();
 			_popup = menu;
@@ -79,6 +83,7 @@ namespace SBModManager.GUI {
 			menu.AddItem("Edit this modpack");
 			menu.AddItem("Open profile folder");
 			menu.AddItem("Duplicate this modpack");
+			menu.AddItem("Export this modpack");
 			menu.AddSeparator();
 			menu.AddItem("Delete this modpack");
 			menu.IndexPressed += delegate (long index) {
@@ -94,8 +99,11 @@ namespace SBModManager.GUI {
 					OS.ShellOpen(Directories.GetPackDirectory(Modpack.ID));
 				} else if (index == 5) {
 					Core.Instance.OnDuplicateModpackButtonPressed();
-					/* 6 is separator */
-				} else if (index == 7) {
+				} else if (index == 6) {
+					Core.Instance.specialHasPendingExport = true;
+					Core.Instance.ExportModpackDialog.Show();
+					/* 7 is separator */
+				} else if (index == 8) {
 					Core.Instance.OnDeleteModpackButtonPressed();
 				}
 				menu.QueueFree();
