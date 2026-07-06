@@ -119,6 +119,7 @@ namespace SBModManager.Menus {
 			ModpackIcon.Texture = modpack.GetIcon();
 
 			ProfileLocation.Text = $"ID: {EditingModpack.ID:D}";
+			GetWindow().Title = $"Edit Modpack Details: {EditingModpack.Name}";
 		}
 
 	}
