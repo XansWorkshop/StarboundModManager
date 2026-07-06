@@ -201,3 +201,13 @@ use_native_dialog = true
 option_count = 1
 option_0/name = "Duplicate Modpack Behavior"
 option_0/values = PackedStringArray("Import as New Modpack", "Overwrite Existing Modpack")
+
+[node name="ExportModpackDialog" type="FileDialog" parent="." unique_id=2075807319]
+unique_name_in_owner = true
+title = "Export Modpack"
+initial_position = 2
+mode_overrides_title = false
+display_mode = 1
+access = 2
+filters = PackedStringArray("*.sbmm;Starbound Mod Manager List")
+use_native_dialog = true

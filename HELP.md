@@ -4,7 +4,7 @@ This page includes some help topics.
 
 - [File Locations](#file-locations)
 - [Setup Failed: SteamCMD](#steamcmd-failed)
-- [Setup Failed: Starbound](#starbound-failed)
+- [Setup Failed: (Open)Starbound](#starbound-failed-or-openstarbound-failed)
 
 # Folder Locations
 
@@ -78,6 +78,7 @@ By default the app looks for a Steam installation, and will fail if it can't fin
     2. On Windows, drag everything inside of the .zip file into `starbound`.
     3. On Mac and Linux, open the `client_distribution` folder that's inside of the .zip, and then drag everything in there into `starbound`.
     4. **If you did it correctly, your `starbound` folder should now have two folders inside**: An `assets` folder, and either `win`, `osx`, or `linux` depending on your OS.
+3. **Repeat these steps with the `Server` zip file** (unless you are on Mac, in which case there is no server and you can skip this step).
 
 ## Part 2: Integrate Starbound Assets
 
