@@ -62,6 +62,7 @@ namespace SBModManager.Menus {
 		/// </summary>
 		private readonly SortedDictionary<string, ModListEntryElement> _sortedElementsByDisplayName = [];
 		private string? _pendingSearchString;
+		private string? _lastPendingSearchString;
 		private double _pendingSearchCooldown = 0.2;
 
 		public override void _Ready() {
@@ -121,6 +122,7 @@ namespace SBModManager.Menus {
 				_pendingSearchCooldown -= delta;
 				if (_pendingSearchCooldown <= 0) {
 					scoped StringSearchEnumerator enumerator = EnumerateSearchResults(_pendingSearchString);
+					_lastPendingSearchString = _pendingSearchString;
 					_pendingSearchString = null;
 
 					ModsList.SetBlockSignals(true); // Prevent a huge processor toll from the constant NOTIFICATION_SORT_CHILDREN invocation.
@@ -192,6 +194,9 @@ namespace SBModManager.Menus {
 					}
 				}
 			}
+
+			// Retain searches once the list updates.
+			_pendingSearchString ??= _lastPendingSearchString;
 		}
 
 		private void OnImportFromWorkshopPressed() {
