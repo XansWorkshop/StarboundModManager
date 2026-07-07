@@ -392,7 +392,7 @@ namespace SBModManager.GUI {
 			ModNameAndAuthor.TooltipText += "[font_size=10][color=#aaa][i]Use Page Up and Page Down to scroll...[/i][/color]\n[/font_size]";
 			if (mod.IsDirectory) {
 				Color = new Color(0.23f, 0.08f, 0.02f);
-				ModNameAndAuthor.TooltipText += "[color=#f77]Unpacked mod![/color] This mod may take longer to load.\n\n";
+				ModNameAndAuthor.TooltipText += "[color=#f77]Unpacked mod![/color] This mod may take longer to load.\n";
 			}
 			ModNameAndAuthor.TooltipText += "[hr]\n";
 
