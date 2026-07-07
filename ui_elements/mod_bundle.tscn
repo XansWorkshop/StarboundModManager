@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://44tvffmfn2mc"]
 
 [ext_resource type="Script" uid="uid://ddbupcdebnbv5" path="res://SBModManager/GUI/ModBundleElement.cs" id="1_fwfbj"]
+[ext_resource type="Texture2D" uid="uid://buy2frwpme3xy" path="res://icons/uninstall_mod.png" id="2_3xfjt"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="2_erhmh"]
+[ext_resource type="Texture2D" uid="uid://cahiwpn1fqcsg" path="res://icons/new_update.png" id="2_ymdbj"]
 
 [node name="ModCategory" type="Control" unique_id=1434697865]
 custom_minimum_size = Vector2(0, 38)
@@ -51,8 +53,29 @@ offset_transform_visual_only = false
 button_pressed = true
 flat = true
 
+[node name="UpdateModButton" type="Button" parent="." unique_id=1884921303]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -31.0
+offset_bottom = 31.0
+grow_horizontal = 0
+offset_transform_enabled = true
+offset_transform_position = Vector2(-31, 0)
+offset_transform_visual_only = false
+tooltip_text = "Download the update for this mod from the Steam Workshop."
+icon = ExtResource("2_ymdbj")
+icon_alignment = 1
+script = ExtResource("2_erhmh")
+
 [node name="UninstallModButton" type="Button" parent="." unique_id=1362856989]
 unique_name_in_owner = true
+texture_filter = 1
 custom_minimum_size = Vector2(31, 31)
 custom_maximum_size = Vector2(31, 31)
 layout_mode = 1
@@ -62,8 +85,8 @@ anchor_right = 1.0
 offset_left = -36.0
 offset_bottom = 36.0
 grow_horizontal = 0
-tooltip_text = "Remove this mod from the list."
+tooltip_text = "Remove these mods from the pack."
 theme_override_constants/line_spacing = -26
-text = "❌
- "
+icon = ExtResource("2_3xfjt")
+icon_alignment = 1
 script = ExtResource("2_erhmh")

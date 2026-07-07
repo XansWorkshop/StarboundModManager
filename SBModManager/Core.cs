@@ -121,10 +121,24 @@ namespace SBModManager {
 		/// </summary>
 		internal List<Modpack> CurrentModpacks { get; } = [];
 
+		/// <summary>
+		/// The button associated with <see cref="_currentSelectedModpack"/>.
+		/// </summary>
 		private ModpackEntryElement? _currentSelectedEntryButton;
-		private Modpack? _currentSelectedModpack;
-		private Task? _autoInstallerSetup;
 
+		/// <summary>
+		/// A reference to the modpack that has been clicked on.
+		/// </summary>
+		private Modpack? _currentSelectedModpack;
+
+		/// <summary>
+		/// This task is the auto-installer setup, or the running task for Starbound (but currently that feature is disabled).
+		/// </summary>
+		private Task? _autoInstallerSetupOrStarbound;
+
+		/// <summary>
+		/// The GUIDs of packs that need to be loaded from disk on the next <see cref="_Process(double)"/> call.
+		/// </summary>
 		private List<Guid> _pendingPacksToLoad = [];
 
 		/// <summary>
@@ -132,11 +146,18 @@ namespace SBModManager {
 		/// </summary>
 		public bool specialHasPendingExport = false;
 
+		/// <summary>
+		/// Keeps track of which modpacks are running which components.
+		/// </summary>
+		private readonly Dictionary<Modpack, (Process? client, Process? server)> _runningModpacks = [];
+
+		private readonly Lock _runningModpacksLock = new Lock();
+
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
 			Instance = this;
-			ProgramSettings.Load();
-			ResourceLoader.SetAbortOnMissingResources(false);
+			WorkshopUpdateInfo.Load();
+			_ = WorkshopUpdateInfo.CheckForUpdatesAsync();
 
 			RunButton.Pressed += OnRunPressed;
 			NewModpackButton.Pressed += OnNewModpackButtonPressed;
@@ -160,6 +181,11 @@ namespace SBModManager {
 				RunServerButton.TooltipText = "Run a dedicated server for the selected modpack.";
 			}
 
+			// Also disable the buttons except the create button.
+			HideButtons();
+			NewModpackButton.Disabled = false;
+			ImportModpackButton.Disabled = false;
+
 			string modpacks = Directories.GetPackDirectory();
 			Directory.CreateDirectory(modpacks);
 
@@ -168,25 +194,22 @@ namespace SBModManager {
 				string nameOnly = Path.GetFileName(subdirectory);
 				if (Guid.TryParse(nameOnly, out Guid modpackID)) {
 					_pendingPacksToLoad.Add(modpackID);
-					/*
-					Modpack? modpack = Modpack.LoadFromDisk(modpackID);
-					if (modpack != null) {
-						CurrentModpacks.Add(modpack);
-						CreateButtonForModpack(modpack);
-					}
-					*/
 				}
 			}
 
+			GD.Print($"Checking if auto-setup is needed...");
 			if (AutoInstaller.ShouldPerformSetup()) {
+				GD.Print($"Yes, yes it is.");
+
 				GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
 				CancellationTokenSource cts = new CancellationTokenSource();
 				HideButtons();
 				AddChild(progress);
-				_autoInstallerSetup = progress.ShowWithCancellation(() => AutoInstaller.PerformSetupAsync(progress, cts.Token), cts, true)
+				_autoInstallerSetupOrStarbound = progress.ShowWithCancellation(() => AutoInstaller.PerformSetupAsync(progress, cts.Token), cts, true)
 							.ContinueWith(delegate {
-								_autoInstallerSetup = null;
-								ShowButtons();
+								GD.Print($"Auto-setup is complete.");
+								_autoInstallerSetupOrStarbound = null;
+								ShowButtonsExceptMacServer();
 							}, TaskScheduler.FromCurrentSynchronizationContext());
 			}
 
@@ -206,7 +229,7 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 						Version updateVersion = new Version(versionText.Trim());
 						if (updateVersion > projectVersionInstance) {
 							Status.Text = @$"[font_size=14]Starbound Mod Manager
-Installed Version: [color=#f55]{projectVersion} (Version {updateVersion} is now available!)[/color][/font_size]
+Installed Version: [color=#f55]{projectVersion} (Version {updateVersion} is now available! [url=https://github.com/XansWorkshop/StarboundModManager/releases/latest]Click here to get it.[/url])[/color][/font_size]
 To report bugs or request features, visit [color=#aff][url]https://github.com/XansWorkshop/StarboundModManager[/url][/color]";
 						}
 					} catch { }
@@ -330,38 +353,29 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 
 		}
 
-
-		public void OnRunPressed() {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
-
-			if (_currentSelectedModpack != null && _currentSelectedEntryButton != null) {
-				Launch(_currentSelectedModpack, _currentSelectedEntryButton, false);
-			}
-		}
-
-		public void OnRunServerPressed() {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
-
-			if (_currentSelectedModpack != null && _currentSelectedEntryButton != null) {
-				Launch(_currentSelectedModpack, _currentSelectedEntryButton, true);
-			}
-		}
-
 		private void OnNewModpackButtonPressed() {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
 
 			Modpack modpack = new Modpack();
 			CurrentModpacks.Add(modpack);
+#if DEBUG
+			if (Directory.Exists(Path2.Combine(Directories.GetLocalWorkshopCacheDirectory(), long.MinValue.ToString()))) {
+				ModSource dummy = new ModSource(-9223372036854775808);
+				modpack.ModSources[dummy] = true;
+				modpack.ModAddedOnDate[dummy] = DateTime.Now;
+			}
+#endif
 			modpack.SaveAndUpdateInitsAsync(CancellationToken.None).Wait();
 			CreateButtonForModpack(modpack);
 		}
 
 		public void OnDuplicateModpackButtonPressed() {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
 
 			if (_currentSelectedModpack != null) {
 				Modpack dupe = _currentSelectedModpack.Duplicate();
 				dupe.Name = dupe.Name + " (Copy)";
+
 				CurrentModpacks.Add(dupe);
 				ModpackEntryElement button = CreateButtonForModpack(dupe);
 				SetSelection(dupe, button);
@@ -369,21 +383,20 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 		}
 
 		private void OnImportModpackButtonPressed() {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
 
 			ImportModpackDialog.Show();
 		}
 
 		public void OnEditModpackButtonPressed() {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
-
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
 			if (_currentSelectedModpack == null) return;
 			ModpackManagement.Show();
-			ModpackManagement.AssignModpack(_currentSelectedModpack);
+			ModpackManagement.AssignModpack(_currentSelectedModpack, false);
 		}
 
 		public void OnDeleteModpackButtonPressed() {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
 
 			if (_currentSelectedModpack == null) return;
 			Modpack modpack = _currentSelectedModpack;
@@ -397,6 +410,11 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 						_currentSelectedEntryButton?.SetSelectedAppearance(false);
 						_currentSelectedModpack = null;
 						_currentSelectedEntryButton = null;
+
+						// Also disable the buttons except the create button.
+						HideButtons();
+						NewModpackButton.Disabled = false;
+						ImportModpackButton.Disabled = false;
 					}
 					foreach (Node node in ModpacksList.GetChildren()) {
 						if (node is ModpackEntryElement entry && entry.Modpack == modpack) {
@@ -415,19 +433,153 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 
 		#region Helpers
 
-		private void Launch(Modpack modpack, ModpackEntryElement clicked, bool asServer) {
+		#region Launching
+
+		public void OnRunPressed() {
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
+			if (_currentSelectedModpack == null || _currentSelectedEntryButton == null) return;
+			if (IsRunningClient(_currentSelectedModpack)) {
+				OS.Alert("Cannot run this pack's Starbound client; Starbound client is already running.");
+				return;
+			}
+
+			TryLaunch(_currentSelectedModpack, _currentSelectedEntryButton, false);
+		}
+
+		public void OnRunServerPressed() {
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
+			if (_currentSelectedModpack == null || _currentSelectedEntryButton == null) return;
+			if (IsRunningServer(_currentSelectedModpack)) {
+				OS.Alert("Cannot run this pack's Starbound server; Starbound server is already running.");
+				return;
+			}
+
+			TryLaunch(_currentSelectedModpack, _currentSelectedEntryButton, true);
+		}
+
+		/// <summary>
+		/// Returns <see langword="true"/> if the Starbound game client is running for the provided <paramref name="modpack"/>.
+		/// </summary>
+		/// <param name="modpack"></param>
+		/// <returns></returns>
+		public bool IsRunningClient(Modpack modpack) {
+			lock (_runningModpacksLock) {
+				if (_runningModpacks.TryGetValue(modpack, out (Process? client, Process? server) data)) {
+					return data.client != null && !data.client.HasExited;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Returns <see langword="true"/> if the Starbound game server is running for the provided <paramref name="modpack"/>.
+		/// </summary>
+		/// <param name="modpack"></param>
+		/// <returns></returns>
+		public bool IsRunningServer(Modpack modpack) {
+			lock (_runningModpacksLock) {
+				if (_runningModpacks.TryGetValue(modpack, out (Process? client, Process? server) data)) {
+					return data.server != null && !data.server.HasExited;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Assigns a modpack to a process, either for the client or server. This is used to lock out
+		/// </summary>
+		/// <param name="modpack"></param>
+		/// <param name="process"></param>
+		/// <param name="isServer"></param>
+		public void UpdateStarboundProcess(Modpack modpack, Process? process, bool isServer) {
+			lock (_runningModpacksLock) {
+				_ = _runningModpacks.TryGetValue(modpack, out (Process? client, Process? server) data);
+
+				if (isServer) {
+					data.server = process;
+				} else {
+					data.client = process;
+				}
+				if (data.server == null && data.client == null) {
+					_runningModpacks.Remove(modpack);
+
+					if (_currentSelectedModpack == modpack) {
+						CallDeferred(MethodName.ShowButtonsExceptMacServer);
+					}
+				} else {
+					_runningModpacks[modpack] = data;
+					if (_currentSelectedModpack == modpack) {
+						CallDeferred(MethodName.HideButtons);
+						if (data.client == null || data.client.HasExited) {
+							RunButton.SetDeferred(BaseButton.PropertyName.Disabled, false);
+						}
+						if (data.server == null || data.server.HasExited) {
+							RunServerButton.SetDeferred(BaseButton.PropertyName.Disabled, OS.GetName() == "macOS");
+						}
+					}
+				}
+			}
+		}
+
+		private void TryLaunch(Modpack modpack, ModpackEntryElement clicked, bool asServer) {
+			if (asServer && IsRunningServer(modpack)) {
+				OS.Alert("The Starbound server is already running. You cannot start it again.", "Cannot start Starbound server");
+				return;
+			} else if (!asServer && IsRunningClient(modpack)) {
+				OS.Alert("The Starbound client is already running. You cannot start it again.", "Cannot start Starbound server");
+				return;
+			}
+
+			// Special edge case:
+			string modpackPath = Directories.GetPackDirectory(modpack.ID);
+			string modsDirectory = Path2.Combine(modpackPath, "mods");
+			if (Directory.Exists(modsDirectory)) {
+				bool hasSubdirectories = Directory.GetDirectories(modsDirectory).Length > 0;
+				bool hasPaks = Directory.GetFiles(modsDirectory, "*.pak").Length > 0;
+				if (hasSubdirectories || hasPaks) {
+					OS.Alert(
+						// I hate this formatting...
+@"Your modpack has a ""mods"" folder in it, but SBMM doesn't use the default mods directory, so these mods will never be loaded.
+
+You need to add these mods to your pack instead. SBMM will open the folder and the pack editor for you.
+
+Drag and drop your entire ""mods"" folder onto the list in SBMM to install them, then rename or delete your mods folder to silence this warning.", 
+						////////////////////////	
+						"Invalid usage detected!"
+					);
+					string os = OS.GetName();
+					if (os == "Windows" || os == "macOS") {
+						OS.ShellShowInFileManager(modsDirectory, false);
+					} else {
+						OS.ShellOpen(modpackPath);
+					}
+					ModpackManagement.Show();
+					ModpackManagement.AssignModpack(modpack, true);
+					return;
+				}
+			}
+
 			GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
 			CancellationTokenSource cts = new CancellationTokenSource();
-			HideButtons();
 			AddChild(progress);
-			_autoInstallerSetup = progress.ShowWithCancellation(() => Launcher.LaunchAsync(modpack, progress, false, asServer, cts.Token), cts, true)
+			HideButtons(); // During the startup sequence...
+			_autoInstallerSetupOrStarbound = progress.ShowWithCancellation(() => Launcher.LaunchAsync(modpack, progress, false, asServer, cts.Token), cts, true)
 						.ContinueWith(delegate {
-							_autoInstallerSetup = null;
-							ShowButtons();
+							_autoInstallerSetupOrStarbound = null;
 							RefreshModpackDisplay(modpack); // For the last played date
 
+							// Unlock the buttons, where applicable, if needed.
+							if (_currentSelectedModpack != modpack) {
+								ShowButtonsExceptMacServer();
+							} else {
+								RunButton.Disabled = IsRunningClient(modpack);
+								RunServerButton.Disabled = OS.GetName() == "macOS" || IsRunningServer(modpack);
+							}
 						}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
+
+		#endregion
+
 
 		/// <summary>
 		/// Updates the displayed information on the button for the provided <paramref name="pack"/>.
@@ -456,13 +608,26 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 		/// <param name="modpack"></param>
 		/// <param name="clicked"></param>
 		private void SetSelection(Modpack modpack, ModpackEntryElement clicked) {
-			if (_autoInstallerSetup != null && !_autoInstallerSetup.IsCompleted) return;
+			if (_autoInstallerSetupOrStarbound != null && !_autoInstallerSetupOrStarbound.IsCompleted) return;
 			if (specialHasPendingExport) return; // no.
 
 			_currentSelectedEntryButton?.SetSelectedAppearance(false);
 			clicked.SetSelectedAppearance(true);
 			_currentSelectedEntryButton = clicked;
 			_currentSelectedModpack = clicked.Modpack;
+
+			bool isRunningClient = IsRunningClient(modpack);
+			bool isRunningServer = IsRunningServer(modpack);
+			if (isRunningClient || isRunningServer) {
+				HideButtons();
+				if (!isRunningClient) {
+					RunButton.Disabled = false;
+				} else if (!isRunningServer) {
+					RunServerButton.Disabled = OS.GetName() == "macOS";
+				}
+			} else {
+				ShowButtonsExceptMacServer();
+			}
 		}
 
 		/// <summary>
@@ -471,7 +636,7 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 		private ModpackEntryElement CreateButtonForModpack(Modpack modpack) {
 			ModpackEntryElement button = Assets.CreateModpackEntryElementFor(modpack);
 			button.OnModpackSelected += SetSelection;
-			button.OnModpackDoubleClicked += (modpack, clicked) => Launch(modpack, clicked, false);
+			button.OnModpackDoubleClicked += (modpack, clicked) => TryLaunch(modpack, clicked, false);
 			ModpacksList.AddChild(button);
 			return button;
 		}
@@ -481,19 +646,20 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 		/// </summary>
 		private void HideButtons() {
 			RunButton.Disabled = true;
+			RunServerButton.Disabled = true;
 			NewModpackButton.Disabled = true;
 			DuplicateModpackButton.Disabled = true;
 			ImportModpackButton.Disabled = true;
 			EditModpackButton.Disabled = true;
 			DeleteModpackButton.Disabled = true;
-			if (ModpackManagement.Visible) ModpackManagement.Hide();
 		}
 
 		/// <summary>
 		/// Enables all the buttons.
 		/// </summary>
-		private void ShowButtons() {
+		private void ShowButtonsExceptMacServer() {
 			RunButton.Disabled = false;
+			RunServerButton.Disabled = OS.GetName() == "macOS";
 			NewModpackButton.Disabled = false;
 			DuplicateModpackButton.Disabled = false;
 			ImportModpackButton.Disabled = false;

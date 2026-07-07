@@ -3,14 +3,21 @@
 [ext_resource type="Script" uid="uid://bxj2e5kcyxw4" path="res://SBModManager/Core.cs" id="1_w0p2i"]
 [ext_resource type="Texture2D" uid="uid://bsctcnud5svye" path="res://icons/play.png" id="2_sj757"]
 [ext_resource type="Script" uid="uid://x81ofxplde8b" path="res://SBModManager/GUI/RichTooltipElements/TooltipTextureButton.cs" id="3_4sclt"]
+[ext_resource type="Texture2D" uid="uid://udbpm1qmryx7" path="res://icons/play_disabled.png" id="3_7087c"]
 [ext_resource type="Texture2D" uid="uid://c1la0souexatb" path="res://icons/launch_server.png" id="4_62wn8"]
 [ext_resource type="Texture2D" uid="uid://cay0y0lw1y431" path="res://icons/new_modpack.png" id="4_ups6l"]
 [ext_resource type="Texture2D" uid="uid://bkqohamnsux0x" path="res://icons/duplicate_modpack.png" id="5_7sxnj"]
 [ext_resource type="PackedScene" uid="uid://dj6i10d8xumgl" path="res://ui_elements/popups/modpack_management.tscn" id="5_ywh4s"]
 [ext_resource type="Texture2D" uid="uid://b2h7de5a5uknn" path="res://icons/import_modpack.png" id="6_cxp7d"]
+[ext_resource type="Texture2D" uid="uid://rfucv0fvtkjj" path="res://icons/launch_server_disabled.png" id="6_do8p6"]
 [ext_resource type="Texture2D" uid="uid://1vkt0comhivi" path="res://icons/edit_modpack.png" id="7_p3r6q"]
 [ext_resource type="Texture2D" uid="uid://d3s8o8ujg8ysa" path="res://icons/delete_modpack.png" id="8_3qsiq"]
+[ext_resource type="Texture2D" uid="uid://cl0uug1j3gpck" path="res://icons/new_modpack_disabled.png" id="8_sqqhh"]
 [ext_resource type="Texture2D" uid="uid://o8ctjuteqtp1" path="res://icons/help.png" id="9_7087c"]
+[ext_resource type="Texture2D" uid="uid://db61064yat7ai" path="res://icons/import_modpack_disabled.png" id="10_qx06n"]
+[ext_resource type="Texture2D" uid="uid://dgypvxb020xc" path="res://icons/duplicate_modpack_disabled.png" id="12_q556m"]
+[ext_resource type="Texture2D" uid="uid://bf1s0qspwwiho" path="res://icons/edit_modpack_disabled.png" id="14_0dp34"]
+[ext_resource type="Texture2D" uid="uid://bf5pa8hqjq7je" path="res://icons/delete_modpack_disabled.png" id="16_kypv5"]
 
 [node name="MainScreen" type="Panel" unique_id=718710276]
 anchors_preset = 15
@@ -48,6 +55,7 @@ tooltip_text = "Play the selected modpack.
 
 You can also double-click on the icon below."
 texture_normal = ExtResource("2_sj757")
+texture_disabled = ExtResource("3_7087c")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -59,6 +67,7 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "(If you are reading this, something has broken)"
 texture_normal = ExtResource("4_62wn8")
+texture_disabled = ExtResource("6_do8p6")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -73,6 +82,7 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Create a new, empty modpack."
 texture_normal = ExtResource("4_ups6l")
+texture_disabled = ExtResource("8_sqqhh")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -84,6 +94,7 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Import a modpack from an exported list."
 texture_normal = ExtResource("6_cxp7d")
+texture_disabled = ExtResource("10_qx06n")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -95,6 +106,7 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Duplicate the selected modpack, including all of its characters and the universe."
 texture_normal = ExtResource("5_7sxnj")
+texture_disabled = ExtResource("12_q556m")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -106,6 +118,7 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Edit the information and mod list for the selected modpack."
 texture_normal = ExtResource("7_p3r6q")
+texture_disabled = ExtResource("14_0dp34")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -120,6 +133,7 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 tooltip_text = "Permanently delete the selected modpack."
 texture_normal = ExtResource("8_3qsiq")
+texture_disabled = ExtResource("16_kypv5")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")
@@ -183,6 +197,7 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 fit_content = true
 scroll_active = false
 vertical_alignment = 2
+meta_underlined = false
 
 [node name="ModpackManagement" parent="." unique_id=1489936823 instance=ExtResource("5_ywh4s")]
 unique_name_in_owner = true

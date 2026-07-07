@@ -4,8 +4,7 @@ global using GDArray = Godot.Collections.Array;
 global using GDDictionary = Godot.Collections.Dictionary;
 
 global using NoDiscard = System.Diagnostics.Contracts.PureAttribute;
-using System;
-using System.Threading.Tasks;
+global using RID = Godot.Rid;
 using HttpClient = System.Net.Http.HttpClient;
 
 namespace SBModManager {

@@ -81,11 +81,26 @@ namespace SBModManager.GUI {
 			menu.AddItem("Start dedicated server");
 			menu.AddSeparator();
 			menu.AddItem("Edit this modpack");
-			menu.AddItem("Open profile folder");
+			menu.AddItem("Open modpack folder");
 			menu.AddItem("Duplicate this modpack");
 			menu.AddItem("Export this modpack");
 			menu.AddSeparator();
 			menu.AddItem("Delete this modpack");
+
+			bool isRunningClient = Core.Instance.IsRunningClient(Modpack);
+			bool isRunningServer = Core.Instance.IsRunningServer(Modpack);
+			if (isRunningClient || isRunningServer) {
+				menu.SetItemDisabled(0, isRunningClient);
+				menu.SetItemDisabled(1, isRunningServer);
+				// separator
+				menu.SetItemDisabled(3, true);
+				menu.SetItemDisabled(4, true);
+				menu.SetItemDisabled(5, true);
+				menu.SetItemDisabled(6, true);
+				// separator
+				menu.SetItemDisabled(8, true);
+			}
+
 			menu.IndexPressed += delegate (long index) {
 				OnModpackSelected?.Invoke(Modpack, this);
 				if (index == 0) {

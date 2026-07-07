@@ -94,7 +94,7 @@ namespace SBModManager.ModInstances {
 		/// Create a <see cref="ModArchive"/> as a <see cref="ModSource"/>.
 		/// <para/>
 		/// <strong>You probably shouldn't be creating this.</strong> When a <see cref="ModSource"/> is instantiated, it enumerates the directory,
-		/// and does not accept manually created archives.
+		/// and does not accept manually created archives. This means the file has to exist <em>before</em> you create this.
 		/// </summary>
 		/// <param name="owner"></param>
 		/// <param name="fullPath"></param>

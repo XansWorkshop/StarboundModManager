@@ -58,7 +58,7 @@ namespace SBModManager {
 			if (OS.GetName() == "macOS") return false; // Mac doesn't have a server.
 
 			string starboundDir = Directories.GetLocalStarboundInstallDirectory();
-			string starboundServerApp = Directories.GetLocalStarboundServerProgram();
+			string starboundServerApp = Directories.GetLocalStarboundServerProgram(true);
 			if (!File.Exists(Path2.Combine(starboundDir, "assets", "opensb.pak"))) return true;
 			return !File.Exists(starboundServerApp);
 		}
@@ -98,6 +98,7 @@ namespace SBModManager {
 				_ => throw new NotSupportedException($"SteamCMD: Operating System {os} is not supported.")
 			};
 
+			GD.Print($"Downloading from {downloadLink} ...");
 			using Stream download = await SBModManagerGlobals.HTTP_CLIENT.GetStreamAsync(downloadLink, cancellationToken).ConfigureAwait(false);
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -112,6 +113,7 @@ namespace SBModManager {
 			string steamCMDExe = Path2.Combine(steamCMDDir, "steamcmd.exe");
 
 			// Unzip in memory and extract to the destination folder.
+			GD.Print($"Unzipping SteamCMD...");
 			using (ZipArchive archive = new ZipArchive(download, ZipArchiveMode.Read)) {
 				cancellationToken.ThrowIfCancellationRequested();
 				await archive.ExtractToDirectoryAsync(steamCMDDir, cancellationToken).ConfigureAwait(false);
@@ -120,6 +122,8 @@ namespace SBModManager {
 			// Start SteamCMD then tell it to run the "quit" command. This will start it, which makes it do its setup, and then close it.
 			await Task.Delay(1000); // Delay is here because without it, it crashes on startup. I don't know why.
 			cancellationToken.ThrowIfCancellationRequested();
+
+			GD.Print($"Running SteamCMD so it can do its setup routine...");
 			Process? steamCMDProcess = Process.Start(new ProcessStartInfo {
 				FileName = steamCMDExe,
 				Arguments = "+quit",
@@ -129,6 +133,7 @@ namespace SBModManager {
 			if (steamCMDProcess == null) throw new InvalidOperationException("Failed to perform first-time startup of SteamCMD.");
 			await steamCMDProcess.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
+			GD.Print($"Done, SteamCMD is now installed.");
 		}
 		private static async Task InstallSteamCMDMacLinuxAsync(string steamCMDDir, Stream download, CancellationToken cancellationToken) {
 			string steamCMDShell = Path2.Combine(steamCMDDir, "steamcmd.sh");
@@ -140,6 +145,8 @@ namespace SBModManager {
 			};
 
 			// Unzip in memory and extract to the destination folder.
+
+			GD.Print($"Decompressing SteamCMD and extracting the tarball that's inside...");
 			using (TarReader archive = new TarReader(new GZipStream(download, CompressionMode.Decompress))) {
 				while (true) {
 					cancellationToken.ThrowIfCancellationRequested();
@@ -154,6 +161,7 @@ namespace SBModManager {
 						string dst = Path2.Combine(steamCMDDir, name);
 						Directory.CreateDirectory(Path.GetDirectoryName(dst)!);
 						try {
+							GD.Print($"Extracting: {dst}");
 							await entry.ExtractToFileAsync(dst, true, cancellationToken).ConfigureAwait(false);
 						} catch (NotSupportedException) { }
 					}
@@ -164,6 +172,8 @@ namespace SBModManager {
 			await Task.Delay(1000); // Delay is here because without it, it crashes on startup. I don't know why.
 									// Or, at least, it does on Windows. I can't test it here.
 			cancellationToken.ThrowIfCancellationRequested();
+
+			GD.Print($"Running SteamCMD so it can do its setup routine...");
 			Process? steamCMDProcess = Process.Start(new ProcessStartInfo {
 				FileName = steamCMDShell,
 				Arguments = "+quit",
@@ -173,6 +183,7 @@ namespace SBModManager {
 			if (steamCMDProcess == null) throw new InvalidOperationException("Failed to perform first-time startup of SteamCMD.");
 			await steamCMDProcess.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
+			GD.Print($"Done, SteamCMD is now installed.");
 		}
 
 		#endregion
@@ -228,6 +239,8 @@ namespace SBModManager {
 				throw new NotSupportedException($"OpenStarbound: Operating System {os} is not supported.");
 			}
 
+			GD.Print($"The asset we need to install is {installationName}");
+
 			// Try downloading it from GitHub. If the latest version fails, fall back.
 			const string installationURLFormat = "https://github.com/OpenStarbound/OpenStarbound/releases/download/v{0}/{1}";
 			string version = await GetCurrentInDevOSBVersionAsync();
@@ -235,15 +248,24 @@ namespace SBModManager {
 
 			Stream download;
 			try {
+				GD.Print($"Going to try downloading version {version}, but this is probably a dev build that isn't out yet...");
 				download = await SBModManagerGlobals.HTTP_CLIENT.GetStreamAsync(string.Format(installationURLFormat, version, installationName), cancellationToken);
-			} catch (HttpRequestException) {
-				GD.PushError($"Cannot get the latest version ({version}) of OpenStarbound because it failed to download.");
+				
+			} catch (HttpRequestException http) {
+				if (http.StatusCode == System.Net.HttpStatusCode.NotFound) {
+					GD.PushWarning($"OpenStarbound version {version} could not be found, but this is okay! It's probably just the in-development version and isn't out yet.");
+					GD.Print($"Going to try the known good version ({OPENSB_VERSION_AS_OF_BUILD}) instead...");
+					await Task.Delay(4000); // Possible mitigation for being rate limited by github.
+				} else {
+					GD.PushError($"Cannot get OpenStarbound version {version}: {http.Message}");
+				}
 				download = await SBModManagerGlobals.HTTP_CLIENT.GetStreamAsync(string.Format(installationURLFormat, OPENSB_VERSION_AS_OF_BUILD, installationName), cancellationToken);
 			}
 
 			// Extract the downloaded archive.
 			using ZipArchive archive = new ZipArchive(download, ZipArchiveMode.Read);
 			if (os != "Windows") {
+				GD.Print("Decompressing and extracting the tarball that's inside...");
 				Stream clientTar = archive.GetEntry($"{distLowercase}.tar")!.Open();
 				Directory.CreateDirectory(localSBInstallDir);
 				TarFile.ExtractToDirectory(clientTar, localSBInstallDir, true);
@@ -252,11 +274,17 @@ namespace SBModManager {
 				// Move everything out, and then delete the old folder.
 				DirectoryInfo clientDistro = new DirectoryInfo(Path2.Combine(localSBInstallDir, $"{distLowercase}_distribution"));
 				foreach (DirectoryInfo child in clientDistro.GetDirectories()) {
+					GD.Print($"Copied directory {child.Name}...");
 					Directories.CopyDirectoryOverwrite(child.FullName, Path2.Combine(localSBInstallDir, child.Name), CancellationToken.None);
 				}
+
+				GD.Print($"Cleaning up...");
 				clientDistro.Delete(true);
+				GD.Print("Done.");
 			} else {
+				GD.Print($"Extracting the zip file...");
 				archive.ExtractToDirectory(localSBInstallDir, true);
+				GD.Print("Done.");
 			}
 		}
 
@@ -269,8 +297,13 @@ namespace SBModManager {
 		public static Task ImportGameAssetsAsync(CancellationToken cancellationToken) {
 			string localSBInstallDir = Directories.GetLocalStarboundInstallDirectory();
 			string? steamSBInstall = SteamTools.GetStarboundDirectory();
-			if (steamSBInstall == null) throw new InvalidOperationException($"OpenStarbound installation is incomplete: Steam installation directory of Starbound was not found. Please install Starbound and relaunch the app.");
-			
+
+			GD.Print("Porting over Starbound assets...");
+			if (steamSBInstall == null) {
+				throw new InvalidOperationException($"OpenStarbound installation is incomplete: Steam installation directory of Starbound was not found. Please install Starbound and relaunch the app.");
+			}
+
+			GD.Print("Finding assets/packed.pak and tiled...");
 			string packedPak = Path2.Combine(steamSBInstall, "assets", "packed.pak");
 			string tiledDir = Path2.Combine(steamSBInstall, "tiled");
 			if (!File.Exists(packedPak)) {
@@ -280,11 +313,14 @@ namespace SBModManager {
 				throw new InvalidOperationException("OpenStarbound installation is incomplete: Required folder \"tiled\" does not exist in your Steam installation of Starbound.");
 			}
 
-			return Task.Run(() => {
-				cancellationToken.ThrowIfCancellationRequested();
-				File.Copy(packedPak, Path2.Combine(localSBInstallDir, "assets", "packed.pak"), true);
-				Directories.CopyDirectoryOverwrite(tiledDir, Path2.Combine(localSBInstallDir, "tiled"), cancellationToken);
-			}, cancellationToken);
+			GD.Print("Copying packed.pak...");
+			File.Copy(packedPak, Path2.Combine(localSBInstallDir, "assets", "packed.pak"), true);
+
+			GD.Print("Copying tiled...");
+			Directories.CopyDirectoryOverwrite(tiledDir, Path2.Combine(localSBInstallDir, "tiled"), cancellationToken);
+
+			GD.Print("Done.");
+			return Task.CompletedTask;
 		}
 
 		/// <summary>
@@ -323,6 +359,7 @@ namespace SBModManager {
 			
 			progressWindow.SetProgress(0.00f);
 			if (NeedsToInstallSteamCMD()) {
+				GD.Print($"The user needs to install SteamCMD. Doing that now.");
 				progressWindow.SetStatus("Installing SteamCMD...\n(This will take about 20 seconds)", "Performing first-time setup");
 				try {
 					await InstallSteamCMDAsync(cancellationToken);
@@ -334,6 +371,7 @@ namespace SBModManager {
 
 			progressWindow.SetProgress(0.25f);
 			if (NeedsToInstallOpenStarboundClient()) {
+				GD.Print($"The user needs to install OpenStarbound's client. Doing that now.");
 				progressWindow.SetStatus("Installing OpenStarbound Client...", "Performing first-time setup");
 				try {
 					await InstallOpenStarboundAsync(false, cancellationToken);
@@ -345,6 +383,7 @@ namespace SBModManager {
 
 			progressWindow.SetProgress(0.50f);
 			if (NeedsToInstallOpenStarboundServer()) {
+				GD.Print($"The user needs to install OpenStarbound's server. Doing that now.");
 				progressWindow.SetStatus("Installing OpenStarbound Server...", "Performing first-time setup");
 				try {
 					await InstallOpenStarboundAsync(true, cancellationToken);
@@ -356,6 +395,7 @@ namespace SBModManager {
 
 			progressWindow.SetProgress(0.75f);
 			if (NeedsToInstallStarboundAssets()) {
+				GD.Print($"The user needs to import Starbound's game data into OpenStarbound. Doing that now.");
 				progressWindow.SetStatus("Importing Starbound Assets...", "Performing first-time setup");
 				try {
 					await ImportGameAssetsAsync(cancellationToken);

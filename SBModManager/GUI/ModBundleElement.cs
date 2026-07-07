@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using SBModManager.Attributes;
+using SBModManager.Menus;
 using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
+using SBModManager.SteamInterop;
 
 namespace SBModManager.GUI {
 
@@ -47,6 +50,13 @@ namespace SBModManager.GUI {
 		public Button UninstallModButton { get; }
 
 		/// <summary>
+		/// The button used to update Workshop mods.
+		/// </summary>
+
+		[Import, AllowNull]
+		public Button UpdateModButton { get; }
+
+		/// <summary>
 		/// The <see cref="Modpack"/> that this represents.
 		/// </summary>
 		[AllowNull]
@@ -59,6 +69,12 @@ namespace SBModManager.GUI {
 		public ModSource Source { get; private set; }
 
 		/// <summary>
+		/// The parent <see cref="ViewModListPanel"/>
+		/// </summary>
+		[AllowNull]
+		private ViewModListPanel _viewModListPanel;
+
+		/// <summary>
 		/// The list of pending children, if <see cref="AddModListEntry(ModListEntryElement)"/> is called before ready.
 		/// </summary>
 		private List<ModListEntryElement> _pendingChildren = [];
@@ -68,14 +84,17 @@ namespace SBModManager.GUI {
 			CategoryEnabled.Toggled += OnCategoryToggled;
 			Container.ItemRectChanged += OnContainerResized;
 			UninstallModButton.Pressed += OnUninstallPressed;
+			UpdateModButton.Pressed += OnUpdatePressed;
 			if (Pack != null && Source != null) {
 				CategoryEnabled.SetPressedNoSignal(Source.IsEnabledIn(Pack));
+				AssignModpackImpl(Pack, Source);
 			}
 			foreach (ModListEntryElement element in _pendingChildren) {
 				if (IsInstanceValid(element)) Children.AddChild(element);
 			}
 			_pendingChildren = null!;
 			Children.SortChildren += OnInnerListSortingChildren;
+
 		}
 
 		/// <summary>
@@ -102,6 +121,27 @@ namespace SBModManager.GUI {
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
 			AddChild(dialog);
+		}
+
+		private void OnUpdatePressed() {
+			if (!Source.IsWorkshopMod) return;
+			if (!WorkshopUpdateInfo.IsUpdateAvailable(Source.WorkshopID)) return;
+
+			GeneralProgressWindow progress = Assets.CreateGeneralProgressWindow();
+			AddChild(progress);
+			CancellationTokenSource cts = new CancellationTokenSource();
+			progress.ShowWithCancellation(
+				async delegate {
+					await SteamTools.DownloadWorkshopModsAsync([Source.WorkshopID], false, progress, cts.Token);
+					WorkshopUpdateInfo.MarkAsUpdated(Source.WorkshopID);
+					if (IsInstanceValid(_viewModListPanel)) {
+						//_viewModListPanel.RebuildList(true);
+						_viewModListPanel.CallDeferred(ViewModListPanel.MethodName.RebuildList, true);
+					}
+				},
+				cts,
+				true
+			);
 		}
 
 		private void OnContainerResized() {
@@ -137,7 +177,8 @@ namespace SBModManager.GUI {
 		/// </summary>
 		/// <param name="modpack"></param>
 		/// <param name="source"></param>
-		public void AssignModpack(Modpack modpack, ModSource source) {
+		public void AssignModpack(ViewModListPanel from, Modpack modpack, ModSource source) {
+			_viewModListPanel = from;
 			Pack = modpack;
 			Source = source;
 			if (IsNodeReady()) {
@@ -146,6 +187,7 @@ namespace SBModManager.GUI {
 		}
 
 		private void AssignModpackImpl(Modpack modpack, ModSource source) {
+			UpdateModButton.Disabled = !source.IsWorkshopMod || !WorkshopUpdateInfo.IsUpdateAvailable(source.WorkshopID);
 			Pack = modpack;
 			Source = source;
 			CategoryEnabled.SetPressedNoSignal(source.IsEnabledIn(modpack));

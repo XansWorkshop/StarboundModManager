@@ -37,11 +37,12 @@ namespace SBModManager {
 		}
 
 		/// <summary>
-		/// Returns the location of the Starbound executable.
+		/// Returns the location of the Starbound server executable.
 		/// </summary>
 		/// <returns></returns>
+		/// <param name="isCheckingForInstall">If true, this is <see cref="AutoInstaller"/> and it should find <c>starbound_server</c>. Otherwise, it should find <c>run-server.sh</c> to run it.</param>
 		/// <exception cref="InvalidOperationException">This is run on an unsupported operating system.</exception>
-		public static string GetLocalStarboundServerProgram() {
+		public static string GetLocalStarboundServerProgram(bool isCheckingForInstall) {
 			string baseDir = GetLocalStarboundInstallDirectory();
 			string os = OS.GetName();
 			if (os == "Windows") {
@@ -49,7 +50,7 @@ namespace SBModManager {
 			} else if (os == "macOS") {
 				throw new NotSupportedException("MacOS does not support running a Starbound Server.");
 			} else if (os == "Linux") {
-				return Path2.Combine(baseDir, "linux", "starbound_server");
+				return Path2.Combine(baseDir, "linux", isCheckingForInstall ? "starbound_server" : "run-server.sh");
 			} else {
 				throw new InvalidOperationException($"Cannot get Starbond installation on OS: {os}");
 			}
@@ -131,6 +132,15 @@ namespace SBModManager {
 		/// <returns></returns>
 		public static string GetLocalWorkshopCacheDirectory() {
 			return ProjectSettings.GlobalizePath($"user://mod_catalog_workshop");
+		}
+
+		/// <summary>
+		/// Returns a path to a special json file in the workshop directory which stores update timestamps.
+		/// This is used for checking updates to mods.
+		/// </summary>
+		/// <returns></returns>
+		public static string GetLocalWorkshopVersionCache() {
+			return Path2.Combine(GetLocalWorkshopCacheDirectory(), "versions.json");
 		}
 
 		/// <summary>

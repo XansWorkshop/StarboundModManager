@@ -198,13 +198,13 @@ namespace SBModManager.SteamInterop {
 		/// or use 
 		/// </summary>
 		/// <param name="ids">An array of workshop item IDs to download.</param>
-		/// <param name="skipIfInstalled">If true, workshop items that appear to be already installed are skipped.</param>
+		/// <param name="onlyMissing">If true, workshop items that appear to be already installed are skipped.</param>
 		/// <param name="progressWindow">A progress window to display progress to the user.</param>
 		/// <param name="cancellationToken">Can be used to cancel the process.</param>
 		/// <returns></returns>
 		/// <exception cref="InvalidOperationException"></exception>
 		/// <exception cref="OperationCanceledException"></exception>
-		public static async Task<long[]> DownloadWorkshopModsAsync(long[] ids, bool skipIfInstalled, GeneralProgressWindow? progressWindow, CancellationToken cancellationToken) {
+		public static async Task<long[]> DownloadWorkshopModsAsync(long[] ids, bool onlyMissing, GeneralProgressWindow? progressWindow, CancellationToken cancellationToken) {
 			if (ids.Length == 0) return [];
 
 			string sbmmWorkshopStorageDirectory = Directories.GetLocalWorkshopCacheDirectory();
@@ -223,17 +223,35 @@ namespace SBModManager.SteamInterop {
 			// though. So maybe.
 
 			List<long> idsList = ids.ToList();
+			bool hasMagicID = false;
 			idsList.Sort();
-			if (skipIfInstalled) {
+			if (onlyMissing) {
+				GD.Print("Trimming workshop mods from the download that we already have on this PC...");
 				PreprocessWorkshopDownloadList(idsList);
 			}
 			string? installScriptPath = AssembleWorkshopDownloadList(idsList);
 			if (installScriptPath == null) return [];
+
+			hasMagicID = idsList[0] == long.MinValue; // [0] because it's sorted.
+			if (hasMagicID) {
+				idsList.RemoveAt(0);
+				if (idsList.Count == 0) {
+					await Task.Delay(1000); // Simulate download time.
+					return [];
+				}
+			}
+
+			GD.Print($"Collecting version information for {idsList.Count} workshop mods, if we need to: {string.Join(',', idsList)}");
+			await WorkshopUpdateInfo.CheckForUpdatesWithCooldownAsync();
+
+			GD.Print($"Downloading {idsList.Count} workshop mods: {string.Join(',', idsList)}");
 			try {
 				float totalToDownload = idsList.Count;
 				float downloaded = 0;
 				progressWindow?.SetStatus("Downloading...", "Downloading Workshop Mod(s)");
-				progressWindow?.SetProgress(0.00f);
+				progressWindow?.SetProgress(1 / (totalToDownload + 1)); 
+				// ^ This is kind of a psychological hack. It feels worse when it's stuck at 0%.
+				// By lying to people and giving it some small percentage, it looks like it's doing something.
 
 				using FileSystemWatcher steamCmdInstallationWatcher = new FileSystemWatcher {
 					Path = steamCmdStagingDirectory,
@@ -243,12 +261,21 @@ namespace SBModManager.SteamInterop {
 				steamCmdInstallationWatcher.Created += delegate (object sender, FileSystemEventArgs e) {
 					if (e.Name != null && e.Name.StartsWith("item_") && long.TryParse(e.Name[5..], out long workshopID) && idsList.BinarySearch(workshopID) >= 0) {
 						downloaded++;
-						progressWindow?.SetProgress(downloaded / totalToDownload);
+						if (downloaded < totalToDownload) {
+							progressWindow?.SetProgress(downloaded / (totalToDownload + 1));
+						} else {
+							progressWindow?.SetProgress(float.NaN); 
+							// Change to indeterminate to indicate the last copying step which might take a sec.
+						}
 					}
 				};
 
 				await SteamCMD.RunSteamCMDScriptAsync(installScriptPath, cancellationToken);
+				if (hasMagicID) {
+					await Task.Delay(1000); // Just some dummy time.
+				}
 
+				GD.Print($"Copying folders from SteamCMD's installation directory into the SBMM cache...");
 				List<long> seeminglyMissing = [];
 				for (int i = 0; i < idsList.Count; i++) {
 					cancellationToken.ThrowIfCancellationRequested();
@@ -260,10 +287,17 @@ namespace SBModManager.SteamInterop {
 						} catch (DirectoryNotFoundException) { }
 					}
 					if (!Directory.Exists(itemPath)) {
+						GD.Print($"Mod with ID {idsList[i]} wasn't in the SteamCMD installation directory. It might be unlisted/private or just outright invalid.");
 						seeminglyMissing.Add(idsList[i]);
 					} else {
+						WorkshopUpdateInfo.MarkAsUpdated(idsList[i], false); // We save later.
 						Directory.Move(itemPath, destination);
 					}
+				}
+				WorkshopUpdateInfo.Save();
+
+				if (seeminglyMissing.Contains(long.MinValue)) {
+					seeminglyMissing.Remove(long.MinValue);
 				}
 
 				// Reuse IDs
@@ -277,7 +311,12 @@ namespace SBModManager.SteamInterop {
 			}
 
 			if (ids.Length > 0) {
-				File.WriteAllText(Path2.Combine(sbmmWorkshopStorageDirectory, "failedworkshop.txt"), string.Join('\n', ids));
+				StringBuilder failList = new StringBuilder();
+				foreach (long id in ids) {
+					failList.Append("https://steamcommunity.com/sharedfiles/filedetails/?id=");
+					failList.AppendLine(id.ToString());
+				}
+				File.WriteAllText(Path2.Combine(sbmmWorkshopStorageDirectory, "failedworkshop.txt"), failList.ToString());
 				OS.Alert($"{ids.Length} {(ids.Length == 1 ? "mod" : "mods")} failed to download (they are probably unlisted or private). The mods have been written to \"failedworkshop.txt\" in the mod_catalog_workshop directory.");
 				return ids;
 			}
@@ -340,6 +379,7 @@ namespace SBModManager.SteamInterop {
 			script.AppendLine("@ShutdownOnFailedCommand 0");
 			script.AppendLine("login anonymous");
 			foreach (long id in ids) {
+				if (id == long.MinValue) continue; // Magic ID
 				script.AppendLine($"download_item 211820 {id}");
 			}
 			File.WriteAllText(thisSteamCMDScript, script.ToString());
@@ -487,6 +527,7 @@ namespace SBModManager.SteamInterop {
 			int retries = 3;
 			while (retries-- > 0) {
 				try {
+					GD.Print("Asking Steam for collection information...");
 					HttpRequestMessage request = new HttpRequestMessage {
 						Method = HttpMethod.Post,
 						RequestUri = new Uri(STEAM_API_GET_COLLECTION_DETAILS),
@@ -504,17 +545,21 @@ namespace SBModManager.SteamInterop {
 						throw new KeyNotFoundException($"Failed to process collection: Steam replied with EResult.{details.result}");
 					} else {
 						// Good to go. Ignore all of the collections first...
+						GD.Print("Got collections. Trimming the ones that have already been scanned, in case of recursion...");
 						foreach (long collection in collectionsToRead.Span) {
 							// ^ Must get the span again since spans can't cross await boundaries (and it won't raise a compiler error)
 							ignoreCollectionIDs.Add(collection);
 						}
 
+						GD.Print("Reading entries...");
 						List<long> childCollectionsToRead = [];
 						foreach (CollectionDetailsEntry entry in details.collectionDetails) {
 							foreach (CollectionDetailsEntryChild child in entry.children) {
 								if (child.fileType == EWorkshopFileType.Community) {
 									itemIDsOut?.Add(child.publishedFileID);
+									GD.Print($"{child.publishedFileID} is a mod.");
 								} else if (child.fileType == EWorkshopFileType.Collection) {
+									GD.Print($"{child.publishedFileID} is a sub-collection.");
 									if (!recursive) {
 										collectionIDsOut?.Add(child.publishedFileID);
 									} else {
@@ -531,12 +576,14 @@ namespace SBModManager.SteamInterop {
 				} catch (HttpRequestException httpError) {
 					if (httpError.StatusCode == HttpStatusCode.TooManyRequests) {
 						// If we get rate limited, wait a while then try again.
+						GD.Print("Steam rate limited us. Waiting a few seconds and trying again...");
 						await Task.Delay(5000, cancellationToken).ConfigureAwait(false);
 						continue;
 
 					} else if (httpError.StatusCode == HttpStatusCode.RequestHeaderFieldsTooLarge) {
 						// If the request is too large for whatever reason, just split it in half and try again.
 
+						GD.Print("Steam says we requested way too much at once. Splitting this request in half...");
 						int halfLength = collectionsToRead.Length >>> 1;
 						if ((collectionsToRead.Length & 1) != 0) halfLength++;
 						if (halfLength == 0) throw new InvalidOperationException("Somehow the request was too large but there was literally only one field. This is a very strange and nonsensical error.");
@@ -611,17 +658,31 @@ namespace SBModManager.SteamInterop {
 			if (entries.Length == 0) return;
 			Dictionary<string, string> kvp = [];
 
+			int index = 0;
+			bool hasMagicID = false;
 			for (int i = 0; i < workshopIDs.Length; i++) {
-				long collection = entries[i];
-				kvp[$"publishedfileids[{i}]"] = collection.ToString();
+				long item = entries[i];
+				if (item == long.MinValue) {
+					hasMagicID = true;
+					continue;
+				}
+				kvp[$"publishedfileids[{index++}]"] = item.ToString();
 			}
-			kvp["itemcount"] = entries.Length.ToString();
+			kvp["itemcount"] = index.ToString();
 
 			FormUrlEncodedContent requestBody = new FormUrlEncodedContent(kvp);
+
+			if (index == 0) {
+				if (hasMagicID) {
+					result.Add(PublishedFileDetailsEntry.CreateVirtualTestItem());
+				}
+				return;
+			}
 
 			int retries = 3;
 			while (retries-- > 0) {
 				try {
+					GD.Print("Asking Steam for information about various workshop items...");
 					HttpRequestMessage request = new HttpRequestMessage {
 						Method = HttpMethod.Post,
 						RequestUri = new Uri(STEAM_API_GET_PUBLISHED_FILE_DETAILS),
@@ -637,9 +698,12 @@ namespace SBModManager.SteamInterop {
 						throw new InvalidOperationException($"Failed to process items: Steam replied with EResult.{details.result}");
 					} else {
 						// Good to go.
-						List<long> childCollectionsToRead = [];
+						// List<long> childCollectionsToRead = [];
 						foreach (PublishedFileDetailsEntry entry in details.publishedFileDetails) {
 							result.Add(entry);
+						}
+						if (hasMagicID) {
+							result.Add(PublishedFileDetailsEntry.CreateVirtualTestItem());
 						}
 						return;
 					}
@@ -647,6 +711,7 @@ namespace SBModManager.SteamInterop {
 				} catch (HttpRequestException httpError) {
 					if (httpError.StatusCode == HttpStatusCode.TooManyRequests) {
 						// If we get rate limited, wait a while then try again.
+						GD.Print("Steam rate limited us. Waiting a few seconds and trying again...");
 						await Task.Delay(5000, cancellationToken).ConfigureAwait(false);
 						continue;
 
@@ -657,6 +722,7 @@ namespace SBModManager.SteamInterop {
 						if ((workshopIDs.Length & 1) != 0) halfLength++;
 						if (halfLength == 0) throw new InvalidOperationException("Somehow the request was too large but there was literally only one field. This is a very strange and nonsensical error.");
 
+						GD.Print("Steam says we requested way too much at once. Splitting this request in half...");
 						// No "halfLengthB" because we use a range expression that goes to the end of the array, knowing the length of the second segment is not useful.
 						await GetPartialPublishedFileDetailsAsync(workshopIDs[..halfLength], result, cancellationToken);
 						await GetPartialPublishedFileDetailsAsync(workshopIDs[halfLength..], result, cancellationToken);
@@ -683,23 +749,6 @@ namespace SBModManager.SteamInterop {
 				return new PublishedFileDetails(json);
 			}
 			return default;
-		}
-
-		#endregion
-
-		#region Check For Updates
-
-		public static async Task<bool> CheckForUpdatesAsync() {
-			// POST https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/
-			// In body form-data:
-			// itemcount
-			// publishedfileids[0], [1], [2]
-			/*
-			 * 
-			MultipartFormDataContent content = new MultipartFormDataContent();
-			content.Add(new StringContent("1"), "itemcount")
-			 * */
-			throw new NotImplementedException();
 		}
 
 		#endregion

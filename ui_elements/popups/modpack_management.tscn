@@ -1,22 +1,21 @@
 [gd_scene format=3 uid="uid://dj6i10d8xumgl"]
 
 [ext_resource type="Script" uid="uid://bytmr2lgg73p3" path="res://SBModManager/Menus/Windows/ModpackManagementWindow.cs" id="1_o685q"]
-[ext_resource type="Theme" uid="uid://qlg4pb2qh52g" path="res://theme.tres" id="2_0sis3"]
 [ext_resource type="Script" uid="uid://b46g2ugm183w7" path="res://SBModManager/Menus/EditModpackDetailsPanel.cs" id="2_o685q"]
 [ext_resource type="Texture2D" uid="uid://lo8aqvl4m0jw" path="res://icons/starbound.png" id="3_lxa52"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="5_0sis3"]
 [ext_resource type="Script" uid="uid://dq4ktxrpkdv2i" path="res://SBModManager/Menus/ViewModListPanel.cs" id="5_ghlnl"]
 [ext_resource type="PackedScene" uid="uid://bgsfhxcgnstw1" path="res://ui_elements/popups/import_dialog.tscn" id="7_e55jo"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ysqsd"]
-bg_color = Color(0.1015625, 0.1015625, 0.1015625, 1)
-border_color = Color(0.9192708, 0.71032524, 0.2154541, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uljub"]
+bg_color = Color(0.11, 0.11, 0.11, 1)
+border_color = Color(1, 0.7959391, 0.23177081, 1)
 
 [node name="ModpackManagement" type="Window" unique_id=939907019]
 oversampling_override = 1.0
 title = "Edit Modpack Details"
 initial_position = 2
-size = Vector2i(800, 428)
+size = Vector2i(1100, 600)
 transient = true
 exclusive = true
 sharp_corners = true
@@ -36,12 +35,13 @@ grow_vertical = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 0
+current_tab = 1
 tab_0/title = "Edit Modpack Details"
 tab_1/title = "View Mod List"
 
 [node name="EditModpackDetails" type="MarginContainer" parent="VBoxContainer/Tabs" unique_id=1980975647]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
@@ -84,7 +84,6 @@ custom_minimum_size = Vector2(0, 31)
 custom_maximum_size = Vector2(-1, 31)
 layout_mode = 2
 size_flags_horizontal = 3
-theme = ExtResource("2_0sis3")
 text = "Pack Author"
 vertical_alignment = 1
 
@@ -182,7 +181,6 @@ use_native_dialog = true
 
 [node name="ViewModList" type="MarginContainer" parent="VBoxContainer/Tabs" unique_id=848081395]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
@@ -195,13 +193,39 @@ metadata/_tab_name = "View Mod List"
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Tabs/ViewModList" unique_id=1151899063]
 layout_mode = 2
 
-[node name="SearchMods" type="LineEdit" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer" unique_id=2055190963]
+[node name="SearchAndSort" type="HBoxContainer" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer" unique_id=1601146249]
+layout_mode = 2
+
+[node name="SearchMods" type="LineEdit" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/SearchAndSort" unique_id=2055190963]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_ysqsd")
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_uljub")
 placeholder_text = "Search for a mod..."
 clear_button_enabled = true
+select_all_on_focus = true
 caret_blink = true
+
+[node name="SortTechnique" type="OptionButton" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/SearchAndSort" unique_id=1170690071]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Sort by Name"
+popup/item_0/id = 0
+popup/item_1/text = "Sort by Author"
+popup/item_1/id = 1
+popup/item_2/text = "Sort by Date Added"
+popup/item_2/id = 2
+
+[node name="UpdateAll" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/SearchAndSort" unique_id=1257773357]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Installs updates for all Workshop mods that need them.
+
+The system checks for updates when SBMM launches, and then once every 15 minutes after that."
+disabled = true
+text = "Update Mods"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer" unique_id=2122860021]
 layout_mode = 2

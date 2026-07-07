@@ -270,6 +270,7 @@ namespace SBModManager.Menus.Windows {
 
 					foreach (KeyValuePair<ModSource, bool> binding in modpack.ModSources) {
 						editing.ModSources.TryAdd(binding.Key, binding.Value);
+						editing.ModAddedOnDate.TryAdd(binding.Key, modpack.ModAddedOnDate.GetValueOrDefault(binding.Key, DateTime.Now));
 					}
 				} catch (Exception exc) when (!exc.IsCancellation()) {
 					OS.Alert(exc.Message, "Failed to import modpack!");

@@ -40,7 +40,10 @@ namespace SBModManager {
 				progressWindow.SetStatus("Launching Starbound...", "Launching Starbound");
 			}
 			ProcessStartInfo starboundStartInfo = new ProcessStartInfo {
-				FileName = launchServer ? Directories.GetLocalStarboundServerProgram() : Directories.GetLocalStarboundProgram()
+				FileName = launchServer ? Directories.GetLocalStarboundServerProgram(false) : Directories.GetLocalStarboundProgram(),
+#if NET11_0_OR_GREATER
+				KillOnParentExit = false
+#endif
 			};
 			starboundStartInfo.ArgumentList.Add("-bootconfig");
 			if (launchServer) {
@@ -54,6 +57,8 @@ namespace SBModManager {
 			};
 			starbound.Start();
 
+			Core.Instance.UpdateStarboundProcess(modpack, starbound, launchServer);
+
 			try {
 				if (completeWhenStarboundCloses) {
 					if (launchServer) {
@@ -62,7 +67,14 @@ namespace SBModManager {
 						progressWindow.SetStatus("Starbound is now running.\nIn order to use the mod manager,\nyou must exit the game.", "Starbound Is Running!");
 					}
 					progressWindow.CancelButton.SetDeferred("text", "Force Quit Starbound");
-					await starbound.WaitForExitAsync(cancellationToken);
+					await starbound.WaitForExitAsync(cancellationToken).ContinueWith(delegate {
+						Core.Instance.UpdateStarboundProcess(modpack, null, launchServer);
+					}, CancellationToken.None);
+				} else {
+					_ = Task.Run(delegate {
+						starbound.WaitForExit(); // Not async.
+						Core.Instance.UpdateStarboundProcess(modpack, null, launchServer);
+					}, CancellationToken.None);
 				}
 			} catch (OperationCanceledException) {
 				starbound.Kill();

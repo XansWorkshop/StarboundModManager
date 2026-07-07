@@ -4,7 +4,9 @@
 [ext_resource type="Script" uid="uid://bgstufxnhq8wt" path="res://SBModManager/GUI/RichTooltipElements/TooltipCheckButton.cs" id="1_dbo7l"]
 [ext_resource type="Script" uid="uid://bhnu5j1fv15t4" path="res://SBModManager/GUI/ModListEntryElement.cs" id="1_ysqsd"]
 [ext_resource type="Script" uid="uid://vl5rinndcuu5" path="res://SBModManager/GUI/RichTooltipElements/TooltipRichTextLabel.cs" id="3_ysqsd"]
+[ext_resource type="Texture2D" uid="uid://cahiwpn1fqcsg" path="res://icons/new_update.png" id="5_0ajyu"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="5_udqm2"]
+[ext_resource type="Texture2D" uid="uid://buy2frwpme3xy" path="res://icons/uninstall_mod.png" id="7_oncvm"]
 
 [node name="ModEntry" type="ColorRect" unique_id=1954689346]
 custom_minimum_size = Vector2(0, 36)
@@ -34,7 +36,6 @@ theme_override_constants/margin_bottom = 4
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=520864684]
 layout_mode = 2
-theme_override_constants/separation = 16
 
 [node name="EnableMod" type="CheckButton" parent="MarginContainer/HBoxContainer" unique_id=1027071788]
 unique_name_in_owner = true
@@ -51,6 +52,9 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 texture = ExtResource("1_b0mdo")
 expand_mode = 1
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/HBoxContainer" unique_id=1089333416]
+layout_mode = 2
 
 [node name="ModNameAndAuthor" type="RichTextLabel" parent="MarginContainer/HBoxContainer" unique_id=563932082]
 unique_name_in_owner = true
@@ -77,13 +81,18 @@ autowrap_mode = 0
 vertical_alignment = 1
 script = ExtResource("3_ysqsd")
 
+[node name="VSeparator2" type="VSeparator" parent="MarginContainer/HBoxContainer" unique_id=2021386493]
+layout_mode = 2
+
 [node name="ModVersionAndSize" type="RichTextLabel" parent="MarginContainer/HBoxContainer" unique_id=433920801]
 unique_name_in_owner = true
 clip_contents = false
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
-offset_transform_position = Vector2(0, -2)
+tooltip_text = "[b]Shared:[/b] This installation is shared across modpacks.
+
+Installing it to other modpacks will [i]not[/i] consume additional disk space."
 mouse_filter = 1
 theme_override_constants/strikethrough_alpha = 100
 theme_override_font_sizes/normal_font_size = 12
@@ -92,18 +101,29 @@ theme_override_font_sizes/bold_italics_font_size = 12
 theme_override_font_sizes/italics_font_size = 12
 theme_override_font_sizes/mono_font_size = 12
 bbcode_enabled = true
-text = "Version 0
-0 Bytes On Disk"
 scroll_active = false
 autowrap_mode = 0
+vertical_alignment = 1
+script = ExtResource("3_ysqsd")
 
-[node name="UninstallModButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=857689382]
+[node name="UpdateModButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=1086889629]
 unique_name_in_owner = true
+texture_filter = 1
 custom_minimum_size = Vector2(36, 36)
 custom_maximum_size = Vector2(36, 36)
 layout_mode = 2
-tooltip_text = "Remove this mod from the list."
-theme_override_constants/line_spacing = -26
-text = "❌
- "
+tooltip_text = "Download the update for this mod from the Steam Workshop."
+icon = ExtResource("5_0ajyu")
+icon_alignment = 1
+script = ExtResource("5_udqm2")
+
+[node name="UninstallModButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=1842171544]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(36, 36)
+custom_maximum_size = Vector2(36, 36)
+layout_mode = 2
+tooltip_text = "Remove this mod from the pack."
+icon = ExtResource("7_oncvm")
+icon_alignment = 1
 script = ExtResource("5_udqm2")

@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
+using SBModManager.Menus.Sorting;
 using SBModManager.Other;
 
 namespace SBModManager.ModInstances {
@@ -55,7 +56,11 @@ namespace SBModManager.ModInstances {
 		/// </summary>
 		public string PersistentName { get; }
 
-		public long LastUpdateEpoch { get; }
+		/// <summary>
+		/// Alias method to get the first mod, or null if there are no mods.
+		/// </summary>
+		/// <returns></returns>
+		public ModArchive? GetFirstModOrDefault() => Mods.Length > 0 ? Mods[0] : null;
 
 		/// <summary>
 		/// Returns a <see cref="ModSource"/> for the provided workshop ID. The instance is shared globally.
@@ -93,7 +98,7 @@ namespace SBModManager.ModInstances {
 		/// Create a mod source from a workshop mod. This loads from the workshop catalog.
 		/// </summary>
 		/// <param name="workshopID"></param>
-		private ModSource(long workshopID) {
+		internal ModSource(long workshopID) {
 			AbsolutePath = Path2.Combine(Directories.GetLocalWorkshopCacheDirectory(), workshopID.ToString());
 			if (!Directory.Exists(AbsolutePath)) throw new DirectoryNotFoundException($"No directory exists at {AbsolutePath}");
 
@@ -180,14 +185,7 @@ namespace SBModManager.ModInstances {
 		/// <param name="other"></param>
 		/// <returns></returns>
 		public int CompareTo(ModSource? other) {
-			if (other is null) return 1;
-			if (Mods.Length == 0) {
-				if (other.Mods.Length == 0) return 0;
-				return -1;
-			} else {
-				if (other.Mods.Length == 0) return 1;
-				return Mods[0].Metadata.FriendlyName.CompareTo(other.Mods[0].Metadata.FriendlyName);
-			}
+			return SortModsByName.Instance.Compare(this, other);
 		}
 	}
 }

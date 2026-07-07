@@ -67,6 +67,16 @@ namespace SBModManager.ModInstances {
 		public SortedDictionary<ModSource, bool> ModSources { get; } = [];
 
 		/// <summary>
+		/// Binds a date-added to each mod.
+		/// </summary>
+		public Dictionary<ModSource, DateTime> ModAddedOnDate { get; } = [];
+
+		/// <summary>
+		/// The preferred sorting technique for this modpack's list.
+		/// </summary>
+		public long PreferredSortTechnique { get; set; }
+
+		/// <summary>
 		/// When importing a modpack, this is set to true. The intent is that if the modpack is stored on disk,
 		/// but then the import is cancelled or fails, this will have been saved as true. The next time the game
 		/// reads this modpack, it will delete it instead of loading a corrupted pack.
@@ -110,8 +120,18 @@ namespace SBModManager.ModInstances {
 				Creator = data.GetValueAsStringOrDefault("creator", ""),
 				Description = data.GetValueAsStringOrDefault("description", "")
 			};
-			if (data.TryGetValue("last_played", out Variant lastPlayedVar) && (lastPlayedVar.VariantType == Variant.Type.Int || lastPlayedVar.VariantType == Variant.Type.Float)) {
-				pack.LastPlayed = DateTime.FromBinary((long)lastPlayedVar);
+			if (data.TryGetValue("last_played", out Variant lastPlayedVar)) {
+				if (lastPlayedVar.VariantType is Variant.Type.Int or Variant.Type.Float) {
+					pack.LastPlayed = DateTime.FromBinary((long)lastPlayedVar);
+				} else if (lastPlayedVar.VariantType is Variant.Type.String) {
+					// After 0.3.1 because Godot insists that it should parse json values as float, even if they are int.
+					pack.LastPlayed = DateTime.FromBinary(long.Parse((string)lastPlayedVar));
+				}
+			}
+
+			// Added after 0.3.1:
+			if (data.TryGetValue("preferred_sort_technique", out Variant preferredSortTechniqueVar) && (preferredSortTechniqueVar.VariantType is Variant.Type.Int or Variant.Type.Float)) {
+				pack.PreferredSortTechnique = (long)preferredSortTechniqueVar;
 			}
 
 			GDArray modSources = (GDArray)data["mod_sources"];
@@ -125,6 +145,12 @@ namespace SBModManager.ModInstances {
 				bool isWorkshop = (flags & 2) != 0;
 				bool isEnabled = (flags & 1) != 0;
 
+				// Features added after 0.3.1:
+				DateTime addedOnDate = DateTime.Now;
+				if (innerArray.Count >= 3) {
+					addedOnDate = DateTime.FromBinary((long)innerArray[2]);
+				}
+
 				if (isWorkshop) {
 					if (long.TryParse(key, out long workshopID)) {
 						if (!alreadyGotWorkshop.Add(workshopID)) {
@@ -132,7 +158,9 @@ namespace SBModManager.ModInstances {
 							continue;
 						}
 						try {
-							pack.ModSources[ModSource.GetOrCreateSource(workshopID)] = isEnabled;
+							ModSource src = ModSource.GetOrCreateSource(workshopID);
+							pack.ModSources[src] = isEnabled;
+							pack.ModAddedOnDate[src] = addedOnDate;
 						} catch (Exception ex) {
 							GD.PushError($"Workshop mod {workshopID} failed to load: {ex}");
 							missing.Add($"Workshop: {workshopID}");
@@ -149,7 +177,9 @@ namespace SBModManager.ModInstances {
 						continue;
 					}
 					try {
-						pack.ModSources[ModSource.GetOrCreateSource(key)] = isEnabled;
+						ModSource src = ModSource.GetOrCreateSource(key);
+						pack.ModSources[src] = isEnabled;
+						pack.ModAddedOnDate[src] = addedOnDate;
 					} catch (Exception ex) {
 						GD.PushError($"Named mod {key} failed to load: {ex}");
 						missing.Add(key);
@@ -177,8 +207,9 @@ namespace SBModManager.ModInstances {
 			data["name"] = Name;
 			data["creator"] = Creator;
 			data["description"] = Description;
-			data["last_played"] = LastPlayed.ToBinary();
+			data["last_played"] = LastPlayed.ToBinary().ToString();
 			data["is_corrupted_delete_next_time"] = IsCorruptedDeleteOnNextRead;
+			data["preferred_sort_technique"] = PreferredSortTechnique;
 
 			// This is an array because of a possible edge case where a mod's name is just numbers.
 			GDArray modSources = [];
@@ -186,7 +217,7 @@ namespace SBModManager.ModInstances {
 				ModSource source = binding.Key;
 				bool enabled = binding.Value;
 				int flags = (source.IsWorkshopMod ? 2 : 0) | (enabled ? 1 : 0);
-				modSources.Add(new GDArray { source.PersistentName, flags });
+				modSources.Add(new GDArray { source.PersistentName, flags, ModAddedOnDate.GetValueOrDefault(source, DateTime.Now).ToBinary() });
 			}
 			data["mod_sources"] = modSources;
 
@@ -220,6 +251,7 @@ namespace SBModManager.ModInstances {
 			};
 			foreach (KeyValuePair<ModSource, bool> kvp in ModSources) {
 				dupe.ModSources[kvp.Key] = kvp.Value;
+				dupe.ModAddedOnDate[kvp.Key] = ModAddedOnDate.GetValueOrDefault(kvp.Key, DateTime.Now);
 			}
 			dupe.SaveAndUpdateInitsAsync(CancellationToken.None).Wait();
 

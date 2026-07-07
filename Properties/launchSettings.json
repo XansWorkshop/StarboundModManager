@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Run With Godot": {
+    "Run with Godot": {
       "commandName": "Executable",
       "executablePath": "F:\\Users\\Xan\\Desktop\\Software\\Godot\\Godot_v4.7-stable_mono_win64\\Godot_v4.7-stable_mono_win64.exe",
       "commandLineArgs": "--path F:\\Users\\Xan\\source\\godot\\sb_mod_manager --debug",

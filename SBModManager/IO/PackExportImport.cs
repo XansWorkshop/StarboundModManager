@@ -80,6 +80,7 @@ namespace SBModManager.IO {
 		private static void WriteModpack(BinaryWriter writer, Modpack modpack, GeneralProgressWindow? progressWindow, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
+			GD.Print($"Exporting modpack {modpack.Name}...");
 			writer.Write(modpack.ID.ToByteArray());
 			writer.Write(modpack.Name);
 			writer.Write(modpack.Creator);
@@ -99,6 +100,7 @@ namespace SBModManager.IO {
 			foreach (ModSource source in modpack.ModSources.Keys) {
 				WriteModSource(writer, modpack, source, progressWindow, cancellationToken);
 			}
+			GD.Print($"Done!");
 		}
 
 		/// <summary>
@@ -110,6 +112,7 @@ namespace SBModManager.IO {
 		private static void WriteModSource(BinaryWriter writer, Modpack modpack, ModSource source, GeneralProgressWindow? progressWindow, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
+			GD.Print($"Writing mod source {source.PersistentName}...");
 			const byte BIT_IS_ENABLED        = 1 << 0;
 			const byte BIT_IS_WORKSHOP_MOD   = 1 << 1;
 			byte flags = 0;
@@ -119,10 +122,12 @@ namespace SBModManager.IO {
 			writer.Write(source.PersistentName);
 			writer.Write(flags);
 			if (source.IsWorkshopMod) {
+				GD.Print($"{source.PersistentName} is a workshop mod, so we'll just write the ID.");
 				writer.Write7BitEncodedInt64(source.WorkshopID);
 			} else {
+				GD.Print($"{source.PersistentName} is a local mod, so we have to pack the actual file contents...");
 				float maxProgress = source.Mods.Length;
-				progressWindow?.SetStatus("Storing a mod file...", "Exporting Modpack");
+				progressWindow?.SetStatus("Storing mods...", "Exporting Modpack");
 
 				writer.Write7BitEncodedInt64(source.Mods.Length);
 				for (int i = 0; i < source.Mods.Length; i++) {
@@ -139,7 +144,7 @@ namespace SBModManager.IO {
 		}
 
 		/// <summary>
-		/// Writes a <see cref="ModArchive"/> to the stream.
+		/// Writes a <see cref="ModArchive"/> to the stream in file form.
 		/// </summary>
 		/// <param name="writer">The thing to write to the stream.</param>
 		/// <param name="modpack">The modpack that this belongs to.</param>
@@ -152,8 +157,10 @@ namespace SBModManager.IO {
 			writer.Write(archive.IsDirectory);
 
 			if (archive.IsDirectory) {
+				GD.Print($"Writing sub-archive {archive.Name} as a directory...");
 				WriteDirectoryContents(writer, new DirectoryInfo(archive.AbsolutePath), string.Empty, progressWindow, cancellationToken);
 			} else {
+				GD.Print($"Writing sub-archive {archive.Name} as a .pak file...");
 				FileInfo pak = new FileInfo(archive.AbsolutePath);
 				using FileStream fs = pak.OpenRead();
 				writer.Write(fs.Length);
@@ -209,6 +216,7 @@ namespace SBModManager.IO {
 		private static Modpack ReadModpack(BinaryReader reader, bool ignoreGuid, GeneralProgressWindow? progressWindow, CancellationToken cancellationToken) {
 			cancellationToken.ThrowIfCancellationRequested();
 
+			GD.Print("Importing a modpack...");
 			Modpack modpack;
 			string appended = string.Empty;
 			if (ignoreGuid) {
@@ -224,6 +232,7 @@ namespace SBModManager.IO {
 			modpack.Description = reader.ReadString();
 			modpack.SaveAndUpdateInitsAsync(cancellationToken).Wait(CancellationToken.None); // Save so the folders and stuff get created
 
+			GD.Print("Modpack instantiated, reading icon...");
 			long iconLength = reader.ReadInt64();
 			string directory = Directories.GetPackDirectory(modpack.ID);
 			string icon = Path2.Combine(directory, "icon.png");
@@ -234,6 +243,7 @@ namespace SBModManager.IO {
 				fs.Write(buffer);
 			}
 
+			GD.Print("Reading mod sources...");
 			int sources = reader.ReadInt32();
 			Dictionary<long, bool> workshopMods = [];
 			for (int i = 0; i < sources; i++) {
@@ -248,6 +258,7 @@ namespace SBModManager.IO {
 			progressWindow?.SetStatus("Importing Workshop Mods...\nThis might take a while.", "Importing Modpack");
 			progressWindow?.SetProgress(float.NaN);
 
+			GD.Print("Downloading workshop mods...");
 			HashSet<long> failed = SteamTools.DownloadWorkshopModsAsync(workshopMods.Keys.ToArray(), true, progressWindow, cancellationToken).Result.ToHashSet();
 			foreach ((long id, bool enabled) in workshopMods) {
 				if (failed.Contains(id)) continue;
@@ -255,8 +266,10 @@ namespace SBModManager.IO {
 				modpack.ModSources[source] = enabled;
 			}
 
+			GD.Print("Saving metadata now that all the mods are here...");
 			modpack.SaveAndUpdateInitsAsync(cancellationToken).Wait(CancellationToken.None);
 
+			GD.Print("Done!");
 			return modpack;
 		}
 

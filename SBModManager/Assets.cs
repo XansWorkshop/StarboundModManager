@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 using SBModManager.GUI;
+using SBModManager.Menus;
 using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
 
@@ -96,9 +98,14 @@ namespace SBModManager {
 		public static ConfirmDeleteDialog CreateConfirmDeleteDialog() => ConfirmDeleteDialogPrefab.Instantiate<ConfirmDeleteDialog>();
 
 		/// <summary>
+		/// A 1x1 image.
+		/// </summary>
+		public static Image Dummy1x1Image => field ??= Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
+
+		/// <summary>
 		/// A 1x1 texture.
 		/// </summary>
-		public static ImageTexture Dummy1x1 => field ??= ImageTexture.CreateFromImage(Image.CreateEmpty(1, 1, false, Image.Format.Rgba8));
+		public static ImageTexture Dummy1x1 => field ??= ImageTexture.CreateFromImage(Dummy1x1Image);
 
 		/// <summary>
 		/// Create a new tooltip using the custom rich-text version. Returns <see langword="null"/> if the text is null.
@@ -120,13 +127,14 @@ namespace SBModManager {
 		/// A more complete alternative to <see cref="CreateModListEntryElement"/> which sets the object's name
 		/// for you, as well as calling <see cref="ModListEntryElement.AssignMod(Modpack, ModArchive)"/>.
 		/// </summary>
+		/// <param name="from">The panel creating this element.</param>
 		/// <param name="modpack">The modpack that the <see cref="ModArchive"/> exists in the context of.</param>
 		/// <param name="mod">The mod itself.</param>
 		/// <returns></returns>
-		public static ModListEntryElement CreateModListEntryElementFor(Modpack modpack, ModArchive mod) {
+		public static ModListEntryElement CreateModListEntryElementFor(ViewModListPanel from, Modpack modpack, ModArchive mod) {
 			ModListEntryElement element = CreateModListEntryElement();
 			element.Name = mod.Metadata.ModID;
-			element.AssignMod(modpack, mod);
+			element.AssignMod(from, modpack, mod);
 			return element;
 		}
 
@@ -134,13 +142,14 @@ namespace SBModManager {
 		/// A more complete alternative to <see cref="CreateModBundleElement"/> which sets the object's name
 		/// for you, as well as calling <see cref="ModBundleElement.AssignModpack(Modpack, ModSource)"/>.
 		/// </summary>
+		/// <param name="from">The panel creating this element.</param>
 		/// <param name="modpack">The modpack that the <see cref="ModSource"/> exists in the context of.</param>
 		/// <param name="source">The container of one or more mods.</param>
 		/// <returns></returns>
-		public static ModBundleElement CreateModBundleElementFor(Modpack modpack, ModSource source) {
+		public static ModBundleElement CreateModBundleElementFor(ViewModListPanel from, Modpack modpack, ModSource source) {
 			ModBundleElement element = CreateModBundleElement();
 			element.Name = string.Join(',', source.Mods.Select(mod => mod.Metadata.ModID));
-			element.AssignModpack(modpack, source);
+			element.AssignModpack(from, modpack, source);
 			return element;
 		}
 

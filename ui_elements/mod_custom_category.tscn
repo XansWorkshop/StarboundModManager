@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://bjxijryucjbac"]
+
+[ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="2_ir3q4"]
+
+[node name="ModCustomCategory" type="Control" unique_id=1434697865]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="Container" type="FoldableContainer" parent="." unique_id=1078418183]
+unique_name_in_owner = true
+layout_mode = 0
+anchor_right = 1.0
+offset_bottom = 39.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+title = " "
+
+[node name="Children" type="VBoxContainer" parent="Container" unique_id=1076775368]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CustomName" type="LineEdit" parent="." unique_id=159207531]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.043
+offset_left = 64.0
+offset_right = -30.0
+offset_bottom = 0.8999996
+grow_horizontal = 2
+offset_transform_position = Vector2(64, -1)
+offset_transform_visual_only = false
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+placeholder_text = "Click to name this category..."
+max_length = 80
+flat = true
+caret_blink = true
+
+[node name="CategoryEnabled" type="CheckButton" parent="." unique_id=1920430425]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 44.0
+offset_bottom = 31.0
+offset_transform_enabled = true
+offset_transform_position = Vector2(18, 0)
+offset_transform_visual_only = false
+button_pressed = true
+flat = true
+
+[node name="DeleteCategoryButton" type="Button" parent="." unique_id=1362856989]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(31, 31)
+custom_maximum_size = Vector2(31, 31)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -36.0
+offset_bottom = 36.0
+grow_horizontal = 0
+tooltip_text = "Remove this mod from the list."
+theme_override_constants/line_spacing = -26
+text = "❌
+ "
+script = ExtResource("2_ir3q4")

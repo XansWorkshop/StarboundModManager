@@ -44,8 +44,7 @@ layout_mode = 2
 layout_mode = 2
 bbcode_enabled = true
 text = "You can use this menu to import mods from multiple sources. Choose one:
-[font_size=12][color=#aaa][i]Hover your cursor over an option's name to view information.[/i][/color]
-[color=#faa]Entering text into a box selects that option. To change options, erase the text.[/color][/font_size]"
+[color=#afa]Pro Tip: You can also import mods by dragging-and-dropping files, folders, or .sbmm files onto your mod list directly."
 fit_content = true
 
 [node name="ColumnatedEntries" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=66019466]
@@ -141,12 +140,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Path to .sbmm file..."
 
-[node name="ChooseSBMMFileButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SBMMList" unique_id=204479591]
+[node name="ChooseSBMMFileButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/ColumnatedEntries/Entries/SBMMList" unique_id=805104445]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(31, 31)
 custom_maximum_size = Vector2(31, 31)
 layout_mode = 2
-text = "🗜W"
+tooltip_text = "Import a list of mods exported by this program."
+text = "🗜"
+script = ExtResource("3_sjcc7")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1952991835]
 layout_mode = 2

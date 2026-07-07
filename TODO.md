@@ -20,7 +20,4 @@ This is a collection of things I'd like to do in the future, as well as known bu
 
 ## Known Bugs/UX Problems
 
-* Mods are sorted alphabetically in the list, but this sorting includes invisible formatting (like colors).
-    * This is not severe because of the search bar, but I'd still like to fix it.
 * If a workshop image fails to download, it will be permanently stuck with the "Error! :(" image, because that is what gets saved to the cache.
-* Some mod descriptions have incorrect Godot bbcode translations, causing broken text sizes.

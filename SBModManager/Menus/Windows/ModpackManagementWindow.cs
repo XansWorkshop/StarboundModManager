@@ -68,6 +68,8 @@ namespace SBModManager.Menus.Windows {
 		/// </summary>
 		public Modpack? CurrentModpack { get; private set; }
 
+		private bool _goToModListTab;
+
 		public override void _Ready() {
 			ImportAttribute.ImportAll(this);
 
@@ -80,7 +82,7 @@ namespace SBModManager.Menus.Windows {
 				AssignModpackImpl(CurrentModpack);
 			}
 			OpenFolderButton.Pressed += OnOpenFolderButtonPressed;
-			Tabs.CurrentTab = 0;
+			Tabs.CurrentTab = _goToModListTab ? 1 : 0;
 		}
 
 		private void OnExportFileConfirmed(string path) {
@@ -146,9 +148,10 @@ namespace SBModManager.Menus.Windows {
 		/// Sets <see cref="EditingModpack"/>, and updates every element in this menu to display its customization.
 		/// </summary>
 		/// <param name="modpack"></param>
-		public void AssignModpack(Modpack modpack) {
+		public void AssignModpack(Modpack modpack, bool goToModListTab) {
 			ArgumentNullException.ThrowIfNull(modpack);
 			CurrentModpack = modpack;
+			_goToModListTab = goToModListTab;
 			if (IsNodeReady()) {
 				AssignModpackImpl(modpack);
 			}
@@ -158,6 +161,7 @@ namespace SBModManager.Menus.Windows {
 			CurrentModpack = modpack;
 			EditModpackDetails.SetModpack(modpack);
 			ViewModList.SetModpack(modpack);
+			Tabs.CurrentTab = _goToModListTab ? 1 : 0;
 		}
 	}
 }

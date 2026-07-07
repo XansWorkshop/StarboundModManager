@@ -7,6 +7,7 @@ using System.Text;
 
 using Godot.Collections;
 
+using SBModManager.GUI;
 using SBModManager.Other;
 
 namespace SBModManager.ModInstances {
@@ -49,6 +50,11 @@ namespace SBModManager.ModInstances {
 		public string FriendlyName { get; }
 
 		/// <summary>
+		/// Added by SBMM, this is the same as <see cref="FriendlyName"/> but without its markup.
+		/// </summary>
+		public string SBMMFriendlyNameNoMarkup { get; }
+
+		/// <summary>
 		/// Corresponds to the "description" field.
 		/// </summary>
 		public string Description { get; }
@@ -69,6 +75,11 @@ namespace SBModManager.ModInstances {
 		/// Corresponds to the "author" field.
 		/// </summary>
 		public string Author { get; }
+
+		/// <summary>
+		/// Added by SBMM, this is the same as <see cref="Author"/> but without its markup.
+		/// </summary>
+		public string SBMMAuthorNoMarkup { get; }
 
 		/// <summary>
 		/// Corresponds to the "version" field.
@@ -147,6 +158,18 @@ namespace SBModManager.ModInstances {
 				Priority = GetValueAsIntOrDefault(dictionary, "priority");
 				PreviewImage = (Texture2D)dictionary.GetValueOrDefault("preview_image");
 			}
+
+			// This also really sucks.
+			string bb = FormatTools.StarboundMarkupToBBCode(FriendlyName);
+			using RichTextLabel dummy = new RichTextLabel {
+				BbcodeEnabled = true,
+				Text = bb
+			};
+			SBMMFriendlyNameNoMarkup = dummy.GetParsedText();
+
+			bb = FormatTools.StarboundMarkupToBBCode(Author);
+			dummy.Text = bb;
+			SBMMAuthorNoMarkup = dummy.GetParsedText();
 		}
 
 		/// <summary>
@@ -186,6 +209,18 @@ namespace SBModManager.ModInstances {
 				Priority = 0;
 				PreviewImage = null;
 			}
+
+			// This also really sucks.
+			string bb = FormatTools.StarboundMarkupToBBCode(FriendlyName);
+			using RichTextLabel dummy = new RichTextLabel {
+				BbcodeEnabled = true,
+				Text = bb
+			};
+			SBMMFriendlyNameNoMarkup = dummy.GetParsedText();
+
+			bb = FormatTools.StarboundMarkupToBBCode(Author);
+			dummy.Text = bb;
+			SBMMAuthorNoMarkup = dummy.GetParsedText();
 		}
 
 		private static int GetValueAsIntOrDefault(GDDictionary dictionary, string key, int @default = 0) {
