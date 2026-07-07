@@ -296,9 +296,7 @@ namespace SBModManager.SteamInterop {
 				}
 				WorkshopUpdateInfo.Save();
 
-				if (seeminglyMissing.Contains(long.MinValue)) {
-					seeminglyMissing.Remove(long.MinValue);
-				}
+				seeminglyMissing.Remove(long.MinValue);
 
 				// Reuse IDs
 				if (seeminglyMissing.Count == 0) {
