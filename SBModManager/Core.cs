@@ -229,7 +229,7 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 						Version updateVersion = new Version(versionText.Trim());
 						if (updateVersion > projectVersionInstance) {
 							Status.Text = @$"[font_size=14]Starbound Mod Manager
-Installed Version: [color=#f55]{projectVersion} (Version {updateVersion} is now available! [url=https://github.com/XansWorkshop/StarboundModManager/releases/latest]Click here to get it.[/url])[/color][/font_size]
+Installed Version: [color=#f55]{projectVersion} (Version {updateVersion} is now available! [color=#ffa][url=https://github.com/XansWorkshop/StarboundModManager/releases/latest]Click here to get it.[/url][/color])[/color][/font_size]
 To report bugs or request features, visit [color=#aff][url]https://github.com/XansWorkshop/StarboundModManager[/url][/color]";
 						}
 					} catch { }
