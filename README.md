@@ -7,6 +7,10 @@ Starbound Mod Manager (SBMM) is a cross-platform tool which allows you to manage
 
 **Note:** SBMM is not affiliated with Chucklefish. This is a piece of fan-made software.
 
+## Download
+
+Downloads are on [the releases page](https://github.com/XansWorkshop/StarboundModManager/releases/latest). Scroll down to the bottom.
+
 # Features
 * It works on Windows, Mac, and several Linux distributions.
 * Easy, automatic setup that requires no extra steps.\*
