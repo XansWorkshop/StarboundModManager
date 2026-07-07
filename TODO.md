@@ -6,15 +6,16 @@ This is a collection of things I'd like to do in the future, as well as known bu
 
 ## New Features
 
+
 ### Very Important
 
-* Add the ability to import many pak files at once.
-    * You can still drag and drop more than one.
+1. Add the ability to make categories in the mod list.
 
 ### Less Important (But Still Useful)
 
 1. Clean up the UI. It looks like garbage lol.
-2. Add the ability to make categories in the mod list.
+2. Add the ability to import many pak files at once in the Import dialog.
+    * You can still drag and drop more than one.
 
 ## Known Bugs/UX Problems
 
