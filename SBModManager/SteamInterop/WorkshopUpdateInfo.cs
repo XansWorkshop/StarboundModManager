@@ -32,16 +32,16 @@ namespace SBModManager.SteamInterop {
 		private const long FIFTEEN_MINUTES_IN_SECONDS = 15 * 60;
 
 		/// <summary>
-		/// The same as <see cref="CheckForUpdatesAsync(bool, bool)"/> but this keeps track of a 15 minute cooldown.
+		/// The same as <see cref="CheckForUpdatesIgnoreCooldownAsync(bool, bool)"/> but this keeps track of a 15 minute cooldown.
 		/// If called too early, this does nothing and returns <see cref="Task.CompletedTask"/>.
 		/// </summary>
 		/// <param name="skipKnownOutOfDate"></param>
 		/// <param name="autosave"></param>
 		/// <returns></returns>
-		public static Task CheckForUpdatesWithCooldownAsync(bool skipKnownOutOfDate = true, bool autosave = true) {
+		public static Task CheckForUpdatesWithCooldownAsync(List<long>? appendIDs, bool skipKnownOutOfDate = true, bool autosave = true) {
 			long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 			if ((now - lastUpdateCheck) > FIFTEEN_MINUTES_IN_SECONDS) {
-				return CheckForUpdatesAsync(skipKnownOutOfDate, autosave);
+				return CheckForUpdatesIgnoreCooldownAsync(appendIDs, skipKnownOutOfDate, autosave);
 			}
 			return Task.CompletedTask;
 		}
@@ -54,22 +54,27 @@ namespace SBModManager.SteamInterop {
 		/// but it can make the request smaller.</param>
 		/// <param name="autosave">If <see langword="true"/>, save the results to disk as soon as they are ready.</param>
 		/// <returns></returns>
-		public static async Task CheckForUpdatesAsync(bool skipKnownOutOfDate = true, bool autosave = true) {
+		public static async Task CheckForUpdatesIgnoreCooldownAsync(List<long>? appendIDs, bool skipKnownOutOfDate = true, bool autosave = true) {
 			lastUpdateCheck = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 			string workshopCache = Directories.GetLocalWorkshopCacheDirectory();
 			DirectoryInfo directory = new DirectoryInfo(workshopCache);
 			if (!directory.Exists) return;
 
-			List<long> workshopIDs = [];
+			List<long> workshopIDs = appendIDs != null ? new List<long>(appendIDs) : [];
+			workshopIDs.Sort();
 			Dictionary<long, VersionBinding> versionTrackingReplacement = [];
 			foreach (DirectoryInfo child in directory.GetDirectories()) {
 				if (long.TryParse(child.Name, out long workshopID)) {
 					if (skipKnownOutOfDate && versionTracking.TryGetValue(workshopID, out VersionBinding existingBinding) && existingBinding.IsUpdateAvailable) {
-						// Remember to add it to the replacement!
+						// Add it to the replacement directly.
 						versionTrackingReplacement[workshopID] = existingBinding;
 						continue;
 					}
-					workshopIDs.Add(workshopID);
+					// Otherwise, add it to the pending IDs to download, which once downloaded, will be added to the replacement.
+					int index = workshopIDs.BinarySearch(workshopID);
+					if (index < 0) {
+						workshopIDs.Insert(~index, workshopID);
+					}
 				}
 			}
 
@@ -109,7 +114,7 @@ namespace SBModManager.SteamInterop {
 		/// of the workshop mod when this app downloaded it, and one for the update timestamp of the workshop mod
 		/// as Steam has last reported it.
 		/// <para/>
-		/// The accuracy of this information is up to the last time <see cref="CheckForUpdatesAsync"/> was called.
+		/// The accuracy of this information is up to the last time <see cref="CheckForUpdatesIgnoreCooldownAsync"/> was called.
 		/// </summary>
 		/// <returns></returns>
 		public static IReadOnlyDictionary<long, VersionBinding> GetUpdateInformation() {

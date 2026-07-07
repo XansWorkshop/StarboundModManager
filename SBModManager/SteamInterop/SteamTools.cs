@@ -242,7 +242,7 @@ namespace SBModManager.SteamInterop {
 			}
 
 			GD.Print($"Collecting version information for {idsList.Count} workshop mods, if we need to: {string.Join(',', idsList)}");
-			await WorkshopUpdateInfo.CheckForUpdatesWithCooldownAsync();
+			await WorkshopUpdateInfo.CheckForUpdatesIgnoreCooldownAsync(idsList, false); // We need this to update the version info right away.
 
 			GD.Print($"Downloading {idsList.Count} workshop mods: {string.Join(',', idsList)}");
 			try {

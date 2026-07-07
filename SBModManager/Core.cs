@@ -157,7 +157,7 @@ namespace SBModManager {
 			ImportAttribute.ImportAll(this);
 			Instance = this;
 			WorkshopUpdateInfo.Load();
-			_ = WorkshopUpdateInfo.CheckForUpdatesAsync();
+			_ = WorkshopUpdateInfo.CheckForUpdatesIgnoreCooldownAsync(null);
 
 			RunButton.Pressed += OnRunPressed;
 			NewModpackButton.Pressed += OnNewModpackButtonPressed;

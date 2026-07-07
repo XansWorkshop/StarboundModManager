@@ -229,7 +229,7 @@ namespace SBModManager.Menus {
 			if (skipCheckingForWorkshopUpdate) {
 				UpdateAll.Disabled = GetIDsToUpdate().Length == 0;
 			} else {
-				WorkshopUpdateInfo.CheckForUpdatesWithCooldownAsync().ContinueWith(delegate {
+				WorkshopUpdateInfo.CheckForUpdatesWithCooldownAsync(null).ContinueWith(delegate {
 					if (EditingModpack != null) {
 						//CallDeferred(MethodName.RebuildList, true); // Kind of cursed.
 						RebuildList(true);
