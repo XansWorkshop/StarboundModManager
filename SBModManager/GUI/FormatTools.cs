@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -39,6 +40,48 @@ namespace SBModManager.GUI {
 			{ "clear", Color.Color8(0, 0, 0, 0) }
 		}.ToFrozenDictionary();
 
+		private static Color GetColor(ReadOnlySpan<char> from) {
+			if (from.Length == 0) return Colors.White;
+			if (from[0] == '#') {
+				return Color.FromHtml(from);
+			} else {
+				foreach (KeyValuePair<string, Color> binding in COLORS) {
+					if (MemoryExtensions.Equals(binding.Key, from, StringComparison.Ordinal)) {
+						return binding.Value;
+					}
+				}
+			}
+			return Colors.White;
+		}
+
+		/// <summary>
+		/// Reparses the bbcode found in Steam Workshop pages such that it is compatible with Godot's formatting.
+		/// </summary>
+		/// <param name="sbOrWorkshopDesc"></param>
+		/// <returns></returns>
+		[NoDiscard]
+		public static string TranslateSteamWorkshopBBCode(string sbOrWorkshopDesc) {
+			// You know, in the past, no matter how hard I tried, I couldn't write a custom replacer that was faster than a wall of Replaces.
+			// The ignored case is important because Godot requires lowercase tags. Steam does not.
+			return sbOrWorkshopDesc.Replace("[B]", "[b]", StringComparison.OrdinalIgnoreCase).Replace("[/B]", "[/b]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[I]", "[i]", StringComparison.OrdinalIgnoreCase).Replace("[/I]", "[/i]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[U]", "[u]", StringComparison.OrdinalIgnoreCase).Replace("[/U]", "[/u]", StringComparison.OrdinalIgnoreCase)
+					// .Replace("[IMG]", "[img]", StringComparison.OrdinalIgnoreCase).Replace("[/IMG]", "[/img]", StringComparison.OrdinalIgnoreCase)
+					// .Replace("[URL]", "[url]", StringComparison.OrdinalIgnoreCase).Replace("[/URL]", "[/url]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[STRIKE]", "[s]", StringComparison.OrdinalIgnoreCase).Replace("[/STRIKE]", "[/s]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[LIST]", "[ul]", StringComparison.OrdinalIgnoreCase).Replace("[/LIST]", "[/ul]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[OLIST]", "[ol]", StringComparison.OrdinalIgnoreCase).Replace("[/OLIST]", "[/ol]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[*]", null, StringComparison.OrdinalIgnoreCase) // Used in lists
+					.Replace("[/HR]", null, StringComparison.OrdinalIgnoreCase) // Godot doesn't use a closing tag.
+					.Replace("[LI]", null, StringComparison.OrdinalIgnoreCase).Replace("[/LI]", null, StringComparison.OrdinalIgnoreCase)
+					.Replace("[h1]", "[font_size=24]", StringComparison.OrdinalIgnoreCase).Replace("[/h1]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[h2]", "[font_size=20]", StringComparison.OrdinalIgnoreCase).Replace("[/h2]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[h3]", "[font_size=16]", StringComparison.OrdinalIgnoreCase).Replace("[/h3]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[h4]", "[font_size=14]", StringComparison.OrdinalIgnoreCase).Replace("[/h4]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[h5]", "[font_size=12]", StringComparison.OrdinalIgnoreCase).Replace("[/h5]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
+					.Replace("[h6]", "[font_size=10]", StringComparison.OrdinalIgnoreCase).Replace("[/h6]", "[/font_size]", StringComparison.OrdinalIgnoreCase);
+		}
+
 		/// <summary>
 		/// I'm so sorry for the bullshit you're about to lay your eyes upon.
 		/// </summary>
@@ -49,18 +92,8 @@ namespace SBModManager.GUI {
 			// Starbound markup:
 			sbOrWorkshopDesc = StarboundMarkupToBBCode(sbOrWorkshopDesc);
 
-			// Because some people like to use all caps bbcode...
-			sbOrWorkshopDesc = sbOrWorkshopDesc.Replace("[B]", "[b]", StringComparison.OrdinalIgnoreCase).Replace("[/B]", "[/b]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[I]", "[i]", StringComparison.OrdinalIgnoreCase).Replace("[/I]", "[/i]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[U]", "[u]", StringComparison.OrdinalIgnoreCase).Replace("[/U]", "[/u]", StringComparison.OrdinalIgnoreCase)
-												// .Replace("[IMG]", "[img]", StringComparison.OrdinalIgnoreCase).Replace("[/IMG]", "[/img]", StringComparison.OrdinalIgnoreCase)
-												// .Replace("[URL]", "[url]", StringComparison.OrdinalIgnoreCase).Replace("[/URL]", "[/url]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[STRIKE]", "[s]", StringComparison.OrdinalIgnoreCase).Replace("[/STRIKE]", "[/s]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[LIST]", "[ul]", StringComparison.OrdinalIgnoreCase).Replace("[/LIST]", "[/ul]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[OLIST]", "[ol]", StringComparison.OrdinalIgnoreCase).Replace("[/OLIST]", "[/ol]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[*]", null, StringComparison.OrdinalIgnoreCase) // Used in lists
-												.Replace("[/HR]", null, StringComparison.OrdinalIgnoreCase) // Godot doesn't use a closing tag.
-												.Replace("[LI]", null, StringComparison.OrdinalIgnoreCase).Replace("[/LI]", null, StringComparison.OrdinalIgnoreCase);
+			// Steam markup:
+			sbOrWorkshopDesc = TranslateSteamWorkshopBBCode(sbOrWorkshopDesc);
 
 			// For URL and IMG:
 			sbOrWorkshopDesc = URLBBCodeResolver().Replace(sbOrWorkshopDesc, delegate (Match match) {
@@ -71,14 +104,6 @@ namespace SBModManager.GUI {
 				if (!match.Success) return match.Value;
 				return $"[img]{match.Groups[1].Value}[/img]";
 			});
-
-			// Steam Workshop formatting:
-			sbOrWorkshopDesc = sbOrWorkshopDesc.Replace("[h1]", "[font_size=24]", StringComparison.OrdinalIgnoreCase).Replace("[/h1]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[h2]", "[font_size=20]", StringComparison.OrdinalIgnoreCase).Replace("[/h2]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[h3]", "[font_size=16]", StringComparison.OrdinalIgnoreCase).Replace("[/h3]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[h4]", "[font_size=14]", StringComparison.OrdinalIgnoreCase).Replace("[/h4]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[h5]", "[font_size=12]", StringComparison.OrdinalIgnoreCase).Replace("[/h5]", "[/font_size]", StringComparison.OrdinalIgnoreCase)
-												.Replace("[h6]", "[font_size=10]", StringComparison.OrdinalIgnoreCase).Replace("[/h6]", "[/font_size]", StringComparison.OrdinalIgnoreCase);
 
 			// Image Fixers
 			// The idea here is to create a dummy texture and then download it in the background.
@@ -96,6 +121,164 @@ namespace SBModManager.GUI {
 			if (alsoEscapeBBCode) {
 				sbString = sbString.Replace("[", "[lb]");
 			}
+
+			// Something built into sb.
+			sbString = sbString.Replace("¤", "[img height=1em]res://icons/starbound.png[/img]");
+			Span<char> commandBuffer = stackalloc char[64];
+			ReadOnlySpan<char> contents = sbString;
+			StringBuilder result = new StringBuilder();
+			// ^ It is impossible for the result to be longer than the original.
+
+			// Starbound has multiple format tags.
+			// The ones in common knowledge are:
+			//		^#hexhex; for custom colors
+			//		^named; (see the top of this file) for named colors
+			//		^reset; to go back to default settings
+
+			// Less common:
+			//		^shadow; to add a dropshadow
+
+			// And beyond the knowledge of most SB modders:
+			//		^set; to change what ^reset; considers to be "default" settings.
+			//		^shadow=COLOR; to change the shadow to a specific color (hex or named)
+			//		^noshadow;
+			//		NOTE: ^set; sets the alpha of the color, and the alpha of the set settings multiplies with the alpha of any color that is set now.
+			//					* Unless it's the shadow color, which has an alpha set explicitly no matter what.
+			//		^directives=; and ^backdirectives=; (yes, like the ones you use for sprite colors)
+
+			// For writing to commandBuffer; -1 indicates that there is no command being written.
+			int commandWriteHead = -1;
+
+			// The character index in contents where a command started.
+			int commandEnteredCheckpoint = -1;
+
+			Color savedColor = Colors.White;
+			Color savedShadowColor = Colors.Transparent;
+			string? savedFont = null;
+			// ^ TODO: Support fonts?
+			Color currentColor = Colors.White;
+			Color currentShadowColor = Colors.Transparent;
+			string? currentFont = null;
+
+			result.Append("[outline_size=8]"); // This is a hack which allows shadows to work.
+			result.Append("[outline_color=#0000]"); // Just make it transparent.
+			result.Append("[color=#fff]");
+
+			Stack<string> bbCodeEffectStack = [];
+			// bbCodeEffectStack.Push("outline_size");
+			bbCodeEffectStack.Push("outline_color");
+			bbCodeEffectStack.Push("color");
+
+			for (int i = 0; i < contents.Length; i++) {
+				char c = contents[i];
+				if (c == '^') {
+					// A command was started.
+					if (commandWriteHead != -1) {
+						// But we were in one already, which means the previous one is invalid.
+						// The command buffer does not include the leading ^:
+						result.Append('^');
+						result.Append(commandBuffer);
+						commandWriteHead = -1;
+					}
+
+					commandEnteredCheckpoint = i;
+					commandWriteHead = 0;
+				} else {
+					if (commandWriteHead != -1) {
+						if (commandWriteHead == 63) {
+							// Overflowed the command buffer. No command is this long.
+							// Except for directives, maybe, but I don't support those.
+							result.Append('^');
+							result.Append(commandBuffer);
+							result.Append(c); // Also append the current character, we care about that one too.
+							commandWriteHead = -1;
+							continue;
+						}
+
+						bool beginMultiCommand = false;
+						if (c == ',') {
+							// Multiple commands.
+							beginMultiCommand = true;
+						}
+
+						if (c == ';' || beginMultiCommand) {
+							// Command terminator
+							Color inlineAlphaMultipliedColor = currentColor;
+							// ^ Used because ^set;'s stored color multiplies with currentColor when setting a color.
+							// But it doesn't store it in currentColor so it should not be remembered.
+							
+							bool shouldPushRendering = true;
+							if (MemoryExtensions.Equals(commandBuffer, "reset", StringComparison.Ordinal)) {
+								while (bbCodeEffectStack.TryPop(out string? tag)) {
+									result.Append($"[/{tag}]");
+								}
+								currentColor = savedColor;
+								currentShadowColor = savedShadowColor;
+								currentFont = savedFont;
+								inlineAlphaMultipliedColor = currentColor; // Reassign this
+							} else if (MemoryExtensions.Equals(commandBuffer, "set", StringComparison.Ordinal)) {
+								savedColor = currentColor;
+								savedShadowColor = currentShadowColor;
+								savedFont = currentFont;
+								shouldPushRendering = false;
+							} else if (MemoryExtensions.StartsWith(commandBuffer, "shadow", StringComparison.Ordinal)) {
+								// Remember: writeHead doubles as length.
+								if (commandWriteHead > 6 && commandBuffer[6] == '=') {
+									// Shadow with color directive.
+									currentShadowColor = GetColor(commandBuffer[7..commandWriteHead]);
+								} else {
+									// Plain shadow.
+									currentShadowColor = Colors.Black;
+								}
+							} else if (MemoryExtensions.Equals(commandBuffer, "noshadow", StringComparison.Ordinal)) {
+								currentShadowColor = Colors.Transparent;
+							} else if (MemoryExtensions.StartsWith(commandBuffer, "font=", StringComparison.Ordinal)) {
+								shouldPushRendering = false;
+							} else if (MemoryExtensions.StartsWith(commandBuffer, "directives=", StringComparison.Ordinal)) {
+								shouldPushRendering = false;
+							} else if (MemoryExtensions.StartsWith(commandBuffer, "subdirectives=", StringComparison.Ordinal)) {
+								shouldPushRendering = false;
+							} else {
+								currentColor = GetColor(commandBuffer[..commandWriteHead]);
+								// Rewrite this and do that special alpha multiplication.
+								inlineAlphaMultipliedColor = currentColor with { A = currentColor.A * savedColor.A };
+							}
+
+							if (shouldPushRendering) {
+								while (bbCodeEffectStack.TryPop(out string? tag)) {
+									result.Append($"[/{tag}]");
+								}
+								result.Append($"[outline_color=#{currentShadowColor.ToHtml()}]");
+								result.Append($"[color=#{inlineAlphaMultipliedColor.ToHtml()}]");
+								bbCodeEffectStack.Push("outline_color");
+								bbCodeEffectStack.Push("color");
+							}
+
+							if (beginMultiCommand) {
+								commandWriteHead = 0; // Just move it back to the start and start writing again.
+							} else {
+								commandWriteHead = -1;
+							}
+
+						} else {
+							commandBuffer[commandWriteHead++] = c;
+						}
+					} else {
+						result.Append(c);	
+					}
+				}
+			}
+
+			// Don't forget to pop some tags.
+			// ($20 not included)
+			while (bbCodeEffectStack.TryPop(out string? tag)) {
+				result.Append($"[/{tag}]");
+			}
+			result.Append("[/outline_size]"); // Guaranteed to be present.
+
+			return result.ToString();
+
+			/*
 
 			// okay so check this out right:
 			// replace every color with a closing tag, then the opening of the next tag
@@ -119,7 +302,10 @@ namespace SBModManager.GUI {
 				// This is so cursed lmfao
 				return $"[color=#fff]{sbString}[/color]";
 			}
+
 			return original;
+			*/
+
 		}
 
 		/// <summary>
