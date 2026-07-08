@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,6 +70,12 @@ namespace SBModManager.Menus {
 		/// </summary>
 		[Import, AllowNull]
 		public Button UpdateAll { get; }
+
+		/// <summary>
+		/// A label which indicates that the mods haven't populated the list yet.
+		/// </summary>
+		[Import, AllowNull]
+		public Label LoadingLabel { get; }
 
 		/// <summary>
 		/// A sorted dictionary used to optimize searching for strings.
@@ -138,6 +145,11 @@ namespace SBModManager.Menus {
 
 		#region Search
 
+
+		private double _updateModsSine = 0;
+		private static readonly string NORMAL_STYLE = "normal";
+		private static readonly string BUTTON_HOVER_STYLE = "hover";
+		private static readonly string BUTTON_PRESSED_STYLE = "pressed";
 		public override void _Process(double delta) {
 			if (_pendingSearchString != null) {
 				// ^ Yes, even for empty strings (that just shows everything).
@@ -163,6 +175,36 @@ namespace SBModManager.Menus {
 					}
 				}
 			}
+
+			void _updateButtonDisplay(StyleBoxFlat flatBox, float intensity) {
+				if (UpdateAll.Disabled) {
+					flatBox.SetBorderWidthAll(0);
+				} else {
+					flatBox.SetBorderWidthAll(3);
+					flatBox.BorderColor = flatBox.BorderColor with { A = float.Abs(intensity) };
+				}
+			}
+
+			float intensity = 0;
+			if (UpdateAll.Disabled) {
+				_updateModsSine = 0;
+			} else {
+				_updateModsSine += delta * 2.0D;
+				if (_updateModsSine > double.Pi) {
+					_updateModsSine -= double.Pi;
+				}
+				intensity = float.Sin((float)_updateModsSine);
+			}
+
+			if (UpdateAll.GetThemeStylebox(NORMAL_STYLE) is StyleBoxFlat normal) {
+				_updateButtonDisplay(normal, intensity);
+			}
+			if (UpdateAll.GetThemeStylebox(BUTTON_HOVER_STYLE) is StyleBoxFlat hover) {
+				_updateButtonDisplay(hover, intensity);
+			}
+			if (UpdateAll.GetThemeStylebox(BUTTON_PRESSED_STYLE) is StyleBoxFlat pressed) {
+				_updateButtonDisplay(pressed, intensity);
+			}
 		}
 
 		private void OnSearchTextChanged(string newText) {
@@ -170,7 +212,7 @@ namespace SBModManager.Menus {
 			_pendingSearchString = newText;
 
 			// Give it a border when there is text.
-			if (SearchMods.GetThemeStylebox(NORMAL) is StyleBoxFlat flat) {
+			if (SearchMods.GetThemeStylebox(NORMAL_STYLE) is StyleBoxFlat flat) {
 				if (newText.Length == 0) {
 					flat.SetBorderWidthAll(0);
 				} else {
@@ -178,7 +220,6 @@ namespace SBModManager.Menus {
 				}
 			}
 		}
-		private static readonly StringName NORMAL = "normal";
 
 		private long[] GetIDsToUpdate() {
 			if (EditingModpack == null) return [];
@@ -254,7 +295,6 @@ namespace SBModManager.Menus {
 			InlineThumbnailImageHelper.PrepareForImageLoading();
 			InlineThumbnailImageHelper.PreloadImagesFromDisk(md5sOfImagesToLoad);
 
-
 			_elementsByDisplayName.Clear();
 			_buttonBindings.Clear();
 			foreach (KeyValuePair<ModSource, bool> srcBinding in EditingModpack.ModSources) {
@@ -280,6 +320,7 @@ namespace SBModManager.Menus {
 			// Retain searches once the list updates.
 			_pendingSearchString ??= _lastPendingSearchString;
 			OnSortTechniqueSelected(EditingModpack.PreferredSortTechnique);
+			LoadingLabel.Visible = false;
 		}
 
 		#region Sorting
@@ -352,6 +393,7 @@ namespace SBModManager.Menus {
 			ArgumentNullException.ThrowIfNull(modpack);
 			EditingModpack = modpack;
 			ImportDialog?.Hide();
+			LoadingLabel.Visible = true;
 			RebuildList();
 		}
 
