@@ -18,6 +18,22 @@ namespace SBModManager {
 	public static class Directories {
 
 		/// <summary>
+		/// Returns the path to the SBMM directory.
+		/// </summary>
+		/// <returns></returns>
+		public static string GetSBMMDirectory() {
+			if (OS.HasFeature("standalone")) {
+				return Path.GetDirectoryName(OS.GetExecutablePath())!;
+			} else {
+#if DEBUG
+				return ProjectSettings.GlobalizePath("res://.godot/mono/temp/bin/Debug");
+#else
+				OS.Alert("If you are seeing this message, please file a bug report: Invalid branch taken when getting program directory", "This is one of those impossible errors.");
+#endif
+			}
+		}
+
+		/// <summary>
 		/// Returns the location of the Starbound executable.
 		/// </summary>
 		/// <returns></returns>
@@ -166,6 +182,14 @@ namespace SBModManager {
 		/// <returns></returns>
 		public static string GetSteamCMDTempScriptDirectory() {
 			return ProjectSettings.GlobalizePath("user://steamcmd_tempscripts");
+		}
+
+		/// <summary>
+		/// Returns the path a folder used to store pak files being downloaded from the internet.
+		/// </summary>
+		/// <returns></returns>
+		public static string GetOnlinePakFileStagingDirectory() {
+			return ProjectSettings.GlobalizePath("user://downloading_paks");
 		}
 
 		/// <summary>

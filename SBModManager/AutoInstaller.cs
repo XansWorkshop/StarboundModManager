@@ -299,23 +299,54 @@ namespace SBModManager {
 			string? steamSBInstall = SteamTools.GetStarboundDirectory();
 
 			GD.Print("Porting over Starbound assets...");
-			string parentDir = Path.GetDirectoryName(OS.GetExecutablePath())!;
-			string packedPak = Path2.Combine(parentDir, "packed.pak");
+
+			// Set the directories to the same folder as this exe:
+			string parentDir = Directories.GetSBMMDirectory();
+			string packedPak = Path2.Combine(parentDir, "assets", "packed.pak");
 			string tiledDir = Path2.Combine(parentDir, "tiled");
-			if (steamSBInstall == null) {
-				GD.PushWarning("SBMM can't find a Steam installation of Starbound. I'll try searching in the same folder as the app, just in case...");
-				if (!File.Exists(packedPak) || !Directory.Exists(tiledDir)) {
-					throw new InvalidOperationException($"OpenStarbound installation is incomplete: Steam installation directory of Starbound was not found. Please install Starbound on Steam.\n\nPro tip: If you do not own it on Steam, open your install folder. Then, copy the \"tiled\" folder into this folder where the app is. Finally, open \"assets\" in your Starbound folder and copy \"packed.pak\" into this folder too.");
+
+			string zip = Path2.Combine(parentDir, "starbound.zip");
+			if (File.Exists(zip)) {
+				using ZipArchive archive = new ZipArchive(File.OpenRead(zip));
+				ZipArchiveEntry? tiledDirZip = archive.GetEntry("tiled/");
+				ZipArchiveEntry? packedPakZip = archive.GetEntry("assets/packed.pak");
+				if (tiledDirZip != null && packedPakZip != null) {
+					// Don't go to the label.
+					// Easy:
+					string packedDst = Path2.Combine(localSBInstallDir, "assets", "packed.pak");
+					if (File.Exists(packedDst)) {
+						try {
+							File.Delete(packedDst);
+						} catch (FileNotFoundException) {
+						} catch (DirectoryNotFoundException) { }
+					}
+					packedPakZip.ExtractToFile(packedDst);
+
+					// Gotta enuemrate this:
+					foreach (ZipArchiveEntry entry in archive.Entries) {
+						if (entry.FullName.StartsWith("tiled/") && !entry.FullName.EndsWith('/')) {
+							string resultPath = Path2.Combine(localSBInstallDir, "tiled", entry.FullName[6..]);
+							string resultDir = Path.GetDirectoryName(resultPath)!;
+							Directory.CreateDirectory(resultDir);
+							if (File.Exists(resultPath)) {
+								try {
+									File.Delete(resultPath);
+								} catch (FileNotFoundException) {
+								} catch (DirectoryNotFoundException) { }
+							}
+							entry.ExtractToFile(resultPath);
+						}
+					}
+					return Task.CompletedTask;
 				}
-			} else if (!File.Exists(packedPak) || !Directory.Exists(tiledDir)) {
+			}
+
+			if (steamSBInstall != null) {
 				GD.Print("Finding assets/packed.pak and tiled from Steam...");
 				packedPak = Path2.Combine(steamSBInstall, "assets", "packed.pak");
 				tiledDir = Path2.Combine(steamSBInstall, "tiled");
-				if (!File.Exists(packedPak)) {
-					throw new InvalidOperationException("OpenStarbound installation is incomplete: Required file \"packed.pak\" (in the assets folder) does not exist in your Steam installation of Starbound. Verify the integrity of your game files, then try again.");
-				}
-				if (!Directory.Exists(tiledDir)) {
-					throw new InvalidOperationException("OpenStarbound installation is incomplete: Required folder \"tiled\" does not exist in your Steam installation of Starbound. Verify the integrity of your game files, then try again.");
+				if (File.Exists(packedPak) && Directory.Exists(tiledDir)) {
+					goto FOUND_SB_FILES;
 				}
 			}
 
@@ -324,11 +355,10 @@ namespace SBModManager {
 				// PLAN B!
 
 				// Maybe, just MAYBE, they installed SBMM into their Starbound folder. Some people did that in testing because they assumed they needed to.
-				string app = OS.GetExecutablePath();
+				string parentDirectoryName = Directories.GetSBMMDirectory();
 				// So one of two possibilities.
 
-				FileInfo appFile = new FileInfo(app);
-				DirectoryInfo? parentDirectory = appFile.Directory;
+				DirectoryInfo? parentDirectory = new DirectoryInfo(parentDirectoryName);
 				// ^ DirectoryName is the same as the parent directory's full path. FileName is the folder itself. Confusing I know.
 				bool mightBeInsideSBExec = OS.GetName() switch {
 					"Windows" => parentDirectory?.Name == "win",
@@ -392,6 +422,33 @@ FOUND_SB_FILES:
 		/// <returns></returns>
 		public static bool ShouldPerformSetup() {
 			return NeedsToInstallSteamCMD() || NeedsToInstallOpenStarboundClient() || NeedsToInstallOpenStarboundServer() || NeedsToInstallStarboundAssets();
+		}
+
+		public static void WarnIfInsideStarboundFolder() {
+			string parentDir = Directories.GetSBMMDirectory();
+			string packedPak = Path2.Combine(parentDir, "assets", "packed.pak");
+			string tiledDir = Path2.Combine(parentDir, "tiled");
+
+			if (File.Exists(packedPak) && Directory.Exists(tiledDir)) {
+				if (NeedsToInstallStarboundAssets()) {
+					OS.Alert(
+@"SBMM thinks it's inside of a Starbound installation.
+
+Since you haven't done the first-time install yet, SBMM will actually make use of this to locate required Starbound files.
+
+This installation of Starbound isn't going to be used! Don't get confused when your mods folder is seemingly ""broken"" (..because it's not being used).",
+
+						"Starbound detected, and...");
+
+				} else {
+					OS.Alert(
+@"SBMM thinks it's inside of a Starbound installation.
+
+This installation of Starbound isn't going to be used! Don't get confused when your mods folder is seemingly ""broken"" (..because it's not being used).",
+
+					"Starbound detected, but...");
+				}
+			}
 		}
 
 		/// <summary>

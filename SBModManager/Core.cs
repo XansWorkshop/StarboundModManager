@@ -198,6 +198,7 @@ namespace SBModManager {
 			}
 
 			GD.Print($"Checking if auto-setup is needed...");
+			AutoInstaller.WarnIfInsideStarboundFolder();
 			if (AutoInstaller.ShouldPerformSetup()) {
 				GD.Print($"Yes, yes it is.");
 
