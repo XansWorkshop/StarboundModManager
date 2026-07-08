@@ -89,7 +89,9 @@ namespace SBModManager.IO {
 
 				bool isDirectoryAModReal = isDirectoryAMod.GetValueOrDefault();
 				bool ifNotModWhyModShaped = false;
-				if (isDirectory && isDirectoryAMod == null) {
+				if (metadata != null) {
+					isDirectoryAModReal = isDirectory;
+				} else if (isDirectory && isDirectoryAMod == null) {
 					// Let's try to guess.
 					bool stop = false;
 					isDirectoryAModReal = true; // Assume it is, unless we can find child mods:
@@ -101,17 +103,14 @@ namespace SBModManager.IO {
 							stop = true;
 							break;
 						}
-						if (Directory.GetFiles(subdirectory, "*.patch").Length > 0) {
-							ifNotModWhyModShaped = true;
-						} else {
-							int hits = 0;
-							foreach (string sbKnownFolderName in SB_GENERAL_FOLDERS) {
-								if (Directory.Exists(Path2.Combine(subdirectory, sbKnownFolderName))) {
-									hits++;
-									if (hits >= 3) {
-										ifNotModWhyModShaped = true;
-										break;
-									}
+
+						int hits = 0;
+						foreach (string sbKnownFolderName in SB_GENERAL_FOLDERS) {
+							if (Directory.Exists(Path2.Combine(subdirectory, sbKnownFolderName))) {
+								hits++;
+								if (hits >= 3) {
+									ifNotModWhyModShaped = true;
+									break;
 								}
 							}
 						}
@@ -126,16 +125,17 @@ namespace SBModManager.IO {
 					}
 				}
 
+
 				if (!isDirectoryAMod.HasValue && isDirectoryAModReal && ifNotModWhyModShaped) {
 					// ^ Confusing naming
 					// isDirectoryAModReal = true means that our assumption that the directory being dragged is a mod held true because no
 					// _metadata was found in any subdirectory, and no .pak files were found within.
 					OS.Alert(
-$@"None of the folders inside of ""{name}"" have a metadata file, yet the contents of at least one of them still looks like a mod.
+	$@"None of the folders inside of ""{name}"" have a metadata file, yet the contents of at least one of them still looks like a mod.
 
 SBMM is going to assume that this ""{name}"" folder contains a list of individual mods, but if this guess is incorrect, the import will be broken.
 
-If you created the mod that caused this hiccup, please add metadata to avoid this ambiguity in the future, or pack your mod into a .pak file. Thank you.", 
+If you created the mod that caused this hiccup, please add metadata to avoid this ambiguity in the future, or pack your mod into a .pak file. Thank you.",
 						////////////////////////
 						"If not mod, why mod shaped?"
 					);
