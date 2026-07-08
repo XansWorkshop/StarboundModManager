@@ -187,7 +187,7 @@ namespace SBModManager {
 		}
 
 		#endregion
-		
+
 		#region OpenStarbound
 
 		/// <summary>
@@ -212,7 +212,7 @@ namespace SBModManager {
 			} else {
 				if (!NeedsToInstallOpenStarboundClient()) throw new InvalidOperationException("OpenStarbound already appears to be installed. This is an application bug; this error should never be reached. Please report it.");
 			}
-			
+
 			string localSBInstallDir = Directories.GetLocalStarboundInstallDirectory();
 
 			// Get the name of the .zip archive to download off of GitHub.
@@ -250,7 +250,7 @@ namespace SBModManager {
 			try {
 				GD.Print($"Going to try downloading version {version}, but this is probably a dev build that isn't out yet...");
 				download = await SBModManagerGlobals.HTTP_CLIENT.GetStreamAsync(string.Format(installationURLFormat, version, installationName), cancellationToken);
-				
+
 			} catch (HttpRequestException http) {
 				if (http.StatusCode == System.Net.HttpStatusCode.NotFound) {
 					GD.PushWarning($"OpenStarbound version {version} could not be found, but this is okay! It's probably just the in-development version and isn't out yet.");
@@ -348,41 +348,11 @@ namespace SBModManager {
 				if (File.Exists(packedPak) && Directory.Exists(tiledDir)) {
 					goto FOUND_SB_FILES;
 				}
-			}
-
-			if (!File.Exists(packedPak) || !Directory.Exists(tiledDir)) {
-				// Let's try something a bit outlandish here...
-				// PLAN B!
-
-				// Maybe, just MAYBE, they installed SBMM into their Starbound folder. Some people did that in testing because they assumed they needed to.
-				string parentDirectoryName = Directories.GetSBMMDirectory();
-				// So one of two possibilities.
-
-				DirectoryInfo? parentDirectory = new DirectoryInfo(parentDirectoryName);
-				// ^ DirectoryName is the same as the parent directory's full path. FileName is the folder itself. Confusing I know.
-				bool mightBeInsideSBExec = OS.GetName() switch {
-					"Windows" => parentDirectory?.Name == "win",
-					"macOS" => parentDirectory?.Name == "osx",
-					"Linux" => parentDirectory?.Name == "linux",
-					_ => false
-				};
-				if (mightBeInsideSBExec) {
-					// They put this in with their starbound exe. Alright.
-					// Let's actually make sure.
-					DirectoryInfo? sbDirectoryProbably = parentDirectory!.Parent;
-					if (sbDirectoryProbably != null) {
-						packedPak = Path2.Combine(sbDirectoryProbably.FullName, "assets", "packed.pak");
-						tiledDir = Path2.Combine(sbDirectoryProbably.FullName, "tiled");
-						if (File.Exists(packedPak) && Directory.Exists(tiledDir)) {
-							goto FOUND_SB_FILES;
-						}
-					}
-				} else {
-					// Plan B:
-
+			} else {
+				if (!File.Exists(packedPak) || !Directory.Exists(tiledDir)) {
+					OS.Alert("SBMM can't find a Starbound installation to create its local archive. Please install Starbound on Steam, or create a zip archive containing Starbound's game files, name it \"starbound.zip\", and place it in the same directory as this program.", "No Starbound? :(");
+					return Task.CompletedTask;
 				}
-
-				OS.Alert("SBMM can't find a Steam installation of Starbound.\n\nWhen you click OK, you will be prompted to find your Starbound installation directory.", "Starbound not found!");
 			}
 
 // One of the extremely rare cases where I think labels are actually cleaner / more straightforward.
@@ -457,7 +427,7 @@ This installation of Starbound isn't going to be used! Don't get confused when y
 		/// <param name="progressWindow">A window to reflect upon the progress to the user. This is expected to have been newly created.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken"/> to stop setup. Should be the same one as is used in <paramref name="progressWindow"/>.</param>
 		public static async Task PerformSetupAsync(GeneralProgressWindow progressWindow, CancellationToken cancellationToken) {
-			
+
 			progressWindow.SetProgress(0.00f);
 			if (NeedsToInstallSteamCMD()) {
 				GD.Print($"The user needs to install SteamCMD. Doing that now.");
