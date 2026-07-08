@@ -86,7 +86,6 @@ namespace SBModManager.GUI {
 			UninstallModButton.Pressed += OnUninstallPressed;
 			UpdateModButton.Pressed += OnUpdatePressed;
 			if (Pack != null && Source != null) {
-				CategoryEnabled.SetPressedNoSignal(Source.IsEnabledIn(Pack));
 				AssignModpackImpl(Pack, Source);
 			}
 			foreach (ModListEntryElement element in _pendingChildren) {
@@ -191,6 +190,7 @@ namespace SBModManager.GUI {
 			Pack = modpack;
 			Source = source;
 			CategoryEnabled.SetPressedNoSignal(source.IsEnabledIn(modpack));
+			Modulate = new Color(1, 1, 1, CategoryEnabled.ButtonPressed ? 1 : 0.5f);
 		}
 	}
 }

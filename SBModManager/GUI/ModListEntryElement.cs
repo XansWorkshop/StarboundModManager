@@ -223,14 +223,16 @@ namespace SBModManager.GUI {
 
 			if (mod.IsDisabledByForce) {
 				EnableMod.TooltipText = "This mod's archive name begins with an underscore.\nStarbound itself actually uses this to forcibly skip loading a mod.";
-				Modulate = new Color(1, 1, 1, 0.5f);
+				//Modulate = new Color(1, 1, 1, 0.5f);
 			} else if (!mod.IsExclusive) {
 				EnableMod.TooltipText = "You can't disable this mod because it's part of a bundle.";
-				Modulate = Colors.White;
+				//Modulate = Colors.White;
 			} else {
 				EnableMod.TooltipText = string.Empty;
-				Modulate = Colors.White;
+				//Modulate = Colors.White;
 			}
+
+			// ^ Modulate set below.
 
 			string friendlyName = mod.Metadata.FriendlyName ?? string.Empty;
 			string author = mod.Metadata.Author ?? string.Empty;
@@ -320,6 +322,12 @@ namespace SBModManager.GUI {
 			string ttTextStored = ModNameAndAuthor.TooltipText;
 			ModNameAndAuthor.TooltipText = "[i](This description is loading in the background to not freeze the menu. Try again in a bit.)[/i]\n\n" + ModNameAndAuthor.TooltipText;
 
+			if (!EnableMod.ButtonPressed) {
+				Modulate = new Color(1, 1, 1, 0.5f);
+			} else {
+				Modulate = Colors.White;
+			}
+
 			Task.Run(() => {
 				string? description = mod.Metadata.SBMMFixedDescription;
 				if (description == null) {
@@ -329,8 +337,6 @@ namespace SBModManager.GUI {
 						description = "[i]No description was provided for this mod.[/i]";
 					}
 					mod.Metadata.SBMMFixedDescription = description;
-				} else {
-
 				}
 				return description;
 			}).ContinueWith(delegate (Task<string> task) {
