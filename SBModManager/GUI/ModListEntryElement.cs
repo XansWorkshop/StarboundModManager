@@ -12,6 +12,7 @@ using SBModManager.Attributes;
 using SBModManager.Menus;
 using SBModManager.Menus.Windows;
 using SBModManager.ModInstances;
+using SBModManager.Other;
 using SBModManager.SteamInterop;
 
 namespace SBModManager.GUI {
@@ -300,91 +301,6 @@ namespace SBModManager.GUI {
 			ModVersionAndSize.Pop();
 #pragma warning restore format
 
-
-			/*
-			if (!string.IsNullOrWhiteSpace(author)) {
-				ModNameAndAuthor.Clear();
-				ModNameAndAuthor.PushFontSize(16);
-				ModNameAndAuthor.PushContext();
-				ModNameAndAuthor.AppendText(formattedFriendlyName);
-				ModNameAndAuthor.PopContext();
-				ModNameAndAuthor.Pop();
-				ModNameAndAuthor.PushFontSize(10);
-				ModNameAndAuthor.AppendText("\nby ");
-				ModNameAndAuthor.PushColor(Colors.MediumSeaGreen);
-				ModNameAndAuthor.PushContext();
-				ModNameAndAuthor.AppendText(FormatTools.StarboundMarkupToBBCode(author.Replace("\n", null).Replace("\r", null), true));
-				ModNameAndAuthor.PopContext();
-				ModNameAndAuthor.Pop();
-				ModNameAndAuthor.AppendText(" - Hover for more information.");
-				ModNameAndAuthor.Pop();
-			} else {
-				ModNameAndAuthor.Clear();
-				ModNameAndAuthor.PushContext();
-				ModNameAndAuthor.AppendText(formattedFriendlyName);
-				ModNameAndAuthor.PopContext();
-				ModNameAndAuthor.PushFontSize(10);
-				ModNameAndAuthor.AppendText("\nHover for more information.");
-				ModNameAndAuthor.Pop();
-			}
-			if (!string.IsNullOrWhiteSpace(version)) {
-				ModVersionAndSize.Clear();
-				ModVersionAndSize.AppendText("Version ");
-				ModVersionAndSize.PushColor(Colors.MediumSeaGreen);
-				ModVersionAndSize.PushContext();
-				ModVersionAndSize.AppendText();
-				ModVersionAndSize.PopContext();
-				ModVersionAndSize.Pop();
-
-				ModVersionAndSize.PushColor(Colors.LightGray);
-				if (mod.Owner.IsWorkshopMod && WorkshopUpdateInfo.TryGetUpdateInformation(mod.Owner.WorkshopID, out WorkshopUpdateInfo.VersionBinding updateInfo) && updateInfo.lastUpdatedForCurrentInstall != 0) {
-					ModVersionAndSize.AppendText($" | Published on {updateInfo.CurrentInstalledUpdateDate}");
-				} else {
-					if (mod.Owner.IsWorkshopMod) {
-						ModVersionAndSize.AppendText(" | Published on [lb]??? Information Outdated]");
-					} else {
-						try {
-							DateTime creation = File.GetCreationTime(mod.AbsolutePath);
-							ModVersionAndSize.AppendText($" | File made on {creation}");
-						} catch (FileNotFoundException) {
-						} catch (DirectoryNotFoundException) { }
-					}
-				}
-				ModVersionAndSize.Pop();
-
-				ModVersionAndSize.AppendText("\nSize: ");
-				ModVersionAndSize.PushColor(Colors.Gray);
-				ModVersionAndSize.AppendText(FormatTools.ToLargestSIUnitByteSize((ulong)mod.FileSizeBytes));
-				ModVersionAndSize.Pop();
-			} else {
-				ModVersionAndSize.Clear();
-				ModVersionAndSize.PushItalics();
-				ModVersionAndSize.AppendText("N/A");
-				ModVersionAndSize.Pop();
-
-				ModVersionAndSize.PushColor(Colors.LightGray);
-				if (mod.Owner.IsWorkshopMod && WorkshopUpdateInfo.TryGetUpdateInformation(mod.Owner.WorkshopID, out WorkshopUpdateInfo.VersionBinding updateInfo) && updateInfo.lastUpdatedForCurrentInstall != 0) {
-					ModVersionAndSize.AppendText($" | Published on {updateInfo.CurrentInstalledUpdateDate}");
-				} else {
-					if (mod.Owner.IsWorkshopMod) {
-						ModVersionAndSize.AppendText(" | Published on [lb]??? Information Outdated]");
-					} else {
-						try {
-							DateTime creation = File.GetCreationTime(mod.AbsolutePath);
-							ModVersionAndSize.AppendText($" | File made on {creation}");
-						} catch (FileNotFoundException) {
-						} catch (DirectoryNotFoundException) { }
-					}
-				}
-				ModVersionAndSize.Pop();
-
-				ModVersionAndSize.AppendText("\nSize: ");
-				ModVersionAndSize.PushColor(Colors.Gray);
-				ModVersionAndSize.AppendText(FormatTools.ToLargestSIUnitByteSize((ulong)mod.FileSizeBytes));
-				ModVersionAndSize.Pop();
-			}
-			*/
-
 			ModNameAndAuthor.TooltipText = $"[font_size=22]{formattedFriendlyName}[/font_size]\n";
 			if (mod.IsDisabledByForce) {
 				ModNameAndAuthor.TooltipText += $"[font_size=16][color=#f77]File name begins with an underscore; this is being forcibly disabled by Starbound itself.[/color][/font_size]\n";
@@ -394,6 +310,11 @@ namespace SBModManager.GUI {
 				Color = new Color(0.23f, 0.08f, 0.02f);
 				ModNameAndAuthor.TooltipText += "[color=#f77]Unpacked mod![/color] This mod may take longer to load.\n";
 			}
+			if (SpecialCases.TryGetSpecialCaseFor(mod.Metadata.ModID, out string? specialCase)) {
+				Color = new Color(0.20f, 0.08f, 0.23f);
+				ModNameAndAuthor.TooltipText += $"[color=#c7f]Special note[/color]: {specialCase}\n";
+			}
+
 			ModNameAndAuthor.TooltipText += "[hr]\n";
 
 			string ttTextStored = ModNameAndAuthor.TooltipText;
