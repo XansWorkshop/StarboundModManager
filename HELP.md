@@ -206,6 +206,8 @@ You have several options to import Starbound's assets.
 3. In your Starbound installation, open the `assets` folder, and copy `packed.pak`
 4. Paste the `packed.pak` file into the same folder as SBMM's exe/app file.
 
+You are done! Try launching the app now.
+
 ### Option 2: From .zip file
 
 **This is only available on versions 0.5.0 or higher.**
@@ -215,6 +217,8 @@ You have several options to import Starbound's assets.
     * On Windows, it may not have the `.zip` at the end at the end of its name. Windows hides file extensions by default. 
 
 **Note:** If this doesn't work, you can just do Option 1. Copy the files out of the zip file to do it.
+
+You are done! Try launching the app now.
 
 ### Option 3: Manually (Not Recommended)
 
@@ -231,3 +235,5 @@ You should only do this if the other two options fail. This option is the most c
 3. Open the `assets` folder inside of the **OpenStarbound folder**.
 4. Copy `packed.pak` *from* `assets` in the **Steam Starbound folder** *into* `assets` in the **OpenStarbound folder**
     * If you did this right, `assets` inside of your **OpenStarbound folder** should now have two files: `opensb.pak` and `packed.pak`.
+
+You are done! Try launching the app now.
