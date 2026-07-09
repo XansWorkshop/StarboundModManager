@@ -290,7 +290,8 @@ namespace SBModManager.Menus.Windows {
 				} catch (Exception exc) when (!exc.IsCancellation()) {
 					OS.Alert(exc.Message, "Failed to import modpack!");
 				}
-			}, cts, true).ContinueWith(delegate {
+			}, cts, true);
+			_importTask.ContinueWith(delegate {
 				if (IsInstanceValid(panel)) {
 					panel.RebuildList();
 				}
@@ -326,7 +327,8 @@ namespace SBModManager.Menus.Windows {
 					editing.ModSources.TryAdd(ModSource.GetOrCreateSource(acquired[i]), true);
 				}
 
-			}, cts, true).ContinueWith(delegate {
+			}, cts, true);
+			_importTask.ContinueWith(delegate {
 				if (IsInstanceValid(ViewModListPanel)) {
 					panel.RebuildList();
 				}
@@ -372,7 +374,6 @@ namespace SBModManager.Menus.Windows {
 					}
 				}
 
-				_importTask = Task.CompletedTask;
 				Importers.PerformPakOrFolderImport(EditingModpack, null, actualPath);
 				// Pass null into the mod list panel, attempting to rebuild the list in this thread raises an exception.
 
@@ -380,7 +381,8 @@ namespace SBModManager.Menus.Windows {
 					File.Delete(deleteTempFile);
 				}
 
-			}, cts, true).ContinueWith(delegate {
+			}, cts, true);
+			_importTask.ContinueWith(delegate {
 				if (IsInstanceValid(panel)) {
 					panel.RebuildList();
 				}
