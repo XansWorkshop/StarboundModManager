@@ -182,9 +182,7 @@ namespace SBModManager {
 			}
 
 			// Also disable the buttons except the create button.
-			HideButtons();
-			NewModpackButton.Disabled = false;
-			ImportModpackButton.Disabled = false;
+			ShowButtonsForCurrentContext();
 
 			string modpacks = Directories.GetPackDirectory();
 			Directory.CreateDirectory(modpacks);
@@ -210,7 +208,7 @@ namespace SBModManager {
 							.ContinueWith(delegate {
 								GD.Print($"Auto-setup is complete.");
 								_autoInstallerSetupOrStarbound = null;
-								ShowButtonsExceptMacServer();
+								ShowButtonsForCurrentContext();
 							}, TaskScheduler.FromCurrentSynchronizationContext());
 			}
 
@@ -413,9 +411,7 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 						_currentSelectedEntryButton = null;
 
 						// Also disable the buttons except the create button.
-						HideButtons();
-						NewModpackButton.Disabled = false;
-						ImportModpackButton.Disabled = false;
+						ShowButtonsForCurrentContext();
 					}
 					foreach (Node node in ModpacksList.GetChildren()) {
 						if (node is ModpackEntryElement entry && entry.Modpack == modpack) {
@@ -505,18 +501,12 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 					_runningModpacks.Remove(modpack);
 
 					if (_currentSelectedModpack == modpack) {
-						CallDeferred(MethodName.ShowButtonsExceptMacServer);
+						CallDeferred(MethodName.ShowButtonsForCurrentContext);
 					}
 				} else {
 					_runningModpacks[modpack] = data;
 					if (_currentSelectedModpack == modpack) {
-						CallDeferred(MethodName.HideButtons);
-						if (data.client == null || data.client.HasExited) {
-							RunButton.SetDeferred(BaseButton.PropertyName.Disabled, false);
-						}
-						if (data.server == null || data.server.HasExited) {
-							RunServerButton.SetDeferred(BaseButton.PropertyName.Disabled, OS.GetName() == "macOS");
-						}
+						CallDeferred(MethodName.HideButtonsForRunningGameDeferredSafe);
 					}
 				}
 			}
@@ -539,12 +529,12 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 				bool hasPaks = Directory.GetFiles(modsDirectory, "*.pak").Length > 0;
 				if (hasSubdirectories || hasPaks) {
 					OS.Alert(
-						// I hate this formatting...
+// I hate this formatting...
 @"Your modpack has a ""mods"" folder in it, but SBMM doesn't use the default mods directory, so these mods will never be loaded.
 
 You need to add these mods to your pack instead. SBMM will open the folder and the pack editor for you.
 
-Drag and drop your entire ""mods"" folder onto the list in SBMM to install them, then rename or delete your mods folder to silence this warning.", 
+Drag and drop your entire ""mods"" folder onto the list in SBMM to install them, then rename or delete your mods folder to silence this warning.",
 						////////////////////////	
 						"Invalid usage detected!"
 					);
@@ -568,14 +558,7 @@ Drag and drop your entire ""mods"" folder onto the list in SBMM to install them,
 						.ContinueWith(delegate {
 							_autoInstallerSetupOrStarbound = null;
 							RefreshModpackDisplay(modpack); // For the last played date
-
-							// Unlock the buttons, where applicable, if needed.
-							if (_currentSelectedModpack != modpack) {
-								ShowButtonsExceptMacServer();
-							} else {
-								RunButton.Disabled = IsRunningClient(modpack);
-								RunServerButton.Disabled = OS.GetName() == "macOS" || IsRunningServer(modpack);
-							}
+							HideButtonsForRunningGame(IsRunningClient(modpack), IsRunningServer(modpack));
 						}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
@@ -620,14 +603,9 @@ Drag and drop your entire ""mods"" folder onto the list in SBMM to install them,
 			bool isRunningClient = IsRunningClient(modpack);
 			bool isRunningServer = IsRunningServer(modpack);
 			if (isRunningClient || isRunningServer) {
-				HideButtons();
-				if (!isRunningClient) {
-					RunButton.Disabled = false;
-				} else if (!isRunningServer) {
-					RunServerButton.Disabled = OS.GetName() == "macOS";
-				}
+				HideButtonsForRunningGame(isRunningClient, isRunningServer);
 			} else {
-				ShowButtonsExceptMacServer();
+				ShowButtonsForCurrentContext();
 			}
 		}
 
@@ -656,16 +634,41 @@ Drag and drop your entire ""mods"" folder onto the list in SBMM to install them,
 		}
 
 		/// <summary>
-		/// Enables all the buttons.
+		/// Enables all the buttons, except the Run Server button iff the user is on Mac, and the edit/delete/dupe
+		/// buttons if no modpack is selected.
 		/// </summary>
-		private void ShowButtonsExceptMacServer() {
-			RunButton.Disabled = false;
-			RunServerButton.Disabled = OS.GetName() == "macOS";
+		private void ShowButtonsForCurrentContext() {
+			RunButton.Disabled = _currentSelectedModpack == null;
+			RunServerButton.Disabled = _currentSelectedModpack == null || OS.GetName() == "macOS";
+			NewModpackButton.Disabled = false;
+			DuplicateModpackButton.Disabled = _currentSelectedModpack == null;
+			ImportModpackButton.Disabled = false;
+			EditModpackButton.Disabled = _currentSelectedModpack == null;
+			DeleteModpackButton.Disabled = _currentSelectedModpack == null;
+		}
+
+		private void HideButtonsForRunningGame(bool isClientRunning, bool isServerRunning) {
+			RunButton.Disabled = isClientRunning;
+			RunServerButton.Disabled = isServerRunning || OS.GetName() == "macOS";
 			NewModpackButton.Disabled = false;
 			DuplicateModpackButton.Disabled = false;
 			ImportModpackButton.Disabled = false;
-			EditModpackButton.Disabled = false;
-			DeleteModpackButton.Disabled = false;
+			EditModpackButton.Disabled = true;
+			DeleteModpackButton.Disabled = true;
+		}
+
+		/// <summary>
+		/// The same as <see cref="HideButtonsForRunningGame(bool, bool)"/> but this captures the status of the game when called,
+		/// making it safe to use in CallDeferred()
+		/// </summary>
+		private void HideButtonsForRunningGameDeferredSafe() {
+			if (_currentSelectedModpack != null) {
+				_ = _runningModpacks.TryGetValue(_currentSelectedModpack, out (Process? client, Process? server) data);
+				HideButtonsForRunningGame(
+					data.client != null && !data.client.HasExited,
+					data.server != null && !data.server.HasExited
+				);
+			}
 		}
 		#endregion
 
