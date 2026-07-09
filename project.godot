@@ -8,15 +8,21 @@
 
 config_version=5
 
+[accessibility]
+
+general/updates_per_second=15
+
 [application]
 
 config/name="Starbound Mod Manager"
 config/description="Starbound Mod Manager helps to organize modpacks for Starbound, allowing the creation of entire game profiles each with their own mods, save files, and universes."
-config/version="0.5.0"
+config/version="0.5.1"
 run/main_scene="uid://ehcuhykhn26h"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Xan's Workshop/StarboundModManager"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+run/low_processor_mode=true
+run/low_processor_mode_sleep_usec=12000
 boot_splash/show_image=false
 boot_splash/use_filter=false
 config/icon="uid://1vkt0comhivi"
