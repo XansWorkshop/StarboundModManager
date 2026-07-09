@@ -6,9 +6,8 @@ This is a collection of things I'd like to do in the future, as well as known bu
 
 ### New Stuff
 
-1. Add the ability to import SBMM/pak files from a URL.
-    * Possibly could also add a browser protocol to make it possible to click a link and install a modpack that way, too.
-2. Add the ability to make categories in the mod list.
+1. Add the ability to make categories in the mod list.
+2. Add the ability to update a modpack from an sbmm file while keeping existing data in place.
 
 ## Known Bugs From This Update
 
