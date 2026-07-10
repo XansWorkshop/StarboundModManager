@@ -209,7 +209,12 @@ namespace SBModManager.SteamInterop {
 
 			string sbmmWorkshopStorageDirectory = Directories.GetLocalWorkshopCacheDirectory();
 			string sbmmSteamCMDScriptDirectory = Directories.GetSteamCMDTempScriptDirectory();
-			string steamCmdStagingDirectory = Path2.Combine(Directories.GetSteamCMDInstallationDirectory(), "steamapps", "content", "app_211820");
+			string steamCmdStagingDirectory;
+			if (OS.GetName() == "Linux") {
+				steamCmdStagingDirectory = Path2.Combine(Directories.GetSteamCMDInstallationDirectory(), "linux32", "steamapps", "content", "app_211820");
+			} else {
+				steamCmdStagingDirectory = Path2.Combine(Directories.GetSteamCMDInstallationDirectory(), "steamapps", "content", "app_211820");
+			}
 			Directory.CreateDirectory(sbmmWorkshopStorageDirectory);
 			Directory.CreateDirectory(sbmmSteamCMDScriptDirectory);
 			Directory.CreateDirectory(steamCmdStagingDirectory); // We make this so the watcher doesn't shit the bed.
