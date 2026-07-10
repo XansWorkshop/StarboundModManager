@@ -83,7 +83,7 @@ namespace SBModManager.SteamInterop {
 			foreach (PublishedFileDetailsEntry entry in details) {
 				VersionBinding binding = versionTracking.GetValueOrDefault(entry.publishedFileID);
 				if (entry.timeUpdated > binding.lastUpdatedForCurrentInstall) {
-					binding = new VersionBinding(binding.lastUpdatedForCurrentInstall, entry.timeUpdated);
+					binding = new VersionBinding(entry.timeUpdated, entry.timeUpdated);
 				}
 				versionTrackingReplacement[entry.publishedFileID] = binding;
 			}
