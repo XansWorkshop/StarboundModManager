@@ -651,7 +651,7 @@ Drag and drop your entire ""mods"" folder onto the list in SBMM to install them,
 			RunButton.Disabled = isClientRunning;
 			RunServerButton.Disabled = isServerRunning || OS.GetName() == "macOS";
 			NewModpackButton.Disabled = false;
-			DuplicateModpackButton.Disabled = false;
+			DuplicateModpackButton.Disabled = isClientRunning || isServerRunning; // Files in use.
 			ImportModpackButton.Disabled = false;
 			EditModpackButton.Disabled = true;
 			DeleteModpackButton.Disabled = true;

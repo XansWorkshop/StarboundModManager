@@ -94,9 +94,9 @@ namespace SBModManager.GUI {
 				menu.SetItemDisabled(1, isRunningServer);
 				// separator
 				menu.SetItemDisabled(3, true);
-				menu.SetItemDisabled(4, true);
+				menu.SetItemDisabled(4, false);
 				menu.SetItemDisabled(5, true);
-				menu.SetItemDisabled(6, true);
+				menu.SetItemDisabled(6, false);
 				// separator
 				menu.SetItemDisabled(8, true);
 			}
