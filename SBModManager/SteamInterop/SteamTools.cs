@@ -102,8 +102,8 @@ namespace SBModManager.SteamInterop {
 		/// Uses <see cref="GetSteamappsContainingStarbound"/> and adds <c>common/Starbound</c> to the path.
 		/// </summary>
 		/// <returns></returns>
-		public static string? GetStarboundDirectory() {
-			string? steamapps = GetSteamappsContainingStarbound();
+		public static string? GetStarboundDirectory(bool warnIfAmbiguous = false) {
+			string? steamapps = GetSteamappsContainingStarbound(warnIfAmbiguous);
 			if (steamapps == null) return null;
 			return Path2.Combine(steamapps, "common", "Starbound");
 		}
@@ -117,7 +117,7 @@ namespace SBModManager.SteamInterop {
 		/// use <see cref="GetStarboundDirectory"/>
 		/// </summary>
 		/// <returns></returns>
-		public static string? GetSteamappsContainingStarbound() {
+		public static string? GetSteamappsContainingStarbound(bool warnIfAmbiguous = false) {
 			try {
 				string os = OS.GetName();
 				VDFObject? vdf;
@@ -150,6 +150,25 @@ namespace SBModManager.SteamInterop {
 						return Path2.Combine(path, "steamapps");
 					}
 				}
+
+				// If the code makes it here, 211820 was not found explicitly.
+				List<string> candidatePaths = [];
+				foreach (KeyValuePair<string, object> kvp in libraryFolders.Values) {
+					VDFObject libraryFolder = (VDFObject)kvp.Value;
+					string path = libraryFolder.GetValue("path");
+					VDFObject apps = libraryFolder.GetChild("apps");
+					if (Directory.Exists(Path2.Combine(path, "steamapps", "common", "Starbound"))) {
+						candidatePaths.Add(path);
+					}
+				}
+
+				if (candidatePaths.Count == 1) {
+					// Easy:
+					return Path2.Combine(candidatePaths[0], "steamapps");
+				} else if (candidatePaths.Count > 1 && warnIfAmbiguous) {
+					OS.Alert($"When attempting to find your installation of Starbound from Steam, multiple installation locations were detected ({string.Join(',', candidatePaths)}). Please delete or rename your old and unused installations.", "Multiple Starbound paths located!");
+				}
+
 			} catch { }
 			return null;
 		}

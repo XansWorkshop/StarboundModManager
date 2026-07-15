@@ -296,7 +296,7 @@ namespace SBModManager {
 		/// <exception cref="OperationCanceledException">The installation is cancelled.</exception>
 		public static Task ImportGameAssetsAsync(CancellationToken cancellationToken) {
 			string localSBInstallDir = Directories.GetLocalStarboundInstallDirectory();
-			string? steamSBInstall = SteamTools.GetStarboundDirectory();
+			string? steamSBInstall = SteamTools.GetStarboundDirectory(true);
 
 			GD.Print("Porting over Starbound assets...");
 
