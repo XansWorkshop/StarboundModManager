@@ -16,7 +16,7 @@ general/updates_per_second=15
 
 config/name="Starbound Mod Manager"
 config/description="Starbound Mod Manager helps to organize modpacks for Starbound, allowing the creation of entire game profiles each with their own mods, save files, and universes."
-config/version="0.5.2"
+config/version="0.5.3"
 run/main_scene="uid://ehcuhykhn26h"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Xan's Workshop/StarboundModManager"
