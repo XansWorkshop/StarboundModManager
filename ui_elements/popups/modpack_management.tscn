@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://b46g2ugm183w7" path="res://SBModManager/Menus/EditModpackDetailsPanel.cs" id="2_o685q"]
 [ext_resource type="Texture2D" uid="uid://lo8aqvl4m0jw" path="res://icons/starbound.png" id="3_lxa52"]
 [ext_resource type="Script" uid="uid://bxg2iyfd736ia" path="res://SBModManager/GUI/RichTooltipElements/TooltipButton.cs" id="5_0sis3"]
+[ext_resource type="Script" uid="uid://bgstufxnhq8wt" path="res://SBModManager/GUI/RichTooltipElements/TooltipCheckButton.cs" id="5_e55jo"]
 [ext_resource type="Script" uid="uid://dq4ktxrpkdv2i" path="res://SBModManager/Menus/ViewModListPanel.cs" id="5_ghlnl"]
 [ext_resource type="PackedScene" uid="uid://bgsfhxcgnstw1" path="res://ui_elements/popups/import_dialog.tscn" id="7_e55jo"]
 
@@ -235,10 +236,10 @@ metadata/_tab_name = "View Mod List"
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Tabs/ViewModList" unique_id=1151899063]
 layout_mode = 2
 
-[node name="SearchAndSort" type="HBoxContainer" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer" unique_id=1601146249]
+[node name="Topbar" type="HBoxContainer" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer" unique_id=1601146249]
 layout_mode = 2
 
-[node name="SearchMods" type="LineEdit" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/SearchAndSort" unique_id=2055190963]
+[node name="SearchMods" type="LineEdit" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/Topbar" unique_id=2055190963]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -248,7 +249,15 @@ clear_button_enabled = true
 select_all_on_focus = true
 caret_blink = true
 
-[node name="SortTechnique" type="OptionButton" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/SearchAndSort" unique_id=1170690071]
+[node name="ShowAllButton" type="CheckButton" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/Topbar" unique_id=298891331]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+tooltip_text = "When enabled, mods from your catalog will show in the list, allowing you to instantly reinstall mods you have uninstalled, or port mods in from other modpacks."
+text = "Show All"
+script = ExtResource("5_e55jo")
+
+[node name="SortTechnique" type="OptionButton" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/Topbar" unique_id=1170690071]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
@@ -260,7 +269,7 @@ popup/item_1/id = 1
 popup/item_2/text = "Sort by Date Added"
 popup/item_2/id = 2
 
-[node name="UpdateAll" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/SearchAndSort" unique_id=1257773357]
+[node name="UpdateAll" type="Button" parent="VBoxContainer/Tabs/ViewModList/VBoxContainer/Topbar" unique_id=1257773357]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Installs updates for all Workshop mods that need them.

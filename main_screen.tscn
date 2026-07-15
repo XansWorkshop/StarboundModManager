@@ -19,6 +19,8 @@
 [ext_resource type="Texture2D" uid="uid://bf1s0qspwwiho" path="res://icons/edit_modpack_disabled.png" id="14_0dp34"]
 [ext_resource type="Texture2D" uid="uid://bf5pa8hqjq7je" path="res://icons/delete_modpack_disabled.png" id="16_kypv5"]
 [ext_resource type="Texture2D" uid="uid://c7ym56v7p6dog" path="res://icons/open_folder.png" id="17_do8p6"]
+[ext_resource type="Texture2D" uid="uid://npranymqrg7f" path="res://icons/make_diff.png" id="17_qx06n"]
+[ext_resource type="Texture2D" uid="uid://32utda1fcg47" path="res://icons/make_diff_disabled.png" id="18_q556m"]
 
 [node name="MainScreen" type="Panel" unique_id=718710276]
 anchors_preset = 15
@@ -139,6 +141,25 @@ layout_mode = 2
 tooltip_text = "Permanently delete the selected modpack."
 texture_normal = ExtResource("8_3qsiq")
 texture_disabled = ExtResource("16_kypv5")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("3_4sclt")
+
+[node name="VSeparator3" type="VSeparator" parent="MarginContainer/VBoxContainer/Tools/ToolsLeft" unique_id=1743932123]
+visible = false
+layout_mode = 2
+
+[node name="MakeDiffButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Tools/ToolsLeft" unique_id=1382428917]
+unique_name_in_owner = true
+visible = false
+texture_filter = 1
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "Export this modpack as an upgrade to an existing modpack.
+
+This can be useful for distributing changes to existing modpacks without having to repackage the entire file."
+texture_normal = ExtResource("17_qx06n")
+texture_disabled = ExtResource("18_q556m")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("3_4sclt")

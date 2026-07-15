@@ -78,6 +78,12 @@ namespace SBModManager.Menus {
 		public Label LoadingLabel { get; }
 
 		/// <summary>
+		/// This button toggles the visibility of mods in the catalog, which are not installed to this pack.
+		/// </summary>
+		[Import, AllowNull]
+		public CheckButton ShowAllButton { get; }
+
+		/// <summary>
 		/// A sorted dictionary used to optimize searching for strings.
 		/// </summary>
 		private readonly Dictionary<string, ModListEntryElement> _elementsByDisplayName = [];
