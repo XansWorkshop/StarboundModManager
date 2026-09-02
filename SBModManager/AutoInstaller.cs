@@ -16,6 +16,8 @@ using SBModManager.ModInstances;
 using SBModManager.Other;
 using SBModManager.SteamInterop;
 
+using SharpAstro.Lzip;
+
 namespace SBModManager {
 
 	/// <summary>
@@ -193,7 +195,7 @@ namespace SBModManager {
 		/// <summary>
 		/// The OpenStarbound version in development as of the last build. This is my "safe fallback" option.
 		/// </summary>
-		private const string OPENSB_VERSION_AS_OF_BUILD = "0.1.14";
+		private const string OPENSB_VERSION_AS_OF_BUILD = "0.1.15";
 
 		/// <summary>
 		/// Asynchronously download and install the latest version of OpenStarbound for the current operating system into SBMM's data folder.
@@ -225,15 +227,15 @@ namespace SBModManager {
 			if (os == "Windows") {
 				installationName = $"OpenStarbound-Windows-{distCapitalized}.zip";
 			} else if (os == "Linux") {
-				installationName = $"OpenStarbound-Linux-Clang-{distCapitalized}.zip";
+				installationName = $"OpenStarbound-Linux-Clang-{distCapitalized}.tar.lz";
 			} else if (os == "macOS") {
 				if (server) {
 					throw new NotSupportedException("OpenStarbound: There is no server application for Mac. If you are seeing this, this is a bug in the program (this error should have never been reached). Please report it.");
 				}
 				if (cpu.Contains("Apple")) {
-					installationName = "OpenStarbound-macOS-Silicon-Client.zip";
+					installationName = "OpenStarbound-macOS-Silicon-Client.tar.lz";
 				} else {
-					installationName = "OpenStarbound-macOS-Intel-Client.zip";
+					installationName = "OpenStarbound-macOS-Intel-Client.tar.lz";
 				}
 			} else {
 				throw new NotSupportedException($"OpenStarbound: Operating System {os} is not supported.");
@@ -263,28 +265,46 @@ namespace SBModManager {
 			}
 
 			// Extract the downloaded archive.
-			using ZipArchive archive = new ZipArchive(download, ZipArchiveMode.Read);
-			if (os != "Windows") {
+			if (os != "Windows") { 
 				GD.Print("Decompressing and extracting the tarball that's inside...");
-				Stream clientTar = archive.GetEntry($"{distLowercase}.tar")!.Open();
+				using MemoryStream clientTar = LzipDecoder.DecompressToStream(download);
 				Directory.CreateDirectory(localSBInstallDir);
 				TarFile.ExtractToDirectory(clientTar, localSBInstallDir, true);
 				// Almost there. This now creates a client_distribution or server_distribution folder which we don't want.
 
 				// Move everything out, and then delete the old folder.
-				DirectoryInfo clientDistro = new DirectoryInfo(Path2.Combine(localSBInstallDir, $"{distLowercase}_distribution"));
-				foreach (DirectoryInfo child in clientDistro.GetDirectories()) {
+				DirectoryInfo targetDistro = new DirectoryInfo(Path2.Combine(localSBInstallDir, $"{distLowercase}_distribution"));
+				foreach (DirectoryInfo child in targetDistro.GetDirectories()) {
 					GD.Print($"Copied directory {child.Name}...");
 					Directories.CopyDirectoryOverwrite(child.FullName, Path2.Combine(localSBInstallDir, child.Name), CancellationToken.None);
 				}
 
 				GD.Print($"Cleaning up...");
-				clientDistro.Delete(true);
+				targetDistro.Delete(true);
 				GD.Print("Done.");
 			} else {
 				GD.Print($"Extracting the zip file...");
-				archive.ExtractToDirectory(localSBInstallDir, true);
-				GD.Print("Done.");
+				using ZipArchive archive = new ZipArchive(download, ZipArchiveMode.Read);
+				string distName = $"{distLowercase}_distribution";
+				if (archive.GetEntry(distName + '/') is ZipArchiveEntry dist) {
+					// Hotfix: 1.15 or newer (presumably) has the client_distribution and server_distribution folders instead.
+					archive.ExtractToDirectory(localSBInstallDir, true);
+
+					// Move everything out, and then delete the old folder.
+					DirectoryInfo targetDistro = new DirectoryInfo(Path2.Combine(localSBInstallDir, distName));
+					foreach (DirectoryInfo child in targetDistro.GetDirectories()) {
+						GD.Print($"Copied directory {child.Name}...");
+						Directories.CopyDirectoryOverwrite(child.FullName, Path2.Combine(localSBInstallDir, child.Name), CancellationToken.None);
+					}
+
+					GD.Print($"Cleaning up...");
+					targetDistro.Delete(true);
+					GD.Print("Done.");
+				} else {
+					// 1.14 or older has its windows files in the zip directly.
+					archive.ExtractToDirectory(localSBInstallDir, true);
+					GD.Print("Done.");
+				}
 			}
 		}
 
