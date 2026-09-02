@@ -244,8 +244,16 @@ To report bugs or request features, visit [color=#aff][url]https://github.com/Xa
 			}, TaskScheduler.FromCurrentSynchronizationContext());
 
 			GD.Print("Loading every single mod that is known to SBMM.");
-			string[] workshopMods = Directory.GetDirectories(Directories.GetLocalWorkshopCacheDirectory());
-			string[] manualMods = Directory.GetDirectories(Directories.GetLocalManualModCacheDirectory());
+			string workshopCacheDirectory = Directories.GetLocalWorkshopCacheDirectory();
+			string manualCacheDirectory = Directories.GetLocalManualModCacheDirectory();
+			string[] workshopMods = [];
+			string[] manualMods = [];
+			if (Directory.Exists(workshopCacheDirectory)) {
+				workshopMods = Directory.GetDirectories(workshopCacheDirectory);
+			}
+			if (Directory.Exists(manualCacheDirectory)) {
+				manualMods = Directory.GetDirectories(manualCacheDirectory);
+			}
 			for (int i = 0; i < workshopMods.Length; i++) {
 				string dir = workshopMods[i];
 				string name = Path.GetFileName(dir);
